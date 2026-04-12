@@ -1,3 +1,5 @@
+package dispositivos;
+
 public class PortaoGaragem extends Dispositivo{
     private int abertura;//0 a 100//
     

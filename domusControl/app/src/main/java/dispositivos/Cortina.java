@@ -1,4 +1,6 @@
-public class Cortina extends Dispositivo{
+package dispositivos;
+    
+    public class Cortina extends Dispositivo{
     private int abertura;//0 a 100//
 
     public Cortina(int identificador, String marca, String modelo, double consumoPorHora, int abertura) {
@@ -11,7 +13,9 @@ public class Cortina extends Dispositivo{
     }
 
     public void setAbertura(int abertura) {
-        this.abertura = abertura;
+        if (abertura < 0) this.abertura = 0;
+        else if (abertura > 100) this.abertura = 100;
+        else this.abertura = abertura;  
     }
 
     public void abrirToda() {
@@ -21,4 +25,13 @@ public class Cortina extends Dispositivo{
     public void fecharToda() {
         this.abertura = 0;
     }
+
+    public void abrirParcial(int incremento) {
+        setAbertura(this.abertura + incremento);
+    }
+
+    public void fecharParcial(int decremento) {
+        setAbertura(this.abertura - decremento);
+    }
+
 }
