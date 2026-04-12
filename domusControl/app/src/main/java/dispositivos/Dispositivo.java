@@ -3,7 +3,15 @@ public class Dispositivo{
     private String marca;
     private String modelo;
     private double consumoPorHora;
+    
+
+    public Dispositivo(int identificador, String marca, String modelo, double consumoPorHora) {
+        this.identificador = identificador;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.consumoPorHora = consumoPorHora;
     }
+    
 
     public int getIdentificador() {
         return identificador;
@@ -17,3 +25,4 @@ public class Dispositivo{
     public double getConsumoPorHora() {
         return consumoPorHora;
     }
+}
