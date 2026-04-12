@@ -1,7 +1,11 @@
 public class Casa{
     private String nome;
     private String morada;
-    }
+
+    public Casa(String nome, String morada) {
+        this.nome = nome;
+        this.morada = morada;
+    }    
 
     public String getNome() {
         return nome;
@@ -18,3 +22,4 @@ public class Casa{
     public void setMorada(String morada) {
         this.morada = morada;
     }
+}
