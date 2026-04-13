@@ -4,6 +4,9 @@
 package domuscontrol;
 
 import org.junit.jupiter.api.Test;
+
+import domus.App;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {

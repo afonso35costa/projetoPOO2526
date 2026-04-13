@@ -1,3 +1,5 @@
+package utilizadores;
+
 public class Admin extends Utilizador{
     
     public Admin (int id, String nome, String email, String password) {

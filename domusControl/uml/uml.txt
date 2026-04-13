@@ -1,0 +1,165 @@
+@startuml
+skinparam classAttributeIconSize 0
+' ======================
+' APLICACAO DE INTERFACE
+' ======================
+
+interface Automacao {    
+  +calcularPagamento()
+}
+
+interface Escalonamento{
+
+}
+
+class AutomacaoMovimento {     
+  +verificar()     
+  +executar()
+}
+  
+class AutomacaoChuva {     
+  +verificar()     
+  +executar()
+}
+
+class AutomacaoLuzExterior {     
+  +verificar()     
+  +executar()
+}
+  
+class AutomacaoPlantas {     
+  +verificar()     
+  +executar()
+}
+  
+class AutomacaoTemperatura {     
+  +verificar()     
+  +executar()
+}
+
+class AutomacaoAnimais {     
+  +verificar()     
+  +executar()
+}
+
+class Casa {  
+
+}
+  
+' Implementação de interface
+AutomacaoMovimento ..|> Automacao
+AutomacaoChuva ..|> Automacao
+AutomacaoLuzExterior ..|> Automacao
+AutomacaoPlantas ..|> Automacao
+AutomacaoTemperatura ..|> Automacao
+AutomacaoAnimais ..|> Automacao
+
+' ======================
+' CLASSE BASE (HERANÇA)
+' ======================
+
+class Utilizador {  
+
+}
+
+class Admin {
+  
+}
+
+Utilizador <|-- Admin
+
+class Dispositivo {    
+  -identificador : int    
+  -marca : string    
+  -modelo : string    
+  -consumoPhora : double    
+  -estado : boolean
+}
+  
+class Lampada {  
+
+}
+class Cortina {   
+
+}
+class PortaoGaragem {   
+
+}
+
+class ColunaDeSom {
+
+}
+
+class Irrigacao {
+  
+}
+
+class LampadaCor {
+  
+}
+
+class LampadaIntensidade {
+  
+}
+
+class Rele {
+  
+}
+
+class Televisao {
+  
+}
+
+class Termostato {
+  
+}
+
+class SensorChuva {
+
+}
+
+class SensorLuminosidade {
+
+}
+
+' Herança (Lampada, Cortina e PortaoGaragem herda de Dispositivo)
+
+Dispositivo <|-- Lampada
+Dispositivo <|-- Cortina
+Dispositivo <|-- PortaoGaragem
+Dispositivo <|-- ColunaDeSom
+Dispositivo <|-- Irrigacao
+Dispositivo <|-- Rele
+Dispositivo <|-- Televisao
+Dispositivo <|-- Termostato
+Dispositivo <|-- SensorChuva
+Dispositivo <|-- SensorLuminosidade
+
+Lampada <|-- LampadaCor
+
+Automacao <|-- Escalonamento
+
+
+' ======================
+' COMPOSIÇÃO
+' ======================
+
+class Divisao {    
+  -titulo : String
+}
+
+class Cenario {  
+
+}
+  
+' Composição: Casa \\\"tem\\\" Divisões
+
+Casa *-- Divisao
+Casa *-- Utilizador
+Casa *-- Cenario
+Casa *-- Automacao
+
+Divisao *-- Dispositivo
+
+@enduml
+

@@ -1,5 +1,7 @@
 package dispositivos;
 
+import java.util.Objects;
+
 public class SensorLuminosidade extends Dispositivo {
     private double luminosidade;
     
@@ -7,9 +9,19 @@ public class SensorLuminosidade extends Dispositivo {
     public static final double LUX_PORDOSOL = 100; // <100 lux = anoitecer
     public static final double LUX_DIA = 1000;       // >1000 lux = dia claro
 
-    public SensorLuminosidade (int identificador, String marca, String modelo, double consumoPorHora) {
-        super(identificador, marca, modelo, consumoPorHora);
+    public SensorLuminosidade(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double luminosidade) {
+        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+        this.luminosidade = luminosidade;
+    }
+
+    public SensorLuminosidade() {
+        super();
         this.luminosidade = 0;
+    }
+
+    public SensorLuminosidade(SensorLuminosidade outroSensor) {
+        super(outroSensor);
+        this.luminosidade = outroSensor.luminosidade;
     }
 
     public double getLuminosidade() {
@@ -19,6 +31,39 @@ public class SensorLuminosidade extends Dispositivo {
     public void setLuminosidade(double luminosidade) {
         if (luminosidade < 0) this.luminosidade = 0;
         else this.luminosidade = luminosidade;
+    }
+
+    public SensorLuminosidade clone() {
+        return new SensorLuminosidade(this);
+    }
+
+    @Override
+    public String toString() {
+        return "SensorLuminosidade{" +
+                "identificador=" + getIdentificador() +
+                ", marca='" + getMarca() + '\'' +
+                ", modelo='" + getModelo() + '\'' +
+                ", consumoPorHora=" + getConsumoPorHora() +
+                ", ligado=" + getLigado() +
+                ", minutosLigado=" + getMinutosLigado() +
+                ", numActivacoes=" + getNumActivacoes() +
+                ", luminosidade=" + luminosidade +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SensorLuminosidade that = (SensorLuminosidade) o;
+
+        return super.equals(that) && this.luminosidade == that.luminosidade;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), luminosidade);
     }
 
     // Para automações!

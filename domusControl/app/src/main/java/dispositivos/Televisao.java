@@ -1,14 +1,27 @@
 package dispositivos;
 
+import java.util.Objects;
+
 public class Televisao extends Dispositivo {
     private int canal;
     private int volume;
     
-    public Televisao(int identificador, String marca, String modelo,
-                     double consumoPorHora, int canal, int volume) {
-        super(identificador, marca, modelo, consumoPorHora);
-        this.canal = canal;
-        this.volume = volume;;
+    public Televisao(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int canal, int volume) {
+        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+        setCanal(canal);
+        setVolume(volume);
+    }
+
+    public Televisao() {
+        super();
+        this.canal = 1;
+        this.volume = 0;
+    }
+
+    public Televisao(Televisao outraTelevisao) {
+        super(outraTelevisao);
+        this.canal = outraTelevisao.canal;
+        this.volume = outraTelevisao.volume;
     }
 
     public int getCanal() {
@@ -31,12 +44,46 @@ public class Televisao extends Dispositivo {
         else this.volume = volume;
     }
 
-    public void aumentarVolume(int incremento) {
-        setVolume(this.volume + incremento);
+    public Televisao clone() {
+        return new Televisao(this);
     }
 
-    public void diminuirVolume(int decremento) {
-        setVolume(this.volume - decremento);
+    @Override
+    public String toString() {
+        return "Televisao{" +
+                "identificador=" + getIdentificador() +
+                ", marca='" + getMarca() + '\'' +
+                ", modelo='" + getModelo() + '\'' +
+                ", consumoPorHora=" + getConsumoPorHora() +
+                ", ligado=" + getLigado() +
+                ", minutosLigado=" + getMinutosLigado() +
+                ", numActivacoes=" + getNumActivacoes() +
+                ", canal=" + canal +
+                ", volume=" + volume +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Televisao that = (Televisao) o;
+
+        return super.equals(that) && this.canal == that.canal && this.volume == that.volume;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), canal, volume);
+    }
+
+    public void aumentarVolume() {
+        setVolume(this.volume + 5);
+    }
+
+    public void diminuirVolume() {
+        setVolume(this.volume - 5);
     }
 
     public void mudarCanal(int novoCanal) {
