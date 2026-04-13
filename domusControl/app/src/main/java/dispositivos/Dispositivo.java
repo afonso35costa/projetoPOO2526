@@ -92,11 +92,7 @@ public abstract class Dispositivo{
         this.numActivacoes = numActivacoes;
     }
 
-    public Dispositivo clone() {
-        return new Dispositivo(this) {};
-    }
-
-     @Override
+    @Override
     public String toString() {
         return "Dispositivo{" +
                 "identificador=" + identificador +
