@@ -69,14 +69,14 @@ public class Divisao {
     }
 
     public void adicionarDispositivo(Dispositivo dispositivo) {
-        dispositivos.add(dispositivo);
+        this.dispositivos.add(dispositivo);
     }
 
     public int getNumDispositivos() { 
-        return dispositivos.size(); 
+        return this.dispositivos.size(); 
     }
 
     public boolean removerDispositivo(int identificador) {
-        return dispositivos.removeIf(d -> d.getIdentificador() == identificador);
+        return this.dispositivos.removeIf(d -> d.getIdentificador() == identificador);
     }
 }

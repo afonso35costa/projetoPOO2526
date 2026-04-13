@@ -1,19 +1,24 @@
 package utilizadores;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class Utilizador{
     private int id;
     private String nome;
-    private String email;
-    private String password;
 
-    public Utilizador(int id, String nome, String email, String password) {
+    public Utilizador(int id, String nome) {
         this.id = id;
         this.nome = nome;
-        this.email = email;
-        this.password = password;
+    }
+
+    public Utilizador() {
+        this.id = 0;
+        this.nome = "";
+    }
+
+     public Utilizador(Utilizador outroUtilizador) {
+        this.id = outroUtilizador.id;
+        this.nome = outroUtilizador.nome;
     }
 
     public int getId() {
@@ -24,23 +29,39 @@ public class Utilizador{
         return nome;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public String getEmail() {
-        return email;
+    public Utilizador clone() {
+        return new Utilizador(this.id, this.nome);
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+     @Override
+    public String toString() {
+        return "Utilizador{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
     }
 
-    public String getPassword() {
-        return password;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Utilizador that = (Utilizador) o;
+
+        return this.id == that.id && this.nome.equals(that.nome);
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+     @Override
+    public int hashCode() {
+        return Objects.hash(id, nome);
     }
+
 }
