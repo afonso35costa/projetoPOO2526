@@ -79,4 +79,10 @@ public class Divisao {
     public boolean removerDispositivo(int identificador) {
         return this.dispositivos.removeIf(d -> d.getIdentificador() == identificador);
     }
+
+    public double calcularConsumoDivisao() {
+        return dispositivos.stream()
+            .mapToDouble(d -> (d.getMinutosLigado() / 60.0) * d.getConsumoPorHora())
+            .sum();
+    }
 }
