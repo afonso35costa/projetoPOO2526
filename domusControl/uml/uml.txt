@@ -5,11 +5,11 @@ skinparam classAttributeIconSize 0
 ' ======================
 
 interface Automacao {    
-  +calcularPagamento()
+  + verificar() : boolean
+  + executar() : void
 }
 
-interface Escalonamento{
-
+class Escalonamento {
 }
 
 class AutomacaoMovimento {     
@@ -43,8 +43,35 @@ class AutomacaoAnimais {
 }
 
 class Casa {  
+  - id : String 
+  - morada : String
+  - divisoes : Map<String, Divisao>
+  - utilizadores : Set<Utilizador>
+  - cenarios : List<Cenario> 
+  - automacoes : List<Automacao> 
 
+  + Casa(String id, String morada, Map<String, Divisao> divisoes, Set<Utilizador> utilizadores, List<Cenario> cenarios, List<Automacao> automacoes)
+  + Casa()
+  + Casa (outraCasa : Casa) 
+  + getId() : String 
+  + setId(String id)
+  + getMorada () : String
+  + setMorada(String morada)
+  + getDivisoes() : Map<String, Divisao>
+  + setDivisoes(Map<String, Divisao> divisoes)
+  + getUtilizadores() : Set<Utilizador>
+  + setUtilizadores(Set<Utilizador> utilizadores)
+  + getCenarios() : List<Cenario>
+  + setCenarios(List<Cenario> cenarios)
+  + getAutomacoes() : List<Automacao>
+  + setAutomacoes(List<Automacao> automacoes)
+  + clone() : Casa
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + calcularConsumoTotal() : double
 }
+
   
 ' Implementação de interface
 AutomacaoMovimento ..|> Automacao
@@ -59,67 +86,266 @@ AutomacaoAnimais ..|> Automacao
 ' ======================
 
 class Utilizador {  
+  - id : int
+  - nome : String
 
+  + Utilizador(int id, String nome)
+  + Utilizador()
+  + Utilizador(outroUtilizador : Utilizador)
+  + getId() : int
+  + getNome() : String
+  + setId(int id)
+  + setNome(String nome)
+  + clone() : Utilizador
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
 }
 
 class Admin {
-  
+  + Admin(int id, String nome)
+  + Admin()
+  + Admin(outroAdmin : Admin)
+  + clone() : Admin
+  + toString() : String
+  + equals(o : Object) : boolean
 }
 
 Utilizador <|-- Admin
 
-class Dispositivo {    
-  -identificador : int    
-  -marca : string    
-  -modelo : string    
-  -consumoPhora : double    
-  -estado : boolean
+abstract class Dispositivo {
+  - identificador : int
+  - marca : String
+  - modelo : String
+  - consumoPorHora : double
+  - ligado : boolean
+  - minutosLigado : int
+  - numActivacoes : int
+
+  + Dispositivo(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes)
+  + Dispositivo()
+  + Dispositivo(outroDispositivo : Dispositivo)
+  + getIdentificador() : int
+  + getMarca() : String
+  + getModelo() : String
+  + getConsumoPorHora() : double
+  + getLigado() : boolean
+  + getMinutosLigado() : int
+  + getNumActivacoes() : int
+  + setIdentificador(int identificador)
+  + setMarca(String marca)
+  + setModelo(String modelo)
+  + setConsumoPorHora(double consumoPorHora)
+  + setLigado(boolean ligado)
+  + setMinutosLigado(int minutosLigado)
+  + setNumActivacoes(int numActivacoes)
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + ligar() : void
+  + desligar() : void
 }
   
-class Lampada {  
+class Lampada {
+  - intensidade : int
 
+  + Lampada(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int intensidade)
+  + Lampada()
+  + Lampada(outraLampada : Lampada)
+  + getIntensidade() : int
+  + setIntensidade(int intensidade)
+  + clone() : Lampada
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + ligar() : void
+  + desligar() : void
+  + aumentarIntensidade(int incremento) : void
+  + diminuirIntensidade(int decremento) : void
 }
-class Cortina {   
 
+class Cortina {
+  - abertura : int
+
+  + Cortina(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int abertura)
+  + Cortina()
+  + Cortina(outraCortina : Cortina)
+  + getAbertura() : int
+  + setAbertura(int abertura)
+  + clone() : Cortina
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + abrirToda() : void
+  + fecharToda() : void
+  + abrirParcial(int incremento) : void
+  + fecharParcial(int decremento) : void
 }
-class PortaoGaragem {   
 
+class PortaoGaragem {
+  - abertura : int
+
+  + PortaoGaragem(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int abertura)
+  + PortaoGaragem()
+  + PortaoGaragem(outroPortao : PortaoGaragem)
+  + getAbertura() : int
+  + setAbertura(int abertura)
+  + clone() : PortaoGaragem
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + abrir() : void
+  + fechar() : void
 }
 
 class ColunaDeSom {
+  - volume : int
 
+  + ColunaDeSom(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int volume)
+  + ColunaDeSom()
+  + ColunaDeSom(outraColuna : ColunaDeSom)
+  + getVolume() : int
+  + setVolume(int volume)
+  + clone() : ColunaDeSom
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + maxVolume() : void
+  + minVolume() : void
+  + aumentarVolume(int incremento) : void
+  + diminuirVolume(int decremento) : void
 }
 
 class Irrigacao {
-  
+  - duracaoMinutos : int
+  - caudal : int
+  - ultimaChuva : double
+  + CHUVA_MINIMA : double {static}
+
+  + Irrigacao(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int duracaoMinutos, int caudal)
+  + Irrigacao()
+  + Irrigacao(outraIrrigacao : Irrigacao)
+  + getDuracaoMinutos() : int
+  + setDuracaoMinutos(int duracaoMinutos)
+  + getCaudal() : int
+  + setCaudal(int caudal)
+  + getUltimaChuva() : double
+  + setUltimaChuva(double ultimaChuva)
+  + clone() : Irrigacao
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + calcularAguaConsumida() : double
+  + iniciarAutomatico(sensorChuva : SensorChuva) : boolean
 }
 
 class LampadaCor {
-  
+  - temperaturaCor : int
+
+  + LampadaCor(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int intensidade, int temperaturaCor)
+  + LampadaCor()
+  + LampadaCor(outraLampadaCor : LampadaCor)
+  + clone() : LampadaCor
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + getTemperaturaCor() : int
+  + setTemperaturaCor(int temperaturaCor)
+  + maisQuente() : void
+  + maisFria() : void
 }
 
-class LampadaIntensidade {
-  
-}
 
 class Rele {
-  
+  + Rele(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes)
+  + Rele()
+  + Rele(outroRele : Rele)
+  + clone() : Rele
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
 }
 
 class Televisao {
-  
+  - canal : int
+  - volume : int
+
+  + Televisao(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int canal, int volume)
+  + Televisao()
+  + Televisao(outraTelevisao : Televisao)
+  + getCanal() : int
+  + setCanal(int canal)
+  + getVolume() : int
+  + setVolume(int volume)
+  + clone() : Televisao
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + aumentarVolume() : void
+  + diminuirVolume() : void
+  + mudarCanal(novoCanal : int) : void
+  + proximoCanal() : void
+  + canalAnterior() : void
 }
 
 class Termostato {
-  
+  - temperaturaAlvo : double
+  - temperaturaAtual : double
+  - modo : String
+
+  + Termostato(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double temperaturaAlvo, double temperaturaAtual, String modo)
+  + Termostato()
+  + Termostato(outroTermostato : Termostato)
+  + getTemperaturaAlvo() : double
+  + setTemperaturaAlvo(double temperaturaAlvo)
+  + getTemperaturaAtual() : double
+  + setTemperaturaAtual(double temperaturaAtual)
+  + getModo() : String
+  + setModo(String modo)
+  + clone() : Termostato
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + aumentarTemperatura(incremento : double) : void
+  + diminuirTemperatura(decremento : double) : void
 }
 
 class SensorChuva {
+  - pluviosidade : double
+  - estaAChover : boolean
 
+  + SensorChuva(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double pluviosidade, boolean estaAChover)
+  + SensorChuva()
+  + SensorChuva(outroSensor : SensorChuva)
+  + getPluviosidade() : double
+  + estaAChover() : boolean
+  + setPluviosidade(double pluviosidade)
+  + setEstaAChover(boolean estaAChover)
+  + clone() : SensorChuva
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
 }
 
 class SensorLuminosidade {
+  - luminosidade : double
+  + LUX_NOITE : double {static}
+  + LUX_PORDOSOL : double {static}
+  + LUX_DIA : double {static}
 
+  + SensorLuminosidade(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double luminosidade)
+  + SensorLuminosidade()
+  + SensorLuminosidade(outroSensor : SensorLuminosidade)
+  + getLuminosidade() : double
+  + setLuminosidade(double luminosidade)
+  + clone() : SensorLuminosidade
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + isNoite() : boolean
+  + isPordosol() : boolean
+  + isDia() : boolean
+  + deveAcenderLuzes() : boolean
 }
 
 ' Herança (Lampada, Cortina e PortaoGaragem herda de Dispositivo)
@@ -145,11 +371,57 @@ Automacao <|-- Escalonamento
 ' ======================
 
 class Divisao {    
-  -titulo : String
+  - id : int
+  - dispositivos : Set<Dispositivo>
+
+  + Divisao(int id, Set<Dispositivo> dispositivos)
+  + Divisao()
+  + Divisao(outraDivisao : Divisao)
+  + getId() : int
+  + getDispositivos() : Set<Dispositivo>
+  + setId(int id)
+  + setDispositivos(Set<Dispositivo> dispositivos)
+  + clone() : Divisao
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + adicionarDispositivo(dispositivo : Dispositivo) : void
+  + getNumDispositivos() : int
+  + removerDispositivo(identificador : int) : boolean
+  + calcularConsumoDivisao() : double
 }
 
 class Cenario {  
+  - nome : String
+  - automacoes : List<Automacao>
 
+  + Cenario(String nome, List<Automacao> automacoes)
+  + Cenario()
+  + Cenario(outroCenario : Cenario)
+  + getNome() : String
+  + getAutomacoes() : List<Automacao>
+  + setNome(String nome)
+  + setAutomacoes(List<Automacao> automacoes)
+  + clone() : Cenario
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+}
+
+class Sistema {
+  - casas : Set<Casa>
+
+  + Sistema(Sistema sistema)
+  + Sistema(Set<Casa> casas)
+  + Sistema()
+  + getCasas() : Set<Casa>
+  + setCasas(Set<Casa> casas)
+  + clone() : Sistema
+  + toString() : String
+  + equals(o : Object) : boolean
+  + hashCode() : int
+  + adicionarCasa(casa : Casa) : void
+  + removerCasa(casa : Casa) : void
 }
   
 ' Composição: Casa \\\"tem\\\" Divisões
@@ -160,6 +432,8 @@ Casa *-- Cenario
 Casa *-- Automacao
 
 Divisao *-- Dispositivo
+
+Sistema *-- Casa
 
 @enduml
 
