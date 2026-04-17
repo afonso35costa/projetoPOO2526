@@ -4,18 +4,18 @@ import java.util.Set;
 import java.util.HashSet;
 import casas.Casa;
 
-public class Sistema {
+public class DomusControl {
     private Set<Casa> casas;
 
-    public Sistema(Sistema sistema) {
+    public DomusControl(DomusControl sistema) {
         this.casas = new HashSet<>(sistema.casas);
     }
 
-    public Sistema(Set<Casa> casas) {
+    public DomusControl(Set<Casa> casas) {
         this.casas = casas;
     }
 
-    public Sistema() {
+    public DomusControl() {
         this.casas = new HashSet<>();
     }
 
@@ -27,8 +27,8 @@ public class Sistema {
         this.casas = casas;
     }
 
-    public Sistema clone() {
-        return new Sistema(this);
+    public DomusControl clone() {
+        return new DomusControl(this);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class Sistema {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Sistema)) return false;
-        Sistema sistema = (Sistema) o;
+        if (!(o instanceof DomusControl)) return false;
+        DomusControl sistema = (DomusControl) o;
         return casas.equals(sistema.casas);
     }
 

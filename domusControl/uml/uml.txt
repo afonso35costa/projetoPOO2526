@@ -142,8 +142,6 @@ abstract class Dispositivo {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
-  + ligar() : void
-  + desligar() : void
 }
   
 class Lampada {
@@ -158,10 +156,10 @@ class Lampada {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
-  + ligar() : void
-  + desligar() : void
   + aumentarIntensidade(int incremento) : void
   + diminuirIntensidade(int decremento) : void
+  + ligar() : void
+  + desligar() : void
 }
 
 class Cortina {
@@ -176,10 +174,8 @@ class Cortina {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
-  + abrirToda() : void
-  + fecharToda() : void
-  + abrirParcial(int incremento) : void
-  + fecharParcial(int decremento) : void
+  + abrir(int abertura) : void
+  + fechar(int fechamento) : void
 }
 
 class PortaoGaragem {
@@ -194,8 +190,8 @@ class PortaoGaragem {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
-  + abrir() : void
-  + fechar() : void
+  + abrir(int abertura) : void
+  + fechar(int fechamento) : void
 }
 
 class ColunaDeSom {
@@ -214,6 +210,8 @@ class ColunaDeSom {
   + minVolume() : void
   + aumentarVolume(int incremento) : void
   + diminuirVolume(int decremento) : void
+  + ligar() : void
+  + desligar() : void
 }
 
 class Irrigacao {
@@ -237,6 +235,8 @@ class Irrigacao {
   + hashCode() : int
   + calcularAguaConsumida() : double
   + iniciarAutomatico(sensorChuva : SensorChuva) : boolean
+  + ligar() : void
+  + desligar() : void
 }
 
 class LampadaCor {
@@ -264,6 +264,8 @@ class Rele {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
+  + ligar() : void
+  + desligar() : void
 }
 
 class Televisao {
@@ -286,6 +288,8 @@ class Televisao {
   + mudarCanal(novoCanal : int) : void
   + proximoCanal() : void
   + canalAnterior() : void
+  + ligar() : void
+  + desligar() : void
 }
 
 class Termostato {
@@ -308,6 +312,8 @@ class Termostato {
   + hashCode() : int
   + aumentarTemperatura(incremento : double) : void
   + diminuirTemperatura(decremento : double) : void
+  + ligar() : void
+  + desligar() : void
 }
 
 class SensorChuva {
@@ -325,6 +331,8 @@ class SensorChuva {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
+  + ligar() : void
+  + desligar() : void
 }
 
 class SensorLuminosidade {
@@ -346,6 +354,18 @@ class SensorLuminosidade {
   + isPordosol() : boolean
   + isDia() : boolean
   + deveAcenderLuzes() : boolean
+  + ligar() : void
+  + desligar() : void
+}
+
+interface DispositivoQueLiga {
+  +ligar () : void
+  +desligar () : void
+}
+
+interface DispositivoQueAbre {
+  +abrir () : void
+  +fechar () : void
 }
 
 ' Herança (Lampada, Cortina e PortaoGaragem herda de Dispositivo)
@@ -364,6 +384,20 @@ Dispositivo <|-- SensorLuminosidade
 Lampada <|-- LampadaCor
 
 Automacao <|-- Escalonamento
+
+' Interfaces que ligam/abrem
+
+DispositivoQueLiga <|.. Lampada
+DispositivoQueLiga <|.. ColunaDeSom
+DispositivoQueLiga <|.. Irrigacao
+DispositivoQueLiga <|.. Rele
+DispositivoQueLiga <|.. Televisao
+DispositivoQueLiga <|.. Termostato
+DispositivoQueLiga <|.. SensorChuva
+DispositivoQueLiga <|.. SensorLuminosidade
+
+DispositivoQueAbre <|.. Cortina
+DispositivoQueAbre <|.. PortaoGaragem
 
 
 ' ======================

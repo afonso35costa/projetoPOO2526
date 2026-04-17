@@ -3,21 +3,29 @@ package dispositivos;
 import java.util.Objects;
 
 public abstract class Dispositivo{
+
+    enum Estado {
+        LIGADO,
+        DESLIGADO,
+        ABERTO,
+        FECHADO
+    }
+
     private int identificador;
     private String marca;
     private String modelo;
     private double consumoPorHora;
-    private boolean ligado;
+    private Estado estado;
     private int minutosLigado;
     private int numActivacoes;
     
 
-    public Dispositivo(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes) {
+    public Dispositivo(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes) {
         this.identificador = identificador;
         this.marca = marca;
         this.modelo = modelo;
         this.consumoPorHora = consumoPorHora;
-        this.ligado = ligado;
+        this.estado = estado;
         this.minutosLigado = minutosLigado;
         this.numActivacoes = numActivacoes;
         }
@@ -27,7 +35,7 @@ public abstract class Dispositivo{
         this.marca = "";
         this.modelo = "";
         this.consumoPorHora = 0.0;
-        this.ligado = false;
+        this.estado = Estado.DESLIGADO;
         this.minutosLigado = 0;
         this.numActivacoes = 0;
     }
@@ -37,7 +45,7 @@ public abstract class Dispositivo{
         this.marca = outroDispositivo.marca;
         this.modelo = outroDispositivo.modelo;
         this.consumoPorHora = outroDispositivo.consumoPorHora;
-        this.ligado = outroDispositivo.ligado;
+        this.estado = outroDispositivo.estado;
         this.minutosLigado = outroDispositivo.minutosLigado;
         this.numActivacoes = outroDispositivo.numActivacoes;
     }
@@ -54,8 +62,8 @@ public abstract class Dispositivo{
     public double getConsumoPorHora() {
         return consumoPorHora;
     }
-    public boolean getLigado() {
-        return ligado;
+    public Estado getEstado() {
+        return estado;
     }
     public int getMinutosLigado() {
         return minutosLigado;
@@ -80,8 +88,8 @@ public abstract class Dispositivo{
         this.consumoPorHora = consumoPorHora;
     }
 
-    public void setLigado(boolean ligado) {
-        this.ligado = ligado;
+    public void setEstado(Estado estado) {
+        this.estado = estado;
     }
 
     public void setMinutosLigado(int minutosLigado) {
@@ -99,7 +107,7 @@ public abstract class Dispositivo{
                 ", marca='" + marca + '\'' +
                 ", modelo='" + modelo + '\'' +
                 ", consumoPorHora=" + consumoPorHora +
-                ", ligado=" + ligado +
+                ", estado=" + estado +
                 ", minutosLigado=" + minutosLigado +
                 ", numActivacoes=" + numActivacoes +
                 '}';
@@ -112,7 +120,7 @@ public abstract class Dispositivo{
         Dispositivo that = (Dispositivo) o;
         return this.identificador == that.identificador &&
                 this.consumoPorHora == that.consumoPorHora &&
-                this.ligado == that.ligado &&
+                this.estado == that.estado &&
                 this.minutosLigado == that.minutosLigado &&
                 this.numActivacoes == that.numActivacoes &&
                 this.marca.equals(that.marca) &&
@@ -121,19 +129,7 @@ public abstract class Dispositivo{
 
     @Override
     public int hashCode() {
-        return Objects.hash(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
-    }
-
-    public void ligar() {
-        if (!ligado) {
-            ligado = true;
-            numActivacoes++;
-        }
-    }
-    public void desligar() {
-        if (ligado) {
-            ligado = false;
-        }
+        return Objects.hash(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
     }
 
 }
