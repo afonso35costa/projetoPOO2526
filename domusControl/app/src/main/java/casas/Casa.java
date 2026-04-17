@@ -133,10 +133,4 @@ public class Casa{
         return Objects.hash(id, morada, divisoes, utilizadores, cenarios, automacoes);
     }
 
-    public double calcularConsumoTotal() {
-        return divisoes.values().stream()
-            .mapToDouble(Divisao::calcularConsumoDivisao)
-            .sum();
-    }
-
 }
