@@ -2,12 +2,12 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class Lampada extends Dispositivo{
+public class Lampada extends Dispositivo implements DispositivoQueLiga{
     private int intensidade; //0 a 100//
 
     public Lampada(int identificador, String marca, String modelo,
-                   double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int intensidade) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+                   double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int intensidade) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.intensidade = intensidade;
     }
 
@@ -42,7 +42,7 @@ public class Lampada extends Dispositivo{
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", intensidade=" + intensidade +
@@ -66,13 +66,13 @@ public class Lampada extends Dispositivo{
 
     @Override
     public void ligar() {
-        super.ligar();
+        super.setEstado(Estado.LIGADO);
         this.intensidade = 100;
     }
 
     @Override
     public void desligar() {
-        super.desligar();
+        super.setEstado(Estado.DESLIGADO);
         this.intensidade = 0;
     }
 

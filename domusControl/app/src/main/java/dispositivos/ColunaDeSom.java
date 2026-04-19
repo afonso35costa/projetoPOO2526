@@ -2,12 +2,12 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class ColunaDeSom extends Dispositivo {
+public class ColunaDeSom extends Dispositivo implements DispositivoQueLiga{
     private int volume; // 0 a 100
 
     public ColunaDeSom(int identificador, String marca, String modelo,
-                       double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int volume) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+                       double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int volume) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.volume = volume;
     }
 
@@ -42,7 +42,7 @@ public class ColunaDeSom extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", volume=" + volume +
@@ -62,6 +62,18 @@ public class ColunaDeSom extends Dispositivo {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), volume);
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.LIGADO);
+        this.volume = 100;
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
+        this.volume = 0;
     }
 
     public void maxVolume() {

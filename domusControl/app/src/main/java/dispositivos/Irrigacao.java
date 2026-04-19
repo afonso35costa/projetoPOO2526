@@ -2,7 +2,7 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class Irrigacao extends Dispositivo {
+public class Irrigacao extends Dispositivo implements DispositivoQueLiga {
     private int duracaoMinutos;
     private int caudal;
     private double ultimaChuva;
@@ -10,8 +10,8 @@ public class Irrigacao extends Dispositivo {
     public static final double CHUVA_MINIMA = 5.0; // mm — abaixo disto deve regar
 
     public Irrigacao(int identificador, String marca, String modelo,
-                     double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int duracaoMinutos, int caudal) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+                     double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int duracaoMinutos, int caudal) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.duracaoMinutos = duracaoMinutos;
         this.caudal = caudal;
         this.ultimaChuva = 0;
@@ -68,7 +68,7 @@ public class Irrigacao extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", duracaoMinutos=" + duracaoMinutos +
@@ -98,6 +98,18 @@ public class Irrigacao extends Dispositivo {
 
     public double calcularAguaConsumida() {
         return (duracaoMinutos / 60.0) * caudal;
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.DESLIGADO);
+        this.caudal = 100;
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
+        this.caudal = 0;
     }
 
     // Chamado pelas automações — verifica se faz sentido regar

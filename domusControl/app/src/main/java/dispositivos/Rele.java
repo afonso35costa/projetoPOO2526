@@ -1,9 +1,9 @@
 package dispositivos;
 
-public class Rele extends Dispositivo {
+public class Rele extends Dispositivo implements DispositivoQueLiga{
 
-    public Rele(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes){
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+    public Rele(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes){
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
     }
 
     public Rele() {
@@ -25,7 +25,7 @@ public class Rele extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 '}';
@@ -42,6 +42,16 @@ public class Rele extends Dispositivo {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.LIGADO);
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
     }
 
 }

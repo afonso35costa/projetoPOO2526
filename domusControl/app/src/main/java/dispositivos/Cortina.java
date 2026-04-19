@@ -6,8 +6,8 @@ public class Cortina extends Dispositivo{
     private int abertura;//0 a 100//
 
     public Cortina(int identificador, String marca, String modelo,
-                   double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int abertura) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+                   double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int abertura) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.abertura = abertura;
     }
 
@@ -42,7 +42,7 @@ public class Cortina extends Dispositivo{
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", abertura=" + abertura +
@@ -63,20 +63,18 @@ public class Cortina extends Dispositivo{
         return Objects.hash(super.hashCode(), abertura);
     }
 
-    public void abrirToda() {
-        this.abertura = 100;
+    public void abrir(int abertura) {
+        super.setEstado(Estado.ABERTO);
+        if (abertura < 0) this.abertura = 0;
+        else if (abertura > 100) this.abertura = 100;
+        else this.abertura = abertura;
     }
 
-    public void fecharToda() {
-        this.abertura = 0;
-    }
-
-    public void abrirParcial(int incremento) {
-        setAbertura(this.abertura + incremento);
-    }
-
-    public void fecharParcial(int decremento) {
-        setAbertura(this.abertura - decremento);
+    public void fechar(int fechamento) {
+        super.setEstado(Estado.FECHADO);
+        if (fechamento < 0) this.abertura = 0;
+        else if (fechamento > 100) this.abertura = 100;
+        else this.abertura = 100 - fechamento;
     }
 
 }

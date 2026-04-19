@@ -2,12 +2,12 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class Televisao extends Dispositivo {
+public class Televisao extends Dispositivo implements DispositivoQueLiga {
     private int canal;
     private int volume;
-    
-    public Televisao(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int canal, int volume) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+
+    public Televisao(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int canal, int volume) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         setCanal(canal);
         setVolume(volume);
     }
@@ -55,7 +55,7 @@ public class Televisao extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", canal=" + canal +
@@ -96,5 +96,15 @@ public class Televisao extends Dispositivo {
 
     public void canalAnterior() {
         setCanal(this.canal - 1); 
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.LIGADO);
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
     }
 }

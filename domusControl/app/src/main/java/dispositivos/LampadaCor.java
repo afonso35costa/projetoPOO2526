@@ -6,8 +6,8 @@ public class LampadaCor extends Lampada {
     private int temperaturaCor;
 
     public LampadaCor(int identificador, String marca, String modelo,
-                      double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, int intensidade, int temperaturaCor) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes, intensidade);
+                      double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int intensidade, int temperaturaCor) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes, intensidade);
         this.temperaturaCor = temperaturaCor;
     }
 
@@ -32,7 +32,7 @@ public class LampadaCor extends Lampada {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", intensidade=" + getIntensidade() +

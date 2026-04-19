@@ -7,19 +7,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import casas.Casa;
-import domuscontrol.Testes;
 
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        Sistema sistemaTeste = Testes.criarSistemaTeste();
-        System.out.println(new App().getGreeting());
-        System.out.println("Sistema de teste carregado com " + sistemaTeste.getCasas().size() + " casas.");
-        System.out.println(sistemaTeste);
-    }
+    
 
 
     public static Casa casaMaisConsumo(List<Casa> casas) {

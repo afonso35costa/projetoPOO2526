@@ -6,6 +6,7 @@ package domuscontrol;
 import org.junit.jupiter.api.Test;
 
 import domus.App;
+import domus.DomusControl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,6 +14,13 @@ class AppTest {
     @Test void appHasAGreeting() {
         App classUnderTest = new App();
         assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    }
+
+    public static void main(String[] args) {
+        DomusControl sistemaTeste = Testes.criarSistemaTeste();
+        System.out.println(new App().getGreeting());
+        System.out.println("Sistema de teste carregado com " + sistemaTeste.getCasas().size() + " casas.");
+        System.out.println(sistemaTeste);
     }
 
     

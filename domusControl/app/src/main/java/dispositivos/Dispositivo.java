@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public abstract class Dispositivo{
 
-    enum Estado {
+    public enum Estado {
         LIGADO,
         DESLIGADO,
         ABERTO,

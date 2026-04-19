@@ -2,12 +2,12 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class SensorChuva extends Dispositivo {
+public class SensorChuva extends Dispositivo implements DispositivoQueLiga {
     private double pluviosidade; // mm/h
     private boolean estaAChover;
 
-    public SensorChuva(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double pluviosidade, boolean estaAChover) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+    public SensorChuva(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double pluviosidade, boolean estaAChover) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.pluviosidade = pluviosidade;
         this.estaAChover = estaAChover;
     }
@@ -55,7 +55,7 @@ public class SensorChuva extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", pluviosidade=" + pluviosidade +
@@ -76,5 +76,15 @@ public class SensorChuva extends Dispositivo {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), pluviosidade, estaAChover);
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.LIGADO);
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
     }
 }

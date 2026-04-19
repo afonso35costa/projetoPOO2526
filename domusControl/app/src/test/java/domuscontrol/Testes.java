@@ -21,8 +21,9 @@ import dispositivos.Rele;
 import dispositivos.SensorChuva;
 import dispositivos.SensorLuminosidade;
 import dispositivos.Televisao;
+import dispositivos.Dispositivo.*;
 import dispositivos.Termostato;
-import domus.Sistema;
+import domus.DomusControl;
 import utilizadores.Admin;
 import utilizadores.Utilizador;
 
@@ -30,11 +31,11 @@ public final class Testes {
     private Testes() {
     }
 
-    public static Sistema criarSistemaTeste() {
+    public static DomusControl criarSistemaTeste() {
         Set<Casa> casas = new LinkedHashSet<>();
         casas.add(criarCasaCentro());
         casas.add(criarCasaPraia());
-        return new Sistema(casas);
+        return new DomusControl(casas);
     }
 
     private static Casa criarCasaCentro() {
@@ -89,52 +90,52 @@ public final class Testes {
 
     private static Divisao criarSalaCentro() {
         Set<dispositivos.Dispositivo> dispositivos = new LinkedHashSet<>();
-        dispositivos.add(new Televisao(1001, "LG", "OLED-C1", 0.18, true, 320, 25, 23, 35));
-        dispositivos.add(new ColunaDeSom(1002, "Sony", "SRS-XB43", 0.06, true, 540, 42, 45));
-        dispositivos.add(new LampadaCor(1003, "Philips", "Hue A60", 0.01, true, 890, 150, 70, 3200));
-        dispositivos.add(new Cortina(1004, "Somfy", "Curtain X", 0.03, false, 120, 18, 20));
+        dispositivos.add(new Televisao(1001, "LG", "OLED-C1", 0.18, Estado.LIGADO, 320, 25, 23, 35));
+        dispositivos.add(new ColunaDeSom(1002, "Sony", "SRS-XB43", 0.06, Estado.LIGADO, 540, 42, 45));
+        dispositivos.add(new LampadaCor(1003, "Philips", "Hue A60", 0.01, Estado.LIGADO, 890, 150, 70, 3200));
+        dispositivos.add(new Cortina(1004, "Somfy", "Curtain X", 0.03, Estado.FECHADO, 120, 18, 20));
         return new Divisao(101, dispositivos);
     }
 
     private static Divisao criarCozinhaCentro() {
         Set<dispositivos.Dispositivo> dispositivos = new LinkedHashSet<>();
-        dispositivos.add(new Lampada(1101, "Ikea", "Tradfri", 0.012, true, 780, 130, 85));
-        dispositivos.add(new Rele(1102, "Shelly", "1PM", 0.01, false, 430, 70));
-        dispositivos.add(new SensorLuminosidade(1103, "Aqara", "T1", 0.004, true, 1440, 5, 280));
-        dispositivos.add(new Termostato(1104, "Nest", "v3", 0.05, true, 600, 66, 21.0, 20.3, "auto"));
+        dispositivos.add(new Lampada(1101, "Ikea", "Tradfri", 0.012, Estado.LIGADO, 780, 130, 85));
+        dispositivos.add(new Rele(1102, "Shelly", "1PM", 0.01, Estado.DESLIGADO, 430, 70));
+        dispositivos.add(new SensorLuminosidade(1103, "Aqara", "T1", 0.004, Estado.LIGADO, 1440, 5, 280));
+        dispositivos.add(new Termostato(1104, "Nest", "v3", 0.05, Estado.LIGADO, 600, 66, 21.0, 20.3, "auto"));
         return new Divisao(102, dispositivos);
     }
 
     private static Divisao criarQuartoCentro() {
         Set<dispositivos.Dispositivo> dispositivos = new LinkedHashSet<>();
-        dispositivos.add(new LampadaCor(1201, "Xiaomi", "MiBulb", 0.009, false, 340, 54, 40, 2900));
-        dispositivos.add(new Termostato(1202, "Tado", "Smart", 0.04, true, 920, 81, 19.5, 19.0, "aquecimento"));
-        dispositivos.add(new SensorChuva(1203, "Bosch", "RainMini", 0.003, true, 1300, 9, 0.0, false));
+        dispositivos.add(new LampadaCor(1201, "Xiaomi", "MiBulb", 0.009, Estado.DESLIGADO, 340, 54, 40, 2900));
+        dispositivos.add(new Termostato(1202, "Tado", "Smart", 0.04, Estado.LIGADO, 920, 81, 19.5, 19.0, "aquecimento"));
+        dispositivos.add(new SensorChuva(1203, "Bosch", "RainMini", 0.003, Estado.LIGADO, 1300, 9, 0.0, false));
         return new Divisao(103, dispositivos);
     }
 
     private static Divisao criarSalaPraia() {
         Set<dispositivos.Dispositivo> dispositivos = new LinkedHashSet<>();
-        dispositivos.add(new Televisao(2001, "Samsung", "Q80", 0.2, true, 410, 37, 12, 28));
-        dispositivos.add(new ColunaDeSom(2002, "JBL", "Charge 5", 0.05, true, 300, 21, 55));
-        dispositivos.add(new Lampada(2003, "Osram", "Smart+", 0.011, true, 500, 88, 75));
+        dispositivos.add(new Televisao(2001, "Samsung", "Q80", 0.2, Estado.LIGADO, 410, 37, 12, 28));
+        dispositivos.add(new ColunaDeSom(2002, "JBL", "Charge 5", 0.05, Estado.LIGADO, 300, 21, 55));
+        dispositivos.add(new Lampada(2003, "Osram", "Smart+", 0.011, Estado.LIGADO, 500, 88, 75));
         return new Divisao(201, dispositivos);
     }
 
     private static Divisao criarExteriorPraia() {
         Set<dispositivos.Dispositivo> dispositivos = new LinkedHashSet<>();
-        dispositivos.add(new PortaoGaragem(2101, "FAAC", "D600", 0.08, false, 180, 27, 0));
-        dispositivos.add(new Irrigacao(2102, "RainBird", "ESP", 0.09, false, 200, 11, 30, 250));
-        dispositivos.add(new SensorChuva(2103, "Netatmo", "RainGauge", 0.004, true, 1440, 7, 1.2, true));
-        dispositivos.add(new SensorLuminosidade(2104, "Eve", "Light", 0.004, true, 1440, 7, 85));
+        dispositivos.add(new PortaoGaragem(2101, "FAAC", "D600", 0.08, Estado.FECHADO, 180, 27, 0));
+        dispositivos.add(new Irrigacao(2102, "RainBird", "ESP", 0.09, Estado.DESLIGADO, 200, 11, 30, 250));
+        dispositivos.add(new SensorChuva(2103, "Netatmo", "RainGauge", 0.004, Estado.LIGADO, 1440, 7, 1.2, true));
+        dispositivos.add(new SensorLuminosidade(2104, "Eve", "Light", 0.004, Estado.LIGADO, 1440, 7, 85));
         return new Divisao(202, dispositivos);
     }
 
     private static Divisao criarSuitePraia() {
         Set<dispositivos.Dispositivo> dispositivos = new LinkedHashSet<>();
-        dispositivos.add(new LampadaCor(2201, "Philips", "Hue E14", 0.008, false, 250, 33, 20, 2700));
-        dispositivos.add(new Termostato(2202, "Daikin", "SmartTherm", 0.06, true, 700, 52, 22.0, 23.1, "arrefecimento"));
-        dispositivos.add(new Rele(2203, "Sonoff", "MiniR4", 0.01, false, 340, 40));
+        dispositivos.add(new LampadaCor(2201, "Philips", "Hue E14", 0.008, Estado.DESLIGADO, 250, 33, 20, 2700));
+        dispositivos.add(new Termostato(2202, "Daikin", "SmartTherm", 0.06, Estado.LIGADO, 700, 52, 22.0, 23.1, "arrefecimento"));
+        dispositivos.add(new Rele(2203, "Sonoff", "MiniR4", 0.01, Estado.DESLIGADO, 340, 40));
         return new Divisao(203, dispositivos);
     }
 }

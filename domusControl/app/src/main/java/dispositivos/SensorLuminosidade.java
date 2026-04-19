@@ -2,15 +2,15 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class SensorLuminosidade extends Dispositivo {
+public class SensorLuminosidade extends Dispositivo implements DispositivoQueLiga {
     private double luminosidade;
     
     public static final double LUX_NOITE = 10;      // <10 lux = noite
     public static final double LUX_PORDOSOL = 100; // <100 lux = anoitecer
     public static final double LUX_DIA = 1000;       // >1000 lux = dia claro
 
-    public SensorLuminosidade(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double luminosidade) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+    public SensorLuminosidade(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double luminosidade) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.luminosidade = luminosidade;
     }
 
@@ -44,7 +44,7 @@ public class SensorLuminosidade extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", luminosidade=" + luminosidade +
@@ -81,5 +81,15 @@ public class SensorLuminosidade extends Dispositivo {
 
     public boolean deveAcenderLuzes() { 
         return luminosidade < LUX_PORDOSOL; // noite ou anoitecer
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.LIGADO);
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
     }
 }

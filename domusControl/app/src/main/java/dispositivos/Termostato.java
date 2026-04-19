@@ -2,13 +2,13 @@ package dispositivos;
 
 import java.util.Objects;
 
-public class Termostato extends Dispositivo {
+public class Termostato extends Dispositivo implements DispositivoQueLiga {
     private double temperaturaAlvo;  // em graus Celsius
     private double temperaturaAtual;
     private String modo; // "aquecimento", "arrefecimento", "auto"
 
-    public Termostato(int identificador, String marca, String modelo, double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes, double temperaturaAlvo, double temperaturaAtual, String modo) {
-        super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
+    public Termostato(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double temperaturaAlvo, double temperaturaAtual, String modo) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.temperaturaAlvo = temperaturaAlvo;
         this.temperaturaAtual = temperaturaAtual;
         this.modo = modo;
@@ -65,7 +65,7 @@ public class Termostato extends Dispositivo {
                 ", marca='" + getMarca() + '\'' +
                 ", modelo='" + getModelo() + '\'' +
                 ", consumoPorHora=" + getConsumoPorHora() +
-                ", ligado=" + getLigado() +
+                ", estado=" + getEstado() +
                 ", minutosLigado=" + getMinutosLigado() +
                 ", numActivacoes=" + getNumActivacoes() +
                 ", temperaturaAlvo=" + temperaturaAlvo +
@@ -99,5 +99,16 @@ public class Termostato extends Dispositivo {
 
     public void diminuirTemperatura(double decremento) {
         setTemperaturaAlvo(this.temperaturaAlvo - decremento);
+    }
+
+    @Override
+    public void ligar() {
+        super.setEstado(Estado.LIGADO);
+        this.modo = "auto"; // Ao ligar, o termostato entra em modo automático
+    }
+
+    @Override
+    public void desligar() {
+        super.setEstado(Estado.DESLIGADO);
     }
 }
