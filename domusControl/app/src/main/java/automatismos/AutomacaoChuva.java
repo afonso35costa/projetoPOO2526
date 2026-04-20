@@ -1,5 +1,7 @@
 package automatismos;
 
+import dispositivos.SensorChuva;
+
 public class AutomacaoChuva implements Automacao{
     @Override
     public void executar() {

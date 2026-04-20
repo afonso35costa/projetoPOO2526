@@ -1,6 +1,10 @@
 package automatismos;
 
+import java.util.List;
+
+import dispositivos.Dispositivo;
+
 public interface Automacao {
-    boolean verificar();
-    void executar();
+    boolean verificar(Dispositivo dispositivo);
+    void executar(List<Dispositivo> dispositivos);
 }
