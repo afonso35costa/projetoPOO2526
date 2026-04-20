@@ -102,7 +102,7 @@ public class Irrigacao extends Dispositivo implements DispositivoQueLiga {
 
     @Override
     public void ligar() {
-        super.setEstado(Estado.DESLIGADO);
+        super.setEstado(Estado.LIGADO);
         this.caudal = 100;
     }
 
