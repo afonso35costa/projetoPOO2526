@@ -1,5 +1,8 @@
 package automatismos;
 
+import dispositivos.DispensadorRacao;
+import dispositivos.Dispositivo;
+
 public class AutomacaoAnimais implements Automacao{
     @Override
     public void executar() {
