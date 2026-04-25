@@ -20,7 +20,7 @@ public class DomusControl {
     }
 
     public Set<Casa> getCasas() {
-        return this.casas;
+        return new HashSet<>(this.casas);
     }
 
     public void setCasas(Set<Casa> casas) {

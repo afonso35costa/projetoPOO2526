@@ -53,48 +53,48 @@ public class Casa{
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getMorada () {
         return morada;
     }
 
-    public void setMorada(String morada) {
-        this.morada = morada;
-    }
-
     public Map<String, Divisao> getDivisoes() {
-        return divisoes;
-    }
-
-    public void setDivisoes(Map<String, Divisao> divisoes) {
-        this.divisoes = divisoes;
+        return new HashMap<>(divisoes);
     }
 
     public Set<Utilizador> getUtilizadores() {
         return utilizadores;
     }
 
+    public List<Cenario> getCenarios() {
+        return new ArrayList<>(cenarios);
+    }
+
+    public List<Automacao> getAutomacoes() {
+        return new ArrayList<>(automacoes);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setMorada(String morada) {
+        this.morada = morada;
+    }
+
+    public void setDivisoes(Map<String, Divisao> divisoes) {
+        this.divisoes = new HashMap<>(divisoes);
+    }
+
     public void setUtilizadores(Set<Utilizador> utilizadores) {
         this.utilizadores = utilizadores;
     }
 
-    public List<Cenario> getCenarios() {
-        return cenarios;
-    }
-
     public void setCenarios(List<Cenario> cenarios) {
-        this.cenarios = cenarios;
-    }
-
-    public List<Automacao> getAutomacoes() {
-        return automacoes;
+        this.cenarios = new ArrayList<>(cenarios);
     }
 
     public void setAutomacoes(List<Automacao> automacoes) {
-        this.automacoes = automacoes;
+        this.automacoes = new ArrayList<>(automacoes);
     }
 
     public Casa clone() {
