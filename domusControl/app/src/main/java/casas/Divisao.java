@@ -1,44 +1,44 @@
 package casas;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import dispositivos.Dispositivo;
 
 public class Divisao {
-    private int id;
-    private Set<Dispositivo> dispositivos;
+    private String id;
+    private Map<Integer, Dispositivo> dispositivos;
 
-    public Divisao(int id, Set<Dispositivo> dispositivos) {
+    public Divisao(String id, Map<Integer, Dispositivo> dispositivos) {
         this.id = id;
-        this.dispositivos = new HashSet<>(dispositivos);
+        this.dispositivos = new HashMap<>(dispositivos);
     }
 
     public Divisao() {
-        this.id = 0;
-        this.dispositivos = new HashSet<>();
+        this.id = "";
+        this.dispositivos = new HashMap<>();
     }
 
     public Divisao(Divisao outraDivisao) {
         this.id = outraDivisao.id;
-        this.dispositivos = new HashSet<>(outraDivisao.dispositivos);
+        this.dispositivos = new HashMap<>(outraDivisao.dispositivos);
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
     
 
-    public Set<Dispositivo> getDispositivos() {
+    public Map<Integer, Dispositivo> getDispositivos() {
         return dispositivos;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public void setDispositivos(Set<Dispositivo> dispositivos) {
+    public void setDispositivos(Map<Integer, Dispositivo> dispositivos) {
         this.dispositivos = dispositivos;
     }
 
@@ -68,20 +68,20 @@ public class Divisao {
         return Objects.hash(id, dispositivos);
     }
 
-    public void adicionarDispositivo(Dispositivo dispositivo) {
-        this.dispositivos.add(dispositivo);
-    }
-
     public int getNumDispositivos() { 
         return this.dispositivos.size(); 
     }
 
-    public boolean removerDispositivo(int identificador) {
-        return this.dispositivos.removeIf(d -> d.getIdentificador() == identificador);
+    public void adicionarDispositivo(Dispositivo dispositivo) {
+        this.dispositivos.put(dispositivo.getIdentificador(), dispositivo);
+    }
+
+    public void removerDispositivo(Dispositivo dispositivo) {
+        this.dispositivos.remove(dispositivo.getIdentificador());
     }
 
     public double calcularConsumoDivisao() {
-        return dispositivos.stream()
+        return dispositivos.values().stream()
             .mapToDouble(d -> (d.getMinutosLigado() / 60.0) * d.getConsumoPorHora())
             .sum();
     }

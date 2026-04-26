@@ -35,6 +35,38 @@ public class Cenario {
         this.estrategias = new ArrayList<>(outroCenario.estrategias);
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public List<Dispositivo> getDispositivos() {
+        return dispositivos;
+    }
+
+    public List<EstrategiaCenario> getEstrategias() {
+        return estrategias;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public void setDispositivos(List<Dispositivo> dispositivos) {
+        this.dispositivos = dispositivos;
+    }
+
+    public void setEstrategias(List<EstrategiaCenario> estrategias) {
+        this.estrategias = estrategias;
+    }
+
     public Cenario clone() {
         return new Cenario(this);
     }

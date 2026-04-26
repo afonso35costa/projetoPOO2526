@@ -10,34 +10,48 @@ interface Automacao {
 }
 
 class Escalonamento {
+  - hora : int
+  + verificaHora(LocalDateTime hora) : boolean
 }
 
-class AutomacaoMovimento {     
+class AutomacaoMovimento {    
+  - dispositivos : List<Dispositivos> 
+
   +verificar()     
   +executar()
 }
   
-class AutomacaoChuva {     
+class AutomacaoChuva { 
+  - dispositivos : List<Dispositivos> 
+
   +verificar()     
   +executar()
 }
 
-class AutomacaoLuzExterior {     
+class AutomacaoLuzExterior {    
+  - dispositivos : List<Dispositivos> 
+
   +verificar()     
   +executar()
 }
   
 class AutomacaoPlantas {     
+  - dispositivos : List<Dispositivos> 
+
   +verificar()     
   +executar()
 }
   
-class AutomacaoTemperatura {     
+class AutomacaoTemperatura {    
+  - dispositivos : List<Dispositivos> 
+
   +verificar()     
   +executar()
 }
 
-class AutomacaoAnimais {     
+class AutomacaoEscalonamentoAnimais {     
+  - dispositivo : Dispositivo
+
   +verificar()     
   +executar()
 }
@@ -46,9 +60,9 @@ class Casa {
   - id : String 
   - morada : String
   - divisoes : Map<String, Divisao>
-  - utilizadores : Set<Utilizador>
   - cenarios : List<Cenario> 
   - automacoes : List<Automacao> 
+  - escalonamentos : List<Escalonamento>
 
   + Casa(String id, String morada, Map<String, Divisao> divisoes, Set<Utilizador> utilizadores, List<Cenario> cenarios, List<Automacao> automacoes)
   + Casa()
@@ -79,7 +93,8 @@ AutomacaoChuva ..|> Automacao
 AutomacaoLuzExterior ..|> Automacao
 AutomacaoPlantas ..|> Automacao
 AutomacaoTemperatura ..|> Automacao
-AutomacaoAnimais ..|> Automacao
+AutomacaoEscalonamentoAnimais ..|> Automacao
+AutomacaoEscalonamentoAnimais --|> Escalonamento
 
 ' ======================
 ' CLASSE BASE (HERANÇA)
@@ -88,30 +103,22 @@ AutomacaoAnimais ..|> Automacao
 class Utilizador {  
   - id : int
   - nome : String
+  - isAdmin : boolean
 
   + Utilizador(int id, String nome)
   + Utilizador()
   + Utilizador(outroUtilizador : Utilizador)
   + getId() : int
   + getNome() : String
+  + getIsAdmin() : boolean
   + setId(int id)
   + setNome(String nome)
+  + setIsAdmin(boolean bool)
   + clone() : Utilizador
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
 }
-
-class Admin {
-  + Admin(int id, String nome)
-  + Admin()
-  + Admin(outroAdmin : Admin)
-  + clone() : Admin
-  + toString() : String
-  + equals(o : Object) : boolean
-}
-
-Utilizador <|-- Admin
 
 abstract class Dispositivo {
   - identificador : int
@@ -383,8 +390,6 @@ Dispositivo <|-- SensorLuminosidade
 
 Lampada <|-- LampadaCor
 
-Automacao <|-- Escalonamento
-
 ' Interfaces que ligam/abrem
 
 DispositivoQueLiga <|.. Lampada
@@ -443,7 +448,8 @@ class Cenario {
 }
 
 class Sistema {
-  - casas : Set<Casa>
+  - users : List<Utilizador>
+  - map : Map<String, Set<Casa>>
 
   + Sistema(Sistema sistema)
   + Sistema(Set<Casa> casas)
@@ -454,20 +460,35 @@ class Sistema {
   + toString() : String
   + equals(o : Object) : boolean
   + hashCode() : int
-  + adicionarCasa(casa : Casa) : void
-  + removerCasa(casa : Casa) : void
+  + criaCasa() : void
+  + removeCasa(casa : Casa) : void
+  + criaUtilizador () : void
+  + removeUtilizador () : void
+  + criaCozinha(casa : Casa)
+  + criaSalaEstar(casa : Casa)
+  + criaCasaBanho(casa : Casa)
 }
   
 ' Composição: Casa \\\"tem\\\" Divisões
 
 Casa *-- Divisao
-Casa *-- Utilizador
 Casa *-- Cenario
 Casa *-- Automacao
+Casa *-- Escalonamento
 
 Divisao *-- Dispositivo
 
 Sistema *-- Casa
+Sistema *-- Utilizador
+
+AutomacaoMovimento o-- Dispositivo
+AutomacaoChuva o-- Dispositivo
+AutomacaoLuzExterior o-- Dispositivo
+AutomacaoPlantas o-- Dispositivo
+AutomacaoTemperatura o-- Dispositivo
+AutomacaoEscalonamentoAnimais o-- Dispositivo
+
+
 
 @enduml
 

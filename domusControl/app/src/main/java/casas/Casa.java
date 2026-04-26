@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.Comparator;
 
 import automatismos.Automacao;
+import automatismos.Escalonamento;
+import dispositivos.Dispositivo;
 
 import java.util.HashSet;
 
@@ -20,15 +23,17 @@ public class Casa{
     private Set<Utilizador> utilizadores;
     private List<Cenario> cenarios;
     private List<Automacao> automacoes;
+    private List<Escalonamento> escalonamentos;
 
     public Casa(String id, String morada, Map<String, Divisao> divisoes, Set<Utilizador> utilizadores,
-            List<Cenario> cenarios, List<Automacao> automacoes) {
+            List<Cenario> cenarios, List<Automacao> automacoes, List<Escalonamento> escalonamentos) {
         this.id = id;
         this.morada = morada;
         this.divisoes = divisoes;
         this.utilizadores = utilizadores;
         this.cenarios = cenarios;
         this.automacoes = automacoes;
+        this.escalonamentos = escalonamentos;
     }
 
     public Casa() {
@@ -38,6 +43,7 @@ public class Casa{
         this.utilizadores = new HashSet<>();
         this.cenarios = new ArrayList<>();
         this.automacoes = new ArrayList<>();
+        this.escalonamentos = new ArrayList<>();
     }
 
     public Casa(Casa outraCasa) {
@@ -47,6 +53,7 @@ public class Casa{
         this.utilizadores = new HashSet<>(outraCasa.utilizadores);
         this.cenarios = new ArrayList<>(outraCasa.cenarios);
         this.automacoes = new ArrayList<>(outraCasa.automacoes);
+        this.escalonamentos = new ArrayList<>(outraCasa.escalonamentos);
     }
 
     public String getId() {
@@ -73,6 +80,10 @@ public class Casa{
         return new ArrayList<>(automacoes);
     }
 
+    public List<Escalonamento> getEscalonamentos() {
+        return new ArrayList<>(escalonamentos);
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -97,6 +108,10 @@ public class Casa{
         this.automacoes = new ArrayList<>(automacoes);
     }
 
+    public void setEscalonamentos(List<Escalonamento> escalonamentos) {
+        this.escalonamentos = new ArrayList<>(escalonamentos);
+    }
+
     public Casa clone() {
         return new Casa(this);
     }
@@ -110,6 +125,7 @@ public class Casa{
                 ", utilizadores=" + utilizadores +
                 ", cenarios=" + cenarios +
                 ", automacoes=" + automacoes +
+                ", escalonamentos=" + escalonamentos +
                 '}';
     }
 
@@ -125,18 +141,76 @@ public class Casa{
         if (!divisoes.equals(casa.divisoes)) return false;
         if (!utilizadores.equals(casa.utilizadores)) return false;
         if (!cenarios.equals(casa.cenarios)) return false;
+        if (!escalonamentos.equals(casa.escalonamentos)) return false;
         return automacoes.equals(casa.automacoes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, morada, divisoes, utilizadores, cenarios, automacoes);
+        return Objects.hash(id, morada, divisoes, utilizadores, cenarios, automacoes, escalonamentos);
     }
 
     public double calcularConsumoTotal() {
         return divisoes.values().stream()
             .mapToDouble(Divisao::calcularConsumoDivisao)
             .sum();
+    }
+
+    public void adicionarUtilizador(Utilizador utilizador) {
+        this.utilizadores.add(utilizador);
+    }
+
+     public void adicionarCenario(Cenario cenario) {
+        this.cenarios.add(cenario);
+    }
+
+    public void adicionarAutomacao(Automacao automacao) {
+    this.automacoes.add(automacao);
+    }
+
+    public void adicionarDivisao(Divisao divisao) {
+    this.divisoes.put(divisao.getId(), divisao);
+    }
+
+    public void adicionarEscalonamento(Escalonamento escalonamento) {
+        this.escalonamentos.add(escalonamento);
+    }
+
+    public void removerUtilizador(Utilizador utilizador) {
+        this.utilizadores.remove(utilizador);
+    }
+
+    public void removerCenario(Cenario cenario) {
+        this.cenarios.remove(cenario);
+    }
+
+    public void removerAutomacao(Automacao automacao) {
+        this.automacoes.remove(automacao);
+    }
+
+    public void removerDivisao(String idDivisao) {
+        this.divisoes.remove(idDivisao);
+    }
+
+    public void removerEscalonamento(Escalonamento escalonamento) {
+        this.escalonamentos.remove(escalonamento);
+    }
+
+    public List<Dispositivo> dispositivosMaisUtilizados(Comparator<Dispositivo> comparator){
+        List<Dispositivo> lista = new ArrayList<>();
+        for (Divisao divisao : divisoes.values()) {
+            lista.addAll(divisao.getDispositivos().values());
+        }
+        lista.sort(comparator.reversed());
+        return lista;
+    }
+
+    public List<Map.Entry<Casa, Divisao>> getDivisoesComCasa() {
+        List<Map.Entry<Casa, Divisao>> lista = new ArrayList<>();
+        for (Divisao divisao : this.divisoes.values()) {
+            lista.add(new HashMap.SimpleEntry<>(this, divisao));
+        }
+        return lista;
     }
 
 }
