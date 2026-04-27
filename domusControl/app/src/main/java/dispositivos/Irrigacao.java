@@ -9,7 +9,7 @@ public class Irrigacao extends Dispositivo implements DispositivoQueLiga {
 
     public static final double CHUVA_MINIMA = 5.0; // mm — abaixo disto deve regar
 
-    public Irrigacao(int identificador, String marca, String modelo,
+    public Irrigacao(String identificador, String marca, String modelo,
                      double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int duracaoMinutos, int caudal) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.duracaoMinutos = duracaoMinutos;

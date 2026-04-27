@@ -2,7 +2,7 @@ package dispositivos;
 
 public class Rele extends Dispositivo implements DispositivoQueLiga{
 
-    public Rele(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes){
+    public Rele(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes){
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
     }
 

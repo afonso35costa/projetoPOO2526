@@ -6,7 +6,7 @@ public class SensorChuva extends Dispositivo implements DispositivoQueLiga {
     private double pluviosidade; // mm/h
     private boolean estaAChover;
 
-    public SensorChuva(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double pluviosidade, boolean estaAChover) {
+    public SensorChuva(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double pluviosidade, boolean estaAChover) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.pluviosidade = pluviosidade;
         this.estaAChover = estaAChover;

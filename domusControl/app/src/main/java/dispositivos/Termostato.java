@@ -7,7 +7,7 @@ public class Termostato extends Dispositivo implements DispositivoQueLiga {
     private double temperaturaAtual;
     private String modo; // "aquecimento", "arrefecimento", "auto"
 
-    public Termostato(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double temperaturaAlvo, double temperaturaAtual, String modo) {
+    public Termostato(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double temperaturaAlvo, double temperaturaAtual, String modo) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.temperaturaAlvo = temperaturaAlvo;
         this.temperaturaAtual = temperaturaAtual;

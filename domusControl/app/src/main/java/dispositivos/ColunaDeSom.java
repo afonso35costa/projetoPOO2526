@@ -5,7 +5,7 @@ import java.util.Objects;
 public class ColunaDeSom extends Dispositivo implements DispositivoQueLiga{
     private int volume; // 0 a 100
 
-    public ColunaDeSom(int identificador, String marca, String modelo,
+    public ColunaDeSom(String identificador, String marca, String modelo,
                        double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int volume) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.volume = volume;

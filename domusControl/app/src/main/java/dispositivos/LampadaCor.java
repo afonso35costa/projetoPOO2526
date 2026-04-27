@@ -5,7 +5,7 @@ import java.util.Objects;
 public class LampadaCor extends Lampada {
     private int temperaturaCor;
 
-    public LampadaCor(int identificador, String marca, String modelo,
+    public LampadaCor(String identificador, String marca, String modelo,
                       double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int intensidade, int temperaturaCor) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes, intensidade);
         this.temperaturaCor = temperaturaCor;

@@ -6,7 +6,7 @@ public class Televisao extends Dispositivo implements DispositivoQueLiga {
     private int canal;
     private int volume;
 
-    public Televisao(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int canal, int volume) {
+    public Televisao(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int canal, int volume) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         setCanal(canal);
         setVolume(volume);

@@ -6,7 +6,7 @@ public class DispensadorRacao extends Dispositivo {
 	private int nivelAgua;
 	private int nivelRacao;
 
-	public DispensadorRacao(int identificador, String marca, String modelo,
+	public DispensadorRacao(String identificador, String marca, String modelo,
 				 double consumoPorHora, Estado ligado, int minutosLigado, int numActivacoes,
 				 int nivelAgua, int nivelRacao) {
 		super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);

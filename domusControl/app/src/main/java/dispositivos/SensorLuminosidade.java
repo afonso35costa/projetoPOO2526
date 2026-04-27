@@ -9,7 +9,7 @@ public class SensorLuminosidade extends Dispositivo implements DispositivoQueLig
     public static final double LUX_PORDOSOL = 100; // <100 lux = anoitecer
     public static final double LUX_DIA = 1000;       // >1000 lux = dia claro
 
-    public SensorLuminosidade(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double luminosidade) {
+    public SensorLuminosidade(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double luminosidade) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.luminosidade = luminosidade;
     }

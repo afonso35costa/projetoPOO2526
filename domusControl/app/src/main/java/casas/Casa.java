@@ -21,6 +21,7 @@ public class Casa{
     private String morada;
     private Map<String, Divisao> divisoes;
     private Set<Utilizador> utilizadores;
+    // Mudar estes list para MAP
     private List<Cenario> cenarios;
     private List<Automacao> automacoes;
     private List<Escalonamento> escalonamentos;

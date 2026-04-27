@@ -5,7 +5,7 @@ import java.util.Objects;
 public class PortaoGaragem extends Dispositivo implements DispositivoQueAbre {
     private int abertura;//0 a 100//
 
-    public PortaoGaragem(int identificador, String marca, String modelo,
+    public PortaoGaragem(String identificador, String marca, String modelo,
                       double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int abertura) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.abertura = abertura;

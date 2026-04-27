@@ -6,7 +6,7 @@ public class SensorHumidadeSolo extends Dispositivo implements DispositivoQueLig
     private double humidade;
     private boolean estaSeco;
 
-    public SensorHumidadeSolo(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double humidade, boolean estaSeco) {
+    public SensorHumidadeSolo(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, double humidade, boolean estaSeco) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.humidade = humidade;
         this.estaSeco = estaSeco;

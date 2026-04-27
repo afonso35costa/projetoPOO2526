@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Lampada extends Dispositivo implements DispositivoQueLiga{
     private int intensidade; //0 a 100//
 
-    public Lampada(int identificador, String marca, String modelo,
+    public Lampada(String identificador, String marca, String modelo,
                    double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int intensidade) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.intensidade = intensidade;

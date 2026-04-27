@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Cortina extends Dispositivo{
     private int abertura;//0 a 100//
 
-    public Cortina(int identificador, String marca, String modelo,
+    public Cortina(String identificador, String marca, String modelo,
                    double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int abertura) {
         super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
         this.abertura = abertura;

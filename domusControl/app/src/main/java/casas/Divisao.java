@@ -76,8 +76,8 @@ public class Divisao {
         this.dispositivos.put(dispositivo.getIdentificador(), dispositivo);
     }
 
-    public void removerDispositivo(Dispositivo dispositivo) {
-        this.dispositivos.remove(dispositivo.getIdentificador());
+    public void removerDispositivo(String dispositivoId) {
+        this.dispositivos.remove(dispositivoId);
     }
 
     public double calcularConsumoDivisao() {

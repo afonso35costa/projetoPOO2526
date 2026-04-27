@@ -90,6 +90,10 @@ public class DomusControl {
         this.casas.remove(id);
     }
 
+    public boolean casaExiste(String id) {
+        return this.casas.containsKey(id);
+    }
+
     public void adicionarUtilizador(Utilizador utilizador) {
         this.utilizadores.put(utilizador.getUsername(), utilizador);
     }
@@ -97,6 +101,10 @@ public class DomusControl {
     public void removerUtilizador(String username) {
         this.utilizadores.remove(username);
         this.casas.values().forEach(casa -> casa.getUtilizadores().removeIf(utilizador -> utilizador.getUsername().equals(username)));
+    }
+
+    public boolean existeUtilizador(String username, String password) {
+        return this.utilizadores.containsKey(username) && this.utilizadores.get(username).getPassword().equals(password);
     }
 
     public void adicionarDivisao (String casaId, Divisao divisao) {
@@ -107,12 +115,20 @@ public class DomusControl {
         this.casas.get(casaId).removerDivisao(divisaoId);
     }
 
+    public boolean divisaoExiste (String casaId, String divisaoId) {
+        return this.casas.get(casaId).getDivisoes().containsKey(divisaoId);
+    }
+
     public void adicionarDispositivo (String casaId, String divisaoId, Dispositivo dispositivo) {
         this.casas.get(casaId).getDivisoes().get(divisaoId).adicionarDispositivo(dispositivo);
     }
 
-    public void removerDispositivo (String casaId, String divisaoId, Dispositivo dispositivo) {
-        this.casas.get(casaId).getDivisoes().get(divisaoId).removerDispositivo(dispositivo);
+    public void removerDispositivo (String casaId, String divisaoId, String idDispositivo) {
+        this.casas.get(casaId).getDivisoes().get(divisaoId).removerDispositivo(idDispositivo);
+    }
+
+    public boolean dispositivoExiste (String casaId, String divisaoId, String idDispositivo) {
+        return this.casas.get(casaId).getDivisoes().get(divisaoId).getDispositivos().containsKey(idDispositivo);
     }
 
     public Casa casaQueMaisConsome() {
@@ -133,6 +149,14 @@ public class DomusControl {
         }
         lista.sort(Comparator.comparingInt((Map.Entry<Casa, Divisao> e) -> e.getValue().getNumDispositivos()).reversed());
         return lista.stream().limit(3).toList();
+    }
+
+    public void adicionarAutomacao(String casaId, Automacao automacao) {
+        this.casas.get(casaId).adicionarAutomacao(automacao);
+    }
+
+    public void removerAutomacao(String casaId, String idAutomacao) {
+        this.casas.get(casaId).removerAutomacao(idAutomacao);
     }
 
     public void executarAutomacoes(Casa casa, Predicate<Automacao> filtro) {

@@ -2,9 +2,11 @@ package domus;
 
 import java.util.Objects;
 
+import automatismos.AutomacaoFactory;
 import casas.Casa;
 import casas.Divisao;
 import dispositivos.Dispositivo;
+import dispositivos.DispositivoFactory;
 import utilizadores.Utilizador;
 
 public class Controller {
@@ -12,6 +14,7 @@ public class Controller {
     private String idUser;
     private String idCasa;
     private String idDivisao;
+    private String idDispositivo;
 
     public Controller(DomusControl sistema) {
         this.sistema = sistema;
@@ -26,11 +29,11 @@ public class Controller {
     }
 
     public DomusControl getSistema() {
-        return sistema;
+        return sistema.clone();
     }
 
     public void setSistema(DomusControl sistema) {
-        this.sistema = sistema;
+        this.sistema = sistema.clone();
     }
 
     public Controller clone(){
@@ -70,6 +73,11 @@ public class Controller {
         sistema.removerCasa(nome);
     }
 
+    public void selecionaCasa(String nome){
+        this.idCasa = this.sistema.getCasas().containsKey(nome) ? nome : null;
+        // Lançar excecao se a casa nao existir
+    }
+
     public void criaUtilizador(String nome, String username, String isAdmin, String password){
         Utilizador u = new Utilizador();
         u.setNome(nome);
@@ -80,8 +88,7 @@ public class Controller {
     }
 
     public void loginUtilizador(String username, String password) {
-        Utilizador u = sistema.getUtilizadores().get(username);
-        if (u != null && u.getPassword().equals(password)) {
+        if (sistema.existeUtilizador(username, password)) {
             this.idUser = username;
         } 
         // Ativar excecoes
@@ -101,10 +108,31 @@ public class Controller {
         sistema.removerDivisao(this.idCasa, nomeDivisao);
     }
 
-    // Implemenar Factory de Dispositivos para poder instanciar o tipo
+    public void selecionaDivisao(String nomeDivisao){
+        this.idDivisao = this.sistema.divisaoExiste(this.idCasa, nomeDivisao) ? nomeDivisao : null;
+        // Lancar excecao se a divisao nao existir
+    }
 
-    public void criaDispositivo(String nomeDispositivo, String tipoDispositivo){
-        Dispositivo d = ;
+    public void criaDispositivo(String tipoDispositivo, String marca, String modelo, String consumoPorHora){
+        Dispositivo d = DispositivoFactory.criarDispositivo(tipoDispositivo);
+        d.setIdentificador(tipoDispositivo + "_" + marca + "_" + modelo);
+        d.setMarca(marca);
+        d.setModelo(modelo);
+        d.setConsumoPorHora(Double.parseDouble(consumoPorHora));
         sistema.adicionarDispositivo(this.idCasa, this.idDivisao, d);
+    }
+
+    public void removeDispositivo(String nomeDispositivo){
+        sistema.removerDispositivo(this.idCasa, this.idDivisao, nomeDispositivo);
+    }
+
+    public void selecionaDispositivo(String nomeDispositivo){
+        this.idDispositivo = this.sistema.dispositivoExiste(this.idCasa, this.idDivisao, nomeDispositivo) ? nomeDispositivo : null;
+        // Lancar excecao se o dispositivo nao existir
+    }
+
+    public void criaAutomacao(String nomeAutomacao) {
+        Automacao a = AutomacaoFactory.criarAutomacao(nomeAutomacao);
+        sistema.
     }
 }
