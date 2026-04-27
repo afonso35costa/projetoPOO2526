@@ -11,7 +11,7 @@ public abstract class Dispositivo{
         FECHADO
     }
 
-    private int identificador;
+    private String identificador;
     private String marca;
     private String modelo;
     private double consumoPorHora;
@@ -20,7 +20,7 @@ public abstract class Dispositivo{
     private int numActivacoes;
     
 
-    public Dispositivo(int identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes) {
+    public Dispositivo(String identificador, String marca, String modelo, double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes) {
         this.identificador = identificador;
         this.marca = marca;
         this.modelo = modelo;
@@ -31,7 +31,7 @@ public abstract class Dispositivo{
         }
 
     public Dispositivo() {
-        this.identificador = 0;
+        this.identificador = "";
         this.marca = "";
         this.modelo = "";
         this.consumoPorHora = 0.0;
@@ -50,7 +50,7 @@ public abstract class Dispositivo{
         this.numActivacoes = outroDispositivo.numActivacoes;
     }
 
-    public int getIdentificador() {
+    public String getIdentificador() {
         return identificador;
     }
     public String getMarca() {
@@ -72,7 +72,7 @@ public abstract class Dispositivo{
         return numActivacoes;
     }
 
-    public void setIdentificador(int identificador) {
+    public void setIdentificador(String identificador) {
         this.identificador = identificador;
     }
 
@@ -118,7 +118,7 @@ public abstract class Dispositivo{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Dispositivo that = (Dispositivo) o;
-        return this.identificador == that.identificador &&
+        return this.identificador.equals(that.identificador) &&
                 this.consumoPorHora == that.consumoPorHora &&
                 this.estado == that.estado &&
                 this.minutosLigado == that.minutosLigado &&

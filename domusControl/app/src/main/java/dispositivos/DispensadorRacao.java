@@ -7,7 +7,7 @@ public class DispensadorRacao extends Dispositivo {
 	private int nivelRacao;
 
 	public DispensadorRacao(int identificador, String marca, String modelo,
-				 double consumoPorHora, boolean ligado, int minutosLigado, int numActivacoes,
+				 double consumoPorHora, Estado ligado, int minutosLigado, int numActivacoes,
 				 int nivelAgua, int nivelRacao) {
 		super(identificador, marca, modelo, consumoPorHora, ligado, minutosLigado, numActivacoes);
 		setNivelAgua(nivelAgua);
@@ -57,7 +57,7 @@ public class DispensadorRacao extends Dispositivo {
 				", marca='" + getMarca() + '\'' +
 				", modelo='" + getModelo() + '\'' +
 				", consumoPorHora=" + getConsumoPorHora() +
-				", ligado=" + getLigado() +
+				", estado=" + getEstado() +
 				", minutosLigado=" + getMinutosLigado() +
 				", numActivacoes=" + getNumActivacoes() +
 				", nivelAgua=" + nivelAgua +

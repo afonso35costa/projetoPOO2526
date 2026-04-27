@@ -23,21 +23,21 @@ import utilizadores.Utilizador;
 
 public class DomusControl {
     private Map<String, Casa> casas;
-    private List<Utilizador> utilizadores;
+    private Map<String, Utilizador> utilizadores;
 
     public DomusControl(DomusControl sistema) {
         this.casas = new HashMap<>(sistema.casas);
-        this.utilizadores = new ArrayList<>(sistema.utilizadores);
+        this.utilizadores = new HashMap<>(sistema.utilizadores);
     }
 
-    public DomusControl(Map<String, Casa> casas, List<Utilizador> utilizadores) {
+    public DomusControl(Map<String, Casa> casas, Map<String, Utilizador> utilizadores) {
         this.casas = casas;
         this.utilizadores = utilizadores;
     }
 
     public DomusControl() {
         this.casas = new HashMap<>();
-        this.utilizadores = new ArrayList<>();
+        this.utilizadores = new HashMap<>();
     }
 
     public Map<String, Casa> getCasas() {
@@ -48,11 +48,11 @@ public class DomusControl {
         this.casas = casas;
     }
 
-    public List<Utilizador> getUtilizadores() {
-        return new ArrayList<>(this.utilizadores);
+    public Map<String, Utilizador> getUtilizadores() {
+        return new HashMap<>(this.utilizadores);
     }
 
-    public void setUtilizadores(List<Utilizador> utilizadores) {
+    public void setUtilizadores(Map<String, Utilizador> utilizadores) {
         this.utilizadores = utilizadores;
     }
 
@@ -81,37 +81,38 @@ public class DomusControl {
         return Objects.hash(casas, utilizadores);
     }
 
-    public void adicionarCasa(Casa casa) {
+    public void adicionarCasa(Casa casa, String idUser) {
+        casa.adicionarUtilizador(this.utilizadores.get(idUser));
         this.casas.put(casa.getId(), casa);
     }
 
-    public void removerCasa(Casa casa) {
-        this.casas.remove(casa.getId());
+    public void removerCasa(String id) {
+        this.casas.remove(id);
     }
 
     public void adicionarUtilizador(Utilizador utilizador) {
-        this.utilizadores.add(utilizador);
+        this.utilizadores.put(utilizador.getUsername(), utilizador);
     }
 
-    public void removerUtilizador(Utilizador utilizador) {
-        this.utilizadores.remove(utilizador);
-        this.casas.values().forEach(casa -> casa.getUtilizadores().remove(utilizador));
+    public void removerUtilizador(String username) {
+        this.utilizadores.remove(username);
+        this.casas.values().forEach(casa -> casa.getUtilizadores().removeIf(utilizador -> utilizador.getUsername().equals(username)));
     }
 
-    public void adicionarDivisao (Casa casa, Divisao divisao) {
-        this.casas.get(casa.getId()).adicionarDivisao(divisao);
+    public void adicionarDivisao (String casaId, Divisao divisao) {
+        this.casas.get(casaId).adicionarDivisao(divisao);
     }
 
-    public void removerDivisao (Casa casa, Divisao divisao) {
-        this.casas.get(casa.getId()).removerDivisao(divisao.getId());
+    public void removerDivisao (String casaId, String divisaoId) {
+        this.casas.get(casaId).removerDivisao(divisaoId);
     }
 
-    public void adicionarDispositivo (Casa casa, Divisao divisao, Dispositivo dispositivo) {
-        this.casas.get(casa.getId()).getDivisoes().get(divisao.getId()).adicionarDispositivo(dispositivo);
+    public void adicionarDispositivo (String casaId, String divisaoId, Dispositivo dispositivo) {
+        this.casas.get(casaId).getDivisoes().get(divisaoId).adicionarDispositivo(dispositivo);
     }
 
-    public void removerDispositivo (Casa casa, Divisao divisao, Dispositivo dispositivo) {
-        this.casas.get(casa.getId()).getDivisoes().get(divisao.getId()).removerDispositivo(dispositivo);
+    public void removerDispositivo (String casaId, String divisaoId, Dispositivo dispositivo) {
+        this.casas.get(casaId).getDivisoes().get(divisaoId).removerDispositivo(dispositivo);
     }
 
     public Casa casaQueMaisConsome() {
@@ -134,6 +135,24 @@ public class DomusControl {
         return lista.stream().limit(3).toList();
     }
 
+    public void executarAutomacoes(Casa casa, Predicate<Automacao> filtro) {
+        casa.getAutomacoes().stream()
+            .filter(filtro)
+            .forEach(Automacao::executar);
+    }
+
+    public void executarEscalonamentos(Casa casa, Predicate<Escalonamento> filtro) {
+        casa.getEscalonamentos().stream()
+            .filter(filtro)
+            .forEach(Escalonamento::executar);
+    }
+
+    public void ativarCenario(Casa casa, Predicate<Cenario> filtro) {
+        casa.getCenarios().stream()
+            .filter(filtro)
+            .forEach(c -> { c.setAtivo(true); c.executar(); });
+    }
+
     public void writeToFile(String filename) throws IOException {
         FileOutputStream fos = new FileOutputStream(filename);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -153,24 +172,6 @@ public class DomusControl {
         ois.close();
         fis.close();
         return domus;
-    }
-
-    public void executarAutomacoes(Casa casa, Predicate<Automacao> filtro) {
-        casa.getAutomacoes().stream()
-            .filter(filtro)
-            .forEach(Automacao::executar);
-    }
-
-    public void executarEscalonamentos(Casa casa, Predicate<Escalonamento> filtro) {
-        casa.getEscalonamentos().stream()
-            .filter(filtro)
-            .forEach(Escalonamento::executar);
-    }
-
-    public void ativarCenario(Casa casa, Predicate<Cenario> filtro) {
-        casa.getCenarios().stream()
-            .filter(filtro)
-            .forEach(c -> { c.setAtivo(true); c.executar(); });
     }
 
 }

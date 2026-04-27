@@ -8,9 +8,9 @@ import dispositivos.Dispositivo;
 
 public class Divisao {
     private String id;
-    private Map<Integer, Dispositivo> dispositivos;
+    private Map<String, Dispositivo> dispositivos;
 
-    public Divisao(String id, Map<Integer, Dispositivo> dispositivos) {
+    public Divisao(String id, Map<String, Dispositivo> dispositivos) {
         this.id = id;
         this.dispositivos = new HashMap<>(dispositivos);
     }
@@ -30,7 +30,7 @@ public class Divisao {
     }
     
 
-    public Map<Integer, Dispositivo> getDispositivos() {
+    public Map<String, Dispositivo> getDispositivos() {
         return dispositivos;
     }
 
@@ -38,7 +38,7 @@ public class Divisao {
         this.id = id;
     }
 
-    public void setDispositivos(Map<Integer, Dispositivo> dispositivos) {
+    public void setDispositivos(Map<String, Dispositivo> dispositivos) {
         this.dispositivos = dispositivos;
     }
 
