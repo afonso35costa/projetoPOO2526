@@ -8,7 +8,7 @@ public class TextUI {
 
     public TextUI() {
         this.sc = new Scanner(System.in);
-        this.menu = new Menu("TextUI", new String[] {
+        this.menu = new Menu("DomusControl", new String[] {
                 "Login",
                 "Registar"
         });
@@ -30,11 +30,16 @@ public class TextUI {
         System.out.print("Palavra-passe: ");
         String pass = this.sc.nextLine();
         // Lógica de login aqui
-        boolean autenticado = true //depois isto troca-se com o que estiver no controller!
-        
-        if (autenticado){
+        boolean autenticado = false; //depois isto troca-se com o que estiver no controller! e penso que seja assim (controller.loginUser(user,pass))
+        boolean isAdmin = false; // por enquanto fica assim mas é boolean isAdmin = controller.isAdmin(user);
+
+        if (autenticado) {
             System.out.println("\nLogin efetuado com sucesso!");
-            //
+            if (isAdmin) {
+                new MenuAdmin(sc).run();
+            } else {
+                menuUtilizador();
+            }
         } else {
             System.out.println("\nCredenciais inválidas!");
         }
@@ -48,26 +53,60 @@ public class TextUI {
 
         System.out.print("Nova palavra-passe: ");
         String pass = this.sc.nextLine();
-
+        
+        //deverá ser assim, not sure controller.criaUtilizador(nome, user, pass, "nao"(é admin?))//
         System.out.println("Registo feito!");
         //volta ao menu principal automaticamente//
     }
 
     //------------------MENU UTILIZADOR-----------------//
+    //...............MENU PRINCIPAL DO UTILIZADOR...........//
 
     private void menuUtilizador() {
-        Menu menuUser = new Menu("Área do Utilizador", new String[]{
-            "Ver casas",
-            "Mexer em casas"            
+        Menu menu = new Menu("Menu Principal", new String[]{
+            "As minhas casas",
+            "Estatísticas"            
         });
 
-        menuUser.setHandler(1, this::verCasas);
-        menuUser.setHandler(2, this::editarCasas);
-
-        menuUser.run(); //quando sai, volta ao menu principal
+        menu.setHandler(1, this::menuCasas);
+        menu.setHandler(2, this::menuEstatisticas);
+        menu.run(); //quando sai, volta ao menu principal
     }
 
-    //--------------------AÇÕES----------------------------//
+    //...................CASAS...................//
+
+    private void menuCasas() {
+        System.out.println("As suas casas: ");
+        //ir buscar as casas do user//
+        System.out.println("");
+
+        System.out.println("Nome da casa a selecionar: ");
+        String nomeCasa = sc.nextLine();
+        if (nomeCasa.isEmpty()) return;
+
+        //boolean existe = controller.selecionaCasa(nomeCasa);
+        boolean existe = true;
+        if (!existe) {
+            System.out.println("Casa não encontrada");
+            return;
+        }
+        menuCasa(nomeCasa;)
+    }
+
+    private void menuCasa(String nomeCasa) {
+        Menu menu = new Menu("Casa: " + nomeCasa, new String[]{
+            "Ver divisões",
+            "Gerir Cenários",
+            "Gerir Automações",
+            "Gerir Escalonamentos"
+        });
+        menu.setHandler(1, () -> menuDivisoes(nomeCasa));
+        menu.setHandler(2, () -> menuCenarios(nomeCasa));
+        menu.setHandler(3, () -> menuAutomacoes(nomeCasa));
+        menu.setHandler(4, () -> menuEscalonamentos(nomeCasa));
+        menu.run();
+    }
+    
 
     
     
