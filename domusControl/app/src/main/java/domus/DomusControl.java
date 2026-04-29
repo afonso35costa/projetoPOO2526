@@ -156,7 +156,7 @@ public class DomusControl {
     }
 
     public void removerAutomacao(String casaId, String idAutomacao) {
-        this.casas.get(casaId).removerAutomacao(idAutomacao);
+        this.casas.get(casaId).getAutomacoes().removeIf(a -> a.getClass().getSimpleName().equalsIgnoreCase(idAutomacao));
     }
 
     public void executarAutomacoes(Casa casa, Predicate<Automacao> filtro) {

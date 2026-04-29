@@ -1,4 +1,4 @@
-package domus;
+package view;
 
 public class MenuAdmin {
     

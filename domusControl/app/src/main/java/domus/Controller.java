@@ -2,6 +2,7 @@ package domus;
 
 import java.util.Objects;
 
+import automatismos.Automacao;
 import automatismos.AutomacaoFactory;
 import casas.Casa;
 import casas.Divisao;
@@ -133,6 +134,6 @@ public class Controller {
 
     public void criaAutomacao(String nomeAutomacao) {
         Automacao a = AutomacaoFactory.criarAutomacao(nomeAutomacao);
-        sistema.
+        sistema.adicionarAutomacao(this.idCasa, a);
     }
 }
