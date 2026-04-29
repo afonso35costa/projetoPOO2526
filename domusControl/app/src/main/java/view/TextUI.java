@@ -108,6 +108,35 @@ public class TextUI {
     }
     
 
+    //...............DIVISÕES..................//
+
+    private void menuDivisoes(String nomeCasa) {
+        System.out.println("\n-- Divisões de " + nomeCasa + " --");
+        // deverá ser assim ig ->  controller.getDivisoesDaCasa(nomeCasa).forEach(System.out::println);
+        System.out.println("");
+
+        System.out.print("Nome da divisão a selecionar: ");
+        String nomeDivisao = sc.nextLine();
+        if (nomeDivisao.isEmpty()) return;
+
+        // boolean existe = controller.selecionaDivisao(nomeDivisao);
+        boolean existe = true;
+        if (!existe) {
+            System.out.println("Divisão não encontrada.");
+            return;
+        }
+        menuDivisao(nomeCasa, nomeDivisao);
+    }
+
+    private void menuDivisao(String nomeCasa, String nomeDivisao) {
+        Menu menu = new Menu("Divisão: " + nomeDivisao, new String[]{
+            "Ver dispositivos"
+        });
+        menu.setHandler(1, () -> menuDispositivos(nomeCasa, nomeDivisao));
+        menu.run();
+    }
+    
+
     
     
 }
