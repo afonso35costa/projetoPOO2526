@@ -169,6 +169,34 @@ public class TextUI {
         System.out.println("Cenário '" + nome + "' ativado.");
     }
 
+
+    //..................AUTOMAÇÕES.......................//
+
+    private void menuAutomacoes(String nomeCasa) {
+        Menu menu = new Menu("Automações de " + nomeCasa, new String[]{
+            "Criar automação",
+            "Listar automações",
+            "Executar automações"
+        });
+
+        menu.setHandler(1, () -> listarAutomacoes(nomeCasa));
+        menu.setHandler(2, () -> executarAutomacoes(nomeCasa));
+
+        menu.run();
+    }
+
+    private void listarAutomacoes(String nomeCasa) {
+        System.out.println("\n-- Automações de " + nomeCasa + " --");
+        // algo do genero de controller.getAutomacoesDaCasa(nomeCasa)
+        //         .forEach(System.out::println);
+        System.out.println("[lista de automações]");
+    }
+
+    private void executarAutomacoes(String nomeCasa) {
+        // controller.executarAutomacoes(nomeCasa);
+        System.out.println("Automações de " + nomeCasa + " verificadas e executadas.");
+    }
+
     
     
 }
