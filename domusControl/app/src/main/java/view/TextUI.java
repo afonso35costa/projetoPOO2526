@@ -197,6 +197,26 @@ public class TextUI {
         System.out.println("Automações de " + nomeCasa + " verificadas e executadas.");
     }
 
+
+    //..................ESCALONAMENTOS.......................//
+
+    private void menuEscalonamentos(String nomeCasa) {
+        Menu menu = new Menu("Escalonamentos de " + nomeCasa, new String[]{
+            "Listar escalonamentos"
+        });
+
+        menu.setHandler(1, () -> listarEscalonamentos(nomeCasa));
+
+        menu.run();
+    }
+
+    private void listarEscalonamentos(String nomeCasa) {
+        System.out.println("Escalonamentos de " + nomeCasa + "");
+        // controller.getEscalonamentosDaCasa(nomeCasa)
+        //         .forEach(e -> System.out.println(e.getHora() + " - " + e));
+        System.out.println("[lista de escalonamentos]");
+    }
+
     
     
 }
