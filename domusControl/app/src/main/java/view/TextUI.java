@@ -78,7 +78,7 @@ public class TextUI {
     private void menuCasas() {
         System.out.println("As suas casas: ");
         //ir buscar as casas do user//
-        System.out.println("");
+        System.out.println("[lista de casas]");
 
         System.out.println("Nome da casa a selecionar: ");
         String nomeCasa = sc.nextLine();
@@ -87,10 +87,10 @@ public class TextUI {
         //boolean existe = controller.selecionaCasa(nomeCasa);
         boolean existe = true;
         if (!existe) {
-            System.out.println("Casa não encontrada");
+            System.out.println("Casa não encontrada.");
             return;
         }
-        menuCasa(nomeCasa;)
+        menuCasa(nomeCasa);
     }
 
     private void menuCasa(String nomeCasa) {
@@ -100,6 +100,7 @@ public class TextUI {
             "Gerir Automações",
             "Gerir Escalonamentos"
         });
+
         menu.setHandler(1, () -> menuDivisoes(nomeCasa));
         menu.setHandler(2, () -> menuCenarios(nomeCasa));
         menu.setHandler(3, () -> menuAutomacoes(nomeCasa));
@@ -111,9 +112,9 @@ public class TextUI {
     //...............DIVISÕES..................//
 
     private void menuDivisoes(String nomeCasa) {
-        System.out.println("\n-- Divisões de " + nomeCasa + " --");
+        System.out.println(" Divisões de " + nomeCasa + "");
         // deverá ser assim ig ->  controller.getDivisoesDaCasa(nomeCasa).forEach(System.out::println);
-        System.out.println("");
+        System.out.println("[lista de divisoes]");
 
         System.out.print("Nome da divisão a selecionar: ");
         String nomeDivisao = sc.nextLine();
@@ -130,12 +131,43 @@ public class TextUI {
 
     private void menuDivisao(String nomeCasa, String nomeDivisao) {
         Menu menu = new Menu("Divisão: " + nomeDivisao, new String[]{
-            "Ver dispositivos"
+            "Ver dispositivos",
+            "Ver consumo da divisão"
         });
+
         menu.setHandler(1, () -> menuDispositivos(nomeCasa, nomeDivisao));
+        menu.setHandler(2, () -> {//ir buscar o consumo da divisao
+        });
         menu.run();
     }
     
+
+    //.............CENÁRIOS.................//
+
+    private void menuCenarios(String nomeCasa) {
+        Menu menu = new Menu("Cenários - " + nomeCasa, new String[]{
+            "Listar cenários",
+            "Ativar cenário"
+        });
+
+        menu.setHandler(1, () -> listarCenarios(nomeCasa));
+        menu.setHandler(2, () -> ativarCenario(nomeCasa));
+        menu.run();
+    }
+
+    private void listarCenarios(String nomeCasa) {
+        System.out.println(" Cenários de " + nomeCasa + "");
+        //talvez seja idk controller.getCenarios(nomeCasa).forEach(System.out::println);
+        System.out.println("[lista de cenários]");
+    }
+
+    private void ativarCenario(String nomeCasa) {
+        listarCenarios(nomeCasa);
+        System.out.print("Nome do cenário a ativar: ");
+        String nome = sc.nextLine();
+        //controller.ativarCenario(nomeCasa, nome);
+        System.out.println("Cenário '" + nome + "' ativado.");
+    }
 
     
     
