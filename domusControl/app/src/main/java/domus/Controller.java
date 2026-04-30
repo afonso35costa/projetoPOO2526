@@ -3,16 +3,17 @@ package domus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import automatismos.Automacao;
 import automatismos.AutomacaoFactory;
 import automatismos.Escalonamento;
 import casas.Casa;
 import casas.Divisao;
+import dispositivos.ColunaDeSom;
 import dispositivos.Cortina;
 import dispositivos.Dispositivo;
 import dispositivos.DispositivoFactory;
+import dispositivos.Lampada;
 import utilizadores.Utilizador;
 
 public class Controller {
@@ -119,9 +120,9 @@ public class Controller {
         // Lancar excecao se a divisao nao existir
     }
 
-    public void criaDispositivo(String tipoDispositivo, String marca, String modelo, String consumoPorHora){
-        Dispositivo d = DispositivoFactory.criarDispositivo(tipoDispositivo);
-        d.setIdentificador(tipoDispositivo + "_" + marca + "_" + modelo);
+    public void criaDispositivo(String classe, String idDispositivo, String marca, String modelo, String consumoPorHora){
+        Dispositivo d = DispositivoFactory.criarDispositivo(classe);
+        d.setIdentificador(idDispositivo);
         d.setMarca(marca);
         d.setModelo(modelo);
         d.setConsumoPorHora(Double.parseDouble(consumoPorHora));
@@ -150,20 +151,75 @@ public class Controller {
         this.sistema.executarAutomacoes(this.idCasa, a -> a.getClass().getSimpleName().equalsIgnoreCase(nomeAutomacao) && a.verificar());
     }
 
-    public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDispositivos) {
+    public void ativarTodasAutomacoes(){
+        this.sistema.executarAutomacoes(this.idCasa, a -> a.verificar());
+    }
+
+    public void criaEscalonamentoAbrirCortinas(String hora, List<String> idsDivisoes) {
         LocalDateTime h = LocalDateTime.parse(hora);
-        List<Dispositivo> dispositivos = idsDispositivos.stream()
-            .map(id -> sistema.getCasas().get(this.idCasa).getDivisoes().values().stream()
-                .flatMap(divisao -> divisao.getDispositivos().values().stream())
-                .filter(d -> d.getId().equals(id))
-                .findFirst())
-            .flatMap(Optional::stream)
-            .toList();
+        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
+        Escalonamento e = new Escalonamento("abre_cortinas", h, dispositivos,
+                                            d -> d instanceof Cortina,
+                                            d -> ((Cortina) d).abrir(100));
+        sistema.adicionarEscalonamento(this.idCasa, e);
+    }
+
+    public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDivisoes) {
+        LocalDateTime h = LocalDateTime.parse(hora);
+        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
         Escalonamento e = new Escalonamento("fecha_cortinas", h, dispositivos,
                                             d -> d instanceof Cortina,
                                             d -> ((Cortina) d).fechar(100));
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    // FAZER IGUAL PARA OS OUTROS ESCALONAMENTOS
+    public void criaEscalonamentoAcenderLampadas(String hora, List<String> idsDivisoes) {
+        LocalDateTime h = LocalDateTime.parse(hora);
+        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
+        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
+        Escalonamento e = new Escalonamento("acende_lampadas", h, dispositivos,
+                                            d -> d instanceof Lampada,
+                                            d -> ((Lampada) d).ligar());
+        sistema.adicionarEscalonamento(this.idCasa, e);
+    }
+
+    public void criaEscalonamentoDesligarLampadas(String hora, List<String> idsDivisoes) {
+        LocalDateTime h = LocalDateTime.parse(hora);
+        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
+        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
+        Escalonamento e = new Escalonamento("desliga_lampadas", h, dispositivos,
+                                            d -> d instanceof Lampada,
+                                            d -> ((Lampada) d).desligar());
+        sistema.adicionarEscalonamento(this.idCasa, e);
+    }
+
+    public void criaEscalonamentoLigarColunas(String hora, List<String> idsDivisoes) {
+        LocalDateTime h = LocalDateTime.parse(hora);
+        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
+        Escalonamento e = new Escalonamento("liga_colunas", h, dispositivos,
+                                            d -> d instanceof ColunaDeSom,
+                                            d -> ((ColunaDeSom) d).ligar());
+        sistema.adicionarEscalonamento(this.idCasa, e);
+    }
+
+    public void criaEscalonamentoDesligarColunas(String hora, List<String> idsDivisoes) {
+        LocalDateTime h = LocalDateTime.parse(hora);
+        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
+        Escalonamento e = new Escalonamento("desliga_colunas", h, dispositivos,
+                                            d -> d instanceof ColunaDeSom,
+                                            d -> ((ColunaDeSom) d).desligar());
+        sistema.adicionarEscalonamento(this.idCasa, e);
+    }
+
+    public void ativaEscalonamento(String idEscalonamento){
+        this.sistema.executarEscalonamentos(this.idCasa, e -> e.getId().equals(idEscalonamento));
+    }
+
+    public void ativarTodosEscalonamentos(){
+        this.sistema.executarEscalonamentos(idCasa, e -> e.verificaHora(LocalDateTime.now()));
+    }
+
+    public void criaCenariosSairdeCasa(){
+        
+    }
 }

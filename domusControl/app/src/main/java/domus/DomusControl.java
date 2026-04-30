@@ -193,6 +193,13 @@ public class DomusControl {
             .forEach(c -> { c.setAtivo(true); c.executar(); });
     }
 
+    public List<Dispositivo> percorreDivisoesEfiltraDispositivos(String idCasa, List<String> idsDivisoes, String classe) {
+        return idsDivisoes.stream()
+            .flatMap(idDivisao -> this.casas.get(idCasa).getDivisoes().get(idDivisao).getDispositivos().values().stream())
+            .filter(d -> d.getClass().getSimpleName().equalsIgnoreCase(classe))
+            .toList();
+    }
+
     public void writeToFile(String filename) throws IOException {
         FileOutputStream fos = new FileOutputStream(filename);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
