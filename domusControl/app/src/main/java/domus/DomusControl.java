@@ -159,20 +159,36 @@ public class DomusControl {
         this.casas.get(casaId).getAutomacoes().removeIf(a -> a.getClass().getSimpleName().equalsIgnoreCase(idAutomacao));
     }
 
-    public void executarAutomacoes(Casa casa, Predicate<Automacao> filtro) {
-        casa.getAutomacoes().stream()
+    public void executarAutomacoes(String idCasa, Predicate<Automacao> filtro) {
+        this.casas.get(idCasa).getAutomacoes().stream()
             .filter(filtro)
             .forEach(Automacao::executar);
     }
 
-    public void executarEscalonamentos(Casa casa, Predicate<Escalonamento> filtro) {
-        casa.getEscalonamentos().stream()
+    public void adicionarEscalonamento(String casaId, Escalonamento escalonamento) {
+        this.casas.get(casaId).adicionarEscalonamento(escalonamento);
+    }
+
+    public void removerEscalonamento(String casaId, String idEscalonamento) {
+        this.casas.get(casaId).getEscalonamentos().removeIf(e -> e.getId().equalsIgnoreCase(idEscalonamento));
+    }
+
+    public void executarEscalonamentos(String idCasa, Predicate<Escalonamento> filtro) {
+        this.casas.get(idCasa).getEscalonamentos().stream()
             .filter(filtro)
             .forEach(Escalonamento::executar);
     }
 
-    public void ativarCenario(Casa casa, Predicate<Cenario> filtro) {
-        casa.getCenarios().stream()
+    public void adicionarCenario(String casaId, Cenario cenario) {
+        this.casas.get(casaId).adicionarCenario(cenario);
+    }
+
+    public void removerCenario(String casaId, String idCenario) {
+        this.casas.get(casaId).getCenarios().removeIf(c -> c.getNome().equalsIgnoreCase(idCenario));
+    }
+
+    public void ativarCenario(String idCasa, Predicate<Cenario> filtro) {
+        this.casas.get(idCasa).getCenarios().stream()
             .filter(filtro)
             .forEach(c -> { c.setAtivo(true); c.executar(); });
     }

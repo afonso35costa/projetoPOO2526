@@ -8,12 +8,14 @@ import java.util.function.Predicate;
 import dispositivos.Dispositivo;
 
 public class Escalonamento {
+    private String id;
     private LocalDateTime hora;
     private List<Dispositivo> dispositivos;
     private Predicate<Dispositivo> condicao;
     private Consumer<Dispositivo> acao;
 
-    public Escalonamento(LocalDateTime hora, List<Dispositivo> dispositivos, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+    public Escalonamento(String id, LocalDateTime hora, List<Dispositivo> dispositivos, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+        this.id = id;
         this.hora = hora;
         this.dispositivos = dispositivos;
         this.condicao = condicao;
@@ -21,6 +23,7 @@ public class Escalonamento {
     }
 
     public Escalonamento(Escalonamento outro) {
+        this.id = outro.id;
         this.hora = outro.hora;
         this.dispositivos = outro.dispositivos;
         this.condicao = outro.condicao;
@@ -28,10 +31,19 @@ public class Escalonamento {
     }
 
     public Escalonamento() {
+        this.id = "";
         this.hora = LocalDateTime.now();
         this.dispositivos = new ArrayList<>();
         this.condicao = d -> true; // Condição padrão que sempre retorna true
         this.acao = d -> {}; // Ação padrão que não faz nada
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public LocalDateTime getHora() {
@@ -73,7 +85,8 @@ public class Escalonamento {
     @Override
     public String toString() {
         return "Escalonamento{" +
-                "hora=" + hora +
+                "id='" + id + '\'' +
+                ", hora=" + hora +
                 ", dispositivos=" + dispositivos +
                 '}';
     }
@@ -83,12 +96,12 @@ public class Escalonamento {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Escalonamento that = (Escalonamento) obj;
-        return hora.equals(that.hora) && dispositivos.equals(that.dispositivos) && condicao.equals(that.condicao) && acao.equals(that.acao);
+        return id.equals(that.id) && hora.equals(that.hora) && dispositivos.equals(that.dispositivos) && condicao.equals(that.condicao) && acao.equals(that.acao);
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(hora, dispositivos, condicao, acao);
+        return Objects.hash(id, hora, dispositivos, condicao, acao);
     }
 
     public boolean verificaHora(LocalDateTime agora) {

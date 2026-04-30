@@ -1,11 +1,16 @@
 package domus;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import automatismos.Automacao;
 import automatismos.AutomacaoFactory;
+import automatismos.Escalonamento;
 import casas.Casa;
 import casas.Divisao;
+import dispositivos.Cortina;
 import dispositivos.Dispositivo;
 import dispositivos.DispositivoFactory;
 import utilizadores.Utilizador;
@@ -134,6 +139,31 @@ public class Controller {
 
     public void criaAutomacao(String nomeAutomacao) {
         Automacao a = AutomacaoFactory.criarAutomacao(nomeAutomacao);
-        sistema.adicionarAutomacao(this.idCasa, a);
+        this.sistema.adicionarAutomacao(this.idCasa, a);
     }
+
+    public void removeAutomacao(String nomeAutomacao) {
+        this.sistema.removerAutomacao(this.idCasa, nomeAutomacao);
+    }
+
+    public void ativaAutomacao(String nomeAutomacao) {
+        this.sistema.executarAutomacoes(this.idCasa, a -> a.getClass().getSimpleName().equalsIgnoreCase(nomeAutomacao) && a.verificar());
+    }
+
+    public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDispositivos) {
+        LocalDateTime h = LocalDateTime.parse(hora);
+        List<Dispositivo> dispositivos = idsDispositivos.stream()
+            .map(id -> sistema.getCasas().get(this.idCasa).getDivisoes().values().stream()
+                .flatMap(divisao -> divisao.getDispositivos().values().stream())
+                .filter(d -> d.getId().equals(id))
+                .findFirst())
+            .flatMap(Optional::stream)
+            .toList();
+        Escalonamento e = new Escalonamento("fecha_cortinas", h, dispositivos,
+                                            d -> d instanceof Cortina,
+                                            d -> ((Cortina) d).fechar(100));
+        sistema.adicionarEscalonamento(this.idCasa, e);
+    }
+
+    // FAZER IGUAL PARA OS OUTROS ESCALONAMENTOS
 }
