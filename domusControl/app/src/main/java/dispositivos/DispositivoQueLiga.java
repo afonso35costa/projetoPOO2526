@@ -1,7 +1,0 @@
-package dispositivos;
-
-public interface DispositivoQueLiga {
-
-    void ligar();
-    void desligar();
-}

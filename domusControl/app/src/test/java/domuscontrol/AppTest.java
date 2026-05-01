@@ -5,8 +5,8 @@ package domuscontrol;
 
 import org.junit.jupiter.api.Test;
 
-import domus.App;
-import domus.DomusControl;
+import model.domus.App;
+import model.domus.DomusControl;
 
 import static org.junit.jupiter.api.Assertions.*;
 

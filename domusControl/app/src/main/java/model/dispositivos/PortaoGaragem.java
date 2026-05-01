@@ -1,0 +1,76 @@
+package model.dispositivos;
+
+import java.util.Objects;
+
+public class PortaoGaragem extends Dispositivo implements DispositivoQueAbre {
+    private int abertura;//0 a 100//
+
+    public PortaoGaragem(String identificador, String marca, String modelo,
+                      double consumoPorHora, Estado estado, int minutosLigado, int numActivacoes, int abertura) {
+        super(identificador, marca, modelo, consumoPorHora, estado, minutosLigado, numActivacoes);
+        this.abertura = abertura;
+    }
+
+    public PortaoGaragem() {
+        super();
+        this.abertura = 0;
+    }
+
+    public PortaoGaragem(PortaoGaragem outroPortao) {
+        super(outroPortao);
+        this.abertura = outroPortao.abertura;
+    }
+
+    public int getAbertura() {
+        return abertura;
+    }
+
+    public void setAbertura(int abertura) {
+        this.abertura = abertura;
+    }
+
+    public PortaoGaragem clone() {
+        return new PortaoGaragem(this);
+    }
+
+    @Override
+    public String toString() {
+        return "PortaoGaragem{" +
+                "identificador=" + getIdentificador() +
+                ", marca='" + getMarca() + '\'' +
+                ", modelo='" + getModelo() + '\'' +
+                ", consumoPorHora=" + getConsumoPorHora() +
+                ", estado=" + getEstado() +
+                ", minutosLigado=" + getMinutosLigado() +
+                ", numActivacoes=" + getNumActivacoes() +
+                ", abertura=" + abertura +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PortaoGaragem that = (PortaoGaragem) o;
+        return super.equals(that) && this.abertura == that.abertura;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), abertura);
+    }
+
+    public void abrir(int abertura) {
+        super.setEstado(Estado.ABERTO);
+        if (abertura < 0) this.abertura = 0;
+        else if (abertura > 100) this.abertura = 100;
+        else this.abertura = abertura;
+    }
+
+    public void fechar(int fechamento) {
+        super.setEstado(Estado.FECHADO);
+        if (fechamento < 0) this.abertura = 0;
+        else if (fechamento > 100) this.abertura = 100;
+        else this.abertura = 100 - fechamento;
+    }
+}
