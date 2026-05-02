@@ -3,25 +3,66 @@
  */
 package domuscontrol;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import model.domus.App;
-import model.domus.DomusControl;
+import model.casas.Casa;
+import model.casas.Divisao;
+import model.dispositivos.Lampada;
+import model.dispositivos.Dispositivo.Estado;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+
+    private Casa casa1;
+    private Casa casa2;
+
+    @BeforeEach
+    void setUp() {
+        casa1 = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        casa2 = new Casa("casa2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
-    public static void main(String[] args) {
-        DomusControl sistemaTeste = Testes.criarSistemaTeste();
-        System.out.println(new App().getGreeting());
-        System.out.println("Sistema de teste carregado com " + sistemaTeste.getCasas().size() + " casas.");
-        System.out.println(sistemaTeste);
+    @Test
+    void testGetGreeting() {
+        App app = new App();
+
+        assertEquals("Hello World!", app.getGreeting());
     }
 
-    
+    @Test
+    void testCasaMaisConsumoComListaVazia() {
+        assertNull(App.casaMaisConsumo(new ArrayList<>()));
+    }
+
+    @Test
+    void testCasaMaisConsumoComNull() {
+        assertNull(App.casaMaisConsumo(null));
+    }
+
+    @Test
+    void testCasaMaisConsumo() {
+        Divisao d1 = new Divisao("div1", new HashMap<>());
+        Divisao d2 = new Divisao("div2", new HashMap<>());
+
+        d1.adicionarDispositivo(new Lampada("lamp1", "Philips", "Hue", 1.0, Estado.LIGADO, 120, 10, 75));
+        d2.adicionarDispositivo(new Lampada("lamp2", "Osram", "Smart", 2.0, Estado.LIGADO, 60, 5, 50));
+
+        casa1.adicionarDivisao(d1);
+        casa2.adicionarDivisao(d2);
+
+        List<Casa> casas = List.of(casa1, casa2);
+
+        Casa resultado = App.casaMaisConsumo(casas);
+
+        assertNotNull(resultado);
+        assertEquals("casa1", resultado.getId());
+    }
 }

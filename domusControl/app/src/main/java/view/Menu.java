@@ -15,7 +15,7 @@ public class Menu {
         boolean validate();
     }
 
-    private static final Scanner is = new Scanner(System.in);
+    private final Scanner is;
 
     private final String titulo;
     private final List<String> opcoes;
@@ -23,14 +23,19 @@ public class Menu {
     private final List<Handler> handlers;
 
     public Menu(String[] opcoes) {
-        this("Menu", opcoes);
+        this("Menu", opcoes, new Scanner(System.in));
     }
 
     public Menu(String titulo, String[] opcoes) {
+        this(titulo, opcoes, new Scanner(System.in));
+    }
+
+    public Menu(String titulo, String[] opcoes, Scanner scanner) {
         this.titulo = titulo;
         this.opcoes = Arrays.asList(opcoes);
         this.disponivel = new ArrayList<>();
         this.handlers = new ArrayList<>();
+        this.is = scanner;
 
         this.opcoes.forEach(s -> {
             this.disponivel.add(() -> true);

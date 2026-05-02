@@ -161,6 +161,27 @@ public class DomusControl {
         return this.casas.get(casaId).getDivisaoById(divisaoId).getDispositivos().containsKey(idDispositivo);
     }
 
+    public Dispositivo getDispositivo(String casaId, String divisaoId, String idDispositivo) {
+        if (!this.casas.containsKey(casaId)) return null;
+        Divisao divisao = this.casas.get(casaId).getDivisaoById(divisaoId);
+        if (divisao == null) return null;
+        return divisao.getDispositivoById(idDispositivo);
+    }
+
+    public void setEstadoDispositivo(String casaId, String divisaoId, String idDispositivo, Dispositivo.Estado estado) {
+        if (!this.casas.containsKey(casaId)) return;
+        Divisao divisao = this.casas.get(casaId).getDivisaoById(divisaoId);
+        if (divisao == null) return;
+        divisao.setEstadoDispositivo(idDispositivo, estado);
+    }
+
+    public double getConsumoDivisao(String casaId, String divisaoId) {
+        if (!this.casas.containsKey(casaId)) return 0.0;
+        Divisao divisao = this.casas.get(casaId).getDivisaoById(divisaoId);
+        if (divisao == null) return 0.0;
+        return divisao.calcularConsumoDivisao();
+    }
+
     public Casa casaQueMaisConsome() {
         Comparator<Casa> comparador = (c1, c2) -> Double.compare(c1.calcularConsumoTotal(), c2.calcularConsumoTotal());
         return this.casas.values().stream()

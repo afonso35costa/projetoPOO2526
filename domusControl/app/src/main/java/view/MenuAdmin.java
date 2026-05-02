@@ -11,7 +11,7 @@ public class MenuAdmin {
         this.menu = new Menu("Menu Admin", new String[]{
             "Gerir Utilizadores",
             "Gerir Casas",
-        });
+        }, this.sc);
 
         this.menu.setHandler(1, this::menuUtilizadores);
         this.menu.setHandler(2, this::menuCasas);
@@ -21,4 +21,15 @@ public class MenuAdmin {
         this.menu.run();
     }
     
+    private void menuUtilizadores() {
+        System.out.println("\nGerir Utilizadores ainda não implementado.");
+        System.out.print("Prima ENTER para voltar: ");
+        this.sc.nextLine();
+    }
+
+    private void menuCasas() {
+        System.out.println("\nGerir Casas ainda não implementado.");
+        System.out.print("Prima ENTER para voltar: ");
+        this.sc.nextLine();
+    }
 }

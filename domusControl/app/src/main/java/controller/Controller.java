@@ -1,7 +1,9 @@
 package controller;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import exceptions.CasaJaExisteException;
@@ -135,7 +137,78 @@ public class Controller {
             throw new CredenciaisInvalidasException();
         this.idUser = username;
     }
+    //ver se é assim estes metodos.
 
+    public boolean utilizadorTemCasas() {
+        if (this.idUser == null || this.idUser.isEmpty()) return false;
+        return this.sistema.getCasas().values().stream()
+                .anyMatch(c -> c.getUtilizadores().stream()
+                        .anyMatch(u -> u.getUsername().equals(this.idUser)));
+    }
+
+    public Casa casaQueMaisConsome() {
+        return this.sistema.casaQueMaisConsome();
+    }
+
+    public List<Dispositivo> top3DispositivosPorTempoLigado() {
+        Casa casa = this.sistema.casaQueMaisConsome();
+        if (casa == null) return List.of();
+        return this.sistema.tresDispositivosMaisUtilizados(casa, Comparator.comparingInt(Dispositivo::getMinutosLigado));
+    }
+
+    public List<Dispositivo> top3DispositivosPorAtivacoes() {
+        Casa casa = this.sistema.casaQueMaisConsome();
+        if (casa == null) return List.of();
+        return this.sistema.tresDispositivosMaisUtilizados(casa, Comparator.comparingInt(Dispositivo::getNumActivacoes));
+    }
+
+    public List<Map.Entry<Casa, Divisao>> top3DivisoesComMaisDispositivos() {
+        return this.sistema.tresDivisoesComMaisDispositivos();
+    }
+
+    public String getDescricaoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+        Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
+        if (dispositivo == null) return "Dispositivo inexistente";
+        return dispositivo.getClass().getSimpleName() + " [" + dispositivo.getIdentificador() + "]";
+    }
+
+    public boolean isDispositivoLigado(String nomeCasa, String nomeDivisao, String idDisp) {
+        Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
+        if (dispositivo == null) return false;
+        return dispositivo.getEstado() == Dispositivo.Estado.LIGADO || dispositivo.getEstado() == Dispositivo.Estado.ABERTO;
+    }
+
+    public void ligarDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+        Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
+        if (dispositivo == null) return;
+        Dispositivo.Estado novoEstado = dispositivo.getEstado() == Dispositivo.Estado.FECHADO
+                ? Dispositivo.Estado.ABERTO
+                : Dispositivo.Estado.LIGADO;
+        this.sistema.setEstadoDispositivo(nomeCasa, nomeDivisao, idDisp, novoEstado);
+    }
+
+    public void desligarDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+        Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
+        if (dispositivo == null) return;
+        Dispositivo.Estado novoEstado = dispositivo.getEstado() == Dispositivo.Estado.ABERTO
+                ? Dispositivo.Estado.FECHADO
+                : Dispositivo.Estado.DESLIGADO;
+        this.sistema.setEstadoDispositivo(nomeCasa, nomeDivisao, idDisp, novoEstado);
+    }
+
+    public String getEstadoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+        Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
+        if (dispositivo == null) return "Dispositivo inexistente";
+        return dispositivo.getEstado().name();
+    }
+
+    public double getConsumoDivisao(String nomeCasa, String nomeDivisao) {
+        return this.sistema.getConsumoDivisao(nomeCasa, nomeDivisao);
+    }
+
+    //ate aqui
+
+    
     public void removeUtilizador(String username) throws SessaoNaoIniciadaException, UtilizadorNaoExisteException {
         if (this.idUser == null || this.idUser.isEmpty())
             throw new SessaoNaoIniciadaException();
@@ -355,6 +428,16 @@ public class Controller {
         );
         c.setEstrategias(estrategias);
         sistema.adicionarCenario(idCasa, c);
+    }
+
+    public List<Cenario> getCenarios(String nomeCasa) {
+        Casa casa = this.sistema.getCasas().get(nomeCasa);
+        if (casa == null) return List.of();
+        return casa.getCenarios();
+    }
+
+    public void ativarCenario(String nomeCasa, String nomeCenario) {
+        this.sistema.ativarCenario(nomeCasa, c -> c.getNome().equalsIgnoreCase(nomeCenario) && !c.isAtivo());
     }
 
     public void ativaCenario(String idCenario){

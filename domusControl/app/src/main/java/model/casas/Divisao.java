@@ -84,6 +84,17 @@ public class Divisao {
         this.dispositivos.remove(dispositivoId);
     }
 
+    public Dispositivo getDispositivoById(String dispositivoId) {
+        return this.dispositivos.get(dispositivoId);
+    }
+
+    public void setEstadoDispositivo(String dispositivoId, Dispositivo.Estado estado) {
+        Dispositivo dispositivo = this.dispositivos.get(dispositivoId);
+        if (dispositivo != null) {
+            dispositivo.setEstado(estado);
+        }
+    }
+
     public double calcularConsumoDivisao() {
         return dispositivos.values().stream()
             .mapToDouble(d -> (d.getMinutosLigado() / 60.0) * d.getConsumoPorHora())
