@@ -1,5 +1,6 @@
 package model.automatismos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,7 +9,7 @@ import model.dispositivos.Cortina;
 import model.dispositivos.Dispositivo;
 import model.dispositivos.SensorChuva;
 
-public class AutomacaoChuva implements Automacao{
+public class AutomacaoChuva implements Automacao, Serializable{
     private SensorChuva sensor;
     private List<Dispositivo> atuadores;
 

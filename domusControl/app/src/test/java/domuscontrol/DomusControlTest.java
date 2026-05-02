@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -437,7 +437,7 @@ class DomusControlTest {
         SensorChuva sensor = new SensorChuva("sensor1", "marca", "modelo", 0.5, Estado.LIGADO, 0, 0, 2.5, true);
         Automacao automacao = new AutomacaoChuva(sensor, new ArrayList<>());
         domusControl.adicionarAutomacao(casa.getId(), automacao);
-        domusControl.removerAutomacao(casa.getId(), "autoId");
+        domusControl.removerAutomacao(casa.getId(), "automacaoChuva");
         
         assertEquals(0, domusControl.getCasas().get(casa.getId()).getAutomacoes().size());
     }
@@ -446,8 +446,8 @@ class DomusControlTest {
     public void testAdicionarEscalonamento() throws UtilizadorJaExisteException, CasaJaExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
-        
-        Escalonamento escalonamento = new Escalonamento("escId", LocalDateTime.of(2026, 5, 1, 10, 30), new ArrayList<>(), d -> true, d -> {});
+
+        Escalonamento escalonamento = new Escalonamento("escId", LocalTime.of(10, 30), new ArrayList<>(), d -> true, d -> {});
         domusControl.adicionarEscalonamento(casa.getId(), escalonamento);
         
         assertEquals(1, domusControl.getCasas().get(casa.getId()).getEscalonamentos().size());
@@ -457,8 +457,8 @@ class DomusControlTest {
     public void testRemoverEscalonamento() throws UtilizadorJaExisteException, CasaJaExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
-        
-        Escalonamento escalonamento = new Escalonamento("escId", LocalDateTime.of(2026, 5, 1, 10, 30), new ArrayList<>(), d -> true, d -> {});
+
+        Escalonamento escalonamento = new Escalonamento("escId", LocalTime.of(10, 30), new ArrayList<>(), d -> true, d -> {});
         domusControl.adicionarEscalonamento(casa.getId(), escalonamento);
         domusControl.removerEscalonamento(casa.getId(), "escId");
         
@@ -519,8 +519,8 @@ class DomusControlTest {
     public void testExecutarEscalonamentos() throws UtilizadorJaExisteException, CasaJaExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
-        
-        Escalonamento escalonamento = new Escalonamento("escId", LocalDateTime.of(2026, 5, 1, 10, 30), new ArrayList<>(), d -> true, d -> {});
+
+        Escalonamento escalonamento = new Escalonamento("escId", LocalTime.of(10, 30), new ArrayList<>(), d -> true, d -> {});
         domusControl.adicionarEscalonamento(casa.getId(), escalonamento);
         
         domusControl.executarEscalonamentos(casa.getId(), e -> e.getId().equals("escId"));

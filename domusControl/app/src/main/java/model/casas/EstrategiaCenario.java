@@ -1,12 +1,13 @@
 package model.casas;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import model.dispositivos.Dispositivo;
 
-public class EstrategiaCenario {
+public class EstrategiaCenario implements Serializable{
     private Predicate<Dispositivo> condicao;
     private Consumer<Dispositivo> acao;
 
@@ -58,7 +59,8 @@ public class EstrategiaCenario {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         EstrategiaCenario that = (EstrategiaCenario) obj;
-        return condicao.equals(that.condicao) && acao.equals(that.acao);
+        return Objects.equals(condicao, that.condicao) &&
+               Objects.equals(acao, that.acao);
     }
 
     @Override

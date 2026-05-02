@@ -1,5 +1,6 @@
 package model.casas;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.HashSet;
 
 import model.utilizadores.Utilizador;
 
-public class Casa {
+public class Casa implements Serializable{
     private String id;
     private String morada;
     private Map<String, Divisao> divisoes;
@@ -263,5 +264,19 @@ public class Casa {
 
     public void removerUtilizadorPorUsername(String username) {
         this.utilizadores.removeIf(u -> u.getUsername().equals(username));
+    }
+
+    public List<Cenario> getCenariosAtivos() {
+        return this.cenarios.stream()
+            .filter(Cenario::isAtivo)
+            .map(Cenario::clone)
+            .collect(Collectors.toList());
+    }
+
+    public List<Automacao> getAutomacoesAtivas() {
+        return this.automacoes.stream()
+            .filter(a -> a.verificar())
+            .map(Automacao::clone)
+            .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,6 @@
 package controller;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -295,8 +295,12 @@ public class Controller {
         this.sistema.executarAutomacoes(this.idCasa, a -> a.verificar());
     }
 
+    public List<Automacao> getAutomacoes(String nomeCasa) {
+        return this.sistema.getAutomacoes(nomeCasa);
+    }
+
     public void criaEscalonamentoAbrirCortinas(String hora, List<String> idsDivisoes) {
-        LocalDateTime h = LocalDateTime.parse(hora);
+        LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
         Escalonamento e = new Escalonamento("abre_cortinas", h, dispositivos,
                                             d -> d instanceof Cortina,
@@ -305,7 +309,7 @@ public class Controller {
     }
 
     public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDivisoes) {
-        LocalDateTime h = LocalDateTime.parse(hora);
+        LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
         Escalonamento e = new Escalonamento("fecha_cortinas", h, dispositivos,
                                             d -> d instanceof Cortina,
@@ -314,7 +318,7 @@ public class Controller {
     }
 
     public void criaEscalonamentoAcenderLampadas(String hora, List<String> idsDivisoes) {
-        LocalDateTime h = LocalDateTime.parse(hora);
+        LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("acende_lampadas", h, dispositivos,
@@ -324,7 +328,7 @@ public class Controller {
     }
 
     public void criaEscalonamentoDesligarLampadas(String hora, List<String> idsDivisoes) {
-        LocalDateTime h = LocalDateTime.parse(hora);
+        LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("desliga_lampadas", h, dispositivos,
@@ -334,7 +338,7 @@ public class Controller {
     }
 
     public void criaEscalonamentoLigarColunas(String hora, List<String> idsDivisoes) {
-        LocalDateTime h = LocalDateTime.parse(hora);
+        LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
         Escalonamento e = new Escalonamento("liga_colunas", h, dispositivos,
                                             d -> d instanceof ColunaDeSom,
@@ -343,7 +347,7 @@ public class Controller {
     }
 
     public void criaEscalonamentoDesligarColunas(String hora, List<String> idsDivisoes) {
-        LocalDateTime h = LocalDateTime.parse(hora);
+        LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
         Escalonamento e = new Escalonamento("desliga_colunas", h, dispositivos,
                                             d -> d instanceof ColunaDeSom,
@@ -356,7 +360,15 @@ public class Controller {
     }
 
     public void ativarTodosEscalonamentos(){
-        this.sistema.executarEscalonamentos(idCasa, e -> e.verificaHora(LocalDateTime.now()));
+        this.sistema.executarEscalonamentos(idCasa, e -> e.verificaHora(LocalTime.now()));
+    }
+
+    public List<Escalonamento> getEscalonamentos(String nomeCasa) {
+        return this.sistema.getEscalonamentos(nomeCasa);
+    }
+
+    public void removeEscalonamento(String nomeCasa, String idEscalonamento) {
+        this.sistema.removerEscalonamento(nomeCasa, idEscalonamento);
     }
 
     public void criaCenarioSairdeCasa(){
@@ -431,10 +443,13 @@ public class Controller {
     }
 
     public List<Cenario> getCenarios(String nomeCasa) {
-        Casa casa = this.sistema.getCasas().get(nomeCasa);
-        if (casa == null) return List.of();
-        return casa.getCenarios();
+        return this.sistema.getCenariosAtivos(nomeCasa);
     }
+
+    public void removeCenario(String nomeCasa, String nomeCenario) {
+        this.sistema.removerCenario(nomeCasa, nomeCenario);
+    }
+
 
     public void ativarCenario(String nomeCasa, String nomeCenario) {
         this.sistema.ativarCenario(nomeCasa, c -> c.getNome().equalsIgnoreCase(nomeCenario) && !c.isAtivo());

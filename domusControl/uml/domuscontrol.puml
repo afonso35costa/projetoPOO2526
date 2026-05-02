@@ -1,0 +1,437 @@
+@startuml DomusControl
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ─────────────────────────────────────────
+' ENUMS
+' ─────────────────────────────────────────
+enum Estado {
+    LIGADO
+    DESLIGADO
+    ABERTO
+    FECHADO
+}
+
+' ─────────────────────────────────────────
+' INTERFACES
+' ─────────────────────────────────────────
+interface Automacao {
+    + verificar() : boolean
+    + executar() : void
+    + clone() : Automacao
+}
+
+interface DispositivoQueLiga {
+    + ligar() : void
+    + desligar() : void
+}
+
+interface DispositivoQueAbre {
+    + abrir(abertura: int) : void
+    + fechar(fechamento: int) : void
+}
+
+' ─────────────────────────────────────────
+' DISPOSITIVOS
+' ─────────────────────────────────────────
+abstract class Dispositivo {
+    - identificador : String
+    - marca : String
+    - modelo : String
+    - consumoPorHora : double
+    - estado : Estado
+    - minutosLigado : int
+    - numActivacoes : int
+    + getIdentificador() : String
+    + getEstado() : Estado
+    + getMinutosLigado() : int
+    + getNumActivacoes() : int
+    + clone() : Dispositivo
+}
+
+class Lampada {
+    - intensidade : int
+    + ligar() : void
+    + desligar() : void
+    + aumentarIntensidade(inc: int) : void
+    + diminuirIntensidade(dec: int) : void
+}
+
+class LampadaCor {
+    - temperaturaCor : int
+    + maisQuente() : void
+    + maisFria() : void
+}
+
+class ColunaDeSom {
+    - volume : int
+    + ligar() : void
+    + desligar() : void
+    + setVolume(v: int) : void
+}
+
+class Televisao {
+    - canal : int
+    - volume : int
+    + ligar() : void
+    + desligar() : void
+    + mudarCanal(c: int) : void
+}
+
+class Cortina {
+    - abertura : int
+    + abrir(abertura: int) : void
+    + fechar(fechamento: int) : void
+}
+
+class PortaoGaragem {
+    - abertura : int
+    + abrir(abertura: int) : void
+    + fechar(fechamento: int) : void
+}
+
+class Termostato {
+    - temperaturaAlvo : double
+    - temperaturaAtual : double
+    - modo : String
+    + ligar() : void
+    + desligar() : void
+}
+
+class Rele {
+    + ligar() : void
+    + desligar() : void
+}
+
+class Irrigacao {
+    - duracaoMinutos : int
+    - caudal : int
+    - ultimaChuva : double
+    + ligar() : void
+    + desligar() : void
+}
+
+class SensorChuva {
+    - pluviosidade : double
+    - estaAChover : boolean
+    + estaAChover() : boolean
+    + ligar() : void
+    + desligar() : void
+}
+
+class SensorHumidadeSolo {
+    - humidade : double
+    - estaSeco : boolean
+    + estaSeco() : boolean
+    + ligar() : void
+    + desligar() : void
+}
+
+class SensorLuminosidade {
+    - luminosidade : double
+    + deveAcenderLuzes() : boolean
+    + ligar() : void
+    + desligar() : void
+}
+
+class DispensadorRacao {
+    - nivelAgua : int
+    - nivelRacao : int
+    + racaoVazia() : boolean
+    + aguaVazia() : boolean
+    + encherRacaoSeVazia() : void
+    + encherAguaSeVazia() : void
+}
+
+class DispositivoFactory {
+    + {static} criarDispositivo(tipo: String) : Dispositivo
+}
+
+' Herança dispositivos
+Dispositivo <|-- Lampada
+Lampada <|-- LampadaCor
+Dispositivo <|-- ColunaDeSom
+Dispositivo <|-- Televisao
+Dispositivo <|-- Cortina
+Dispositivo <|-- PortaoGaragem
+Dispositivo <|-- Termostato
+Dispositivo <|-- Rele
+Dispositivo <|-- Irrigacao
+Dispositivo <|-- SensorChuva
+Dispositivo <|-- SensorHumidadeSolo
+Dispositivo <|-- SensorLuminosidade
+Dispositivo <|-- DispensadorRacao
+
+' Interfaces dispositivos
+Lampada ..|> DispositivoQueLiga
+ColunaDeSom ..|> DispositivoQueLiga
+Televisao ..|> DispositivoQueLiga
+Termostato ..|> DispositivoQueLiga
+Rele ..|> DispositivoQueLiga
+Irrigacao ..|> DispositivoQueLiga
+SensorChuva ..|> DispositivoQueLiga
+SensorHumidadeSolo ..|> DispositivoQueLiga
+SensorLuminosidade ..|> DispositivoQueLiga
+Cortina ..|> DispositivoQueAbre
+PortaoGaragem ..|> DispositivoQueAbre
+
+Dispositivo "1" --> "1" Estado
+
+' ─────────────────────────────────────────
+' AUTOMATISMOS
+' ─────────────────────────────────────────
+class Escalonamento {
+    - id : String
+    - hora : LocalTime
+    - condicao : Predicate<Dispositivo>
+    - acao : Consumer<Dispositivo>
+    + executar() : void
+    + verificaHora(agora: LocalTime) : boolean
+}
+
+class AutomacaoChuva {
+    + verificar() : boolean
+    + executar() : void
+}
+
+class AutomacaoLuzExterior {
+    + verificar() : boolean
+    + executar() : void
+}
+
+class AutomacaoRelva {
+    + verificar() : boolean
+    + executar() : void
+}
+
+class AutomacaoTemperatura {
+    + verificar() : boolean
+    + executar() : void
+}
+
+class AutomacaoEscalonamentoAnimais {
+    + verificar() : boolean
+    + executar() : void
+    + getDispensadorRacao() : DispensadorRacao
+}
+
+class AutomacaoFactory {
+    + {static} criarAutomacao(tipo: String) : Automacao
+}
+
+Escalonamento <|-- AutomacaoEscalonamentoAnimais
+AutomacaoChuva ..|> Automacao
+AutomacaoLuzExterior ..|> Automacao
+AutomacaoRelva ..|> Automacao
+AutomacaoTemperatura ..|> Automacao
+AutomacaoEscalonamentoAnimais ..|> Automacao
+
+Escalonamento "1" o-- "0..*" Dispositivo : dispositivos
+
+AutomacaoChuva "1" --> "1" SensorChuva : sensor
+AutomacaoChuva "1" o-- "0..*" Dispositivo : atuadores
+
+AutomacaoLuzExterior "1" --> "1" SensorLuminosidade : sensorLuminosidade
+AutomacaoLuzExterior "1" o-- "0..*" Lampada : lampadas
+
+AutomacaoRelva "1" --> "1" Irrigacao : irrigacao
+AutomacaoRelva "1" --> "1" SensorChuva : sensorChuva
+AutomacaoRelva "1" --> "1" SensorHumidadeSolo : sensorHumidade
+
+AutomacaoTemperatura "1" --> "1" Termostato : termostato
+
+' ─────────────────────────────────────────
+' CASAS
+' ─────────────────────────────────────────
+class EstrategiaCenario {
+    - condicao : Predicate<Dispositivo>
+    - acao : Consumer<Dispositivo>
+    + getCondicao() : Predicate<Dispositivo>
+    + getAcao() : Consumer<Dispositivo>
+    + clone() : EstrategiaCenario
+}
+
+class Cenario {
+    - nome : String
+    - ativo : boolean
+    + executar() : void
+    + adicionarEstrategia(...) : void
+    + isAtivo() : boolean
+    + clone() : Cenario
+}
+
+class Divisao {
+    - id : String
+    + adicionarDispositivo(d: Dispositivo) : void
+    + calcularConsumoDivisao() : double
+    + clone() : Divisao
+}
+
+class Casa {
+    - id : String
+    - morada : String
+    + calcularConsumoTotal() : double
+    + ativarCenarioPorFiltro(filtro: Predicate<Cenario>) : void
+    + executarAutomacoesPorFiltro(filtro: Predicate<Automacao>) : void
+    + executarEscalonamentosPorFiltro(filtro: Predicate<Escalonamento>) : void
+    + clone() : Casa
+}
+
+' Cenario compõe EstrategiaCenario (dono do ciclo de vida)
+Cenario "1" *-- "0..*" EstrategiaCenario : estrategias
+
+' Cenario agrega Dispositivo (referências — dispositivos vivem na Divisao)
+Cenario "0..*" o-- "0..*" Dispositivo : dispositivos
+
+' Divisao compõe Dispositivo — Map<String, Dispositivo>, chave = identificador
+Divisao "1" *-- "0..*" Dispositivo : dispositivos {chave: identificador}
+
+' Casa compõe Divisao — Map<String, Divisao>, chave = id da divisao
+Casa "1" *-- "0..*" Divisao : divisoes {chave: id}
+
+' Casa compõe Cenario
+Casa "1" *-- "0..*" Cenario : cenarios
+
+' Casa agrega Automacao e Escalonamento
+Casa "1" o-- "0..*" Automacao : automacoes
+Casa "1" o-- "0..*" Escalonamento : escalonamentos
+
+' Casa agrega Utilizador (Set — sem duplicados)
+Casa "0..*" o-- "0..*" Utilizador : utilizadores
+
+' ─────────────────────────────────────────
+' UTILIZADORES
+' ─────────────────────────────────────────
+class Utilizador {
+    - username : String
+    - nome : String
+    - isAdmin : boolean
+    - password : String
+    + isAdmin() : boolean
+    + clone() : Utilizador
+}
+
+' ─────────────────────────────────────────
+' SISTEMA PRINCIPAL
+' ─────────────────────────────────────────
+class DomusControl {
+    + adicionarCasa(casa: Casa, idUser: String) : void
+    + adicionarUtilizador(u: Utilizador) : void
+    + casaQueMaisConsome() : Casa
+    + ativarCenario(idCasa: String, filtro: Predicate<Cenario>) : void
+    + executarAutomacoes(idCasa: String, filtro: Predicate<Automacao>) : void
+    + writeToFile(filename: String) : void
+    + readFromFile(filename: String) : DomusControl
+    + clone() : DomusControl
+}
+
+' Map<String, Casa> — chave = id da casa
+DomusControl "1" *-- "0..*" Casa : casas {chave: id}
+' Map<String, Utilizador> — chave = username
+DomusControl "1" *-- "0..*" Utilizador : utilizadores {chave: username}
+
+' ─────────────────────────────────────────
+' CONTROLLER
+' ─────────────────────────────────────────
+class Controller {
+    - idUser : String
+    - idCasa : String
+    - idDivisao : String
+    - idDispositivo : String
+    + loginUtilizador(username: String, password: String) : void
+    + criaCasa(nome: String, morada: String) : void
+    + criaDivisao(nome: String) : void
+    + criaDispositivo(classe: String, ...) : void
+    + ativarCenario(nomeCasa: String, nomeCenario: String) : void
+    + clone() : Controller
+}
+
+Controller "1" --> "1" DomusControl : sistema
+
+' ─────────────────────────────────────────
+' EXCEPTIONS
+' ─────────────────────────────────────────
+class CasaJaExisteException
+class CasaNaoExisteException
+class CasaNaoSelecionadaException
+class CredenciaisInvalidasException
+class DispositivoNaoExisteException
+class DivisaoNaoExisteException
+class DivisaoNaoSelecionadaException
+class SessaoNaoIniciadaException
+class UtilizadorJaExisteException
+class UtilizadorNaoExisteException
+
+CasaJaExisteException --|> Exception
+CasaNaoExisteException --|> Exception
+CasaNaoSelecionadaException --|> Exception
+CredenciaisInvalidasException --|> Exception
+DispositivoNaoExisteException --|> Exception
+DivisaoNaoExisteException --|> Exception
+DivisaoNaoSelecionadaException --|> Exception
+SessaoNaoIniciadaException --|> Exception
+UtilizadorJaExisteException --|> Exception
+UtilizadorNaoExisteException --|> Exception
+
+Controller ..> CasaJaExisteException
+Controller ..> CasaNaoExisteException
+Controller ..> CasaNaoSelecionadaException
+Controller ..> CredenciaisInvalidasException
+Controller ..> DispositivoNaoExisteException
+Controller ..> DivisaoNaoExisteException
+Controller ..> DivisaoNaoSelecionadaException
+Controller ..> SessaoNaoIniciadaException
+Controller ..> UtilizadorJaExisteException
+Controller ..> UtilizadorNaoExisteException
+
+' ─────────────────────────────────────────
+' VIEW
+' ─────────────────────────────────────────
+class MainUI {
+    + {static} main(args: String[]) : void
+}
+
+class Menu {
+    - titulo : String
+    - is : Scanner
+    + run() : void
+    + setHandler(i: int, h: Handler) : void
+    + setPreCondition(i: int, b: PreCondition) : void
+}
+
+interface "Menu.Handler" as MenuHandler {
+    + execute() : void
+}
+
+interface "Menu.PreCondition" as MenuPreCondition {
+    + validate() : boolean
+}
+
+class MenuAdmin {
+    + run() : void
+}
+
+class TextUI {
+    + run() : void
+    - login() : void
+    - registar() : void
+    - menuUtilizador() : void
+    - menuCasas() : void
+    - menuCenarios(nomeCasa: String) : void
+    - menuAutomacoes(nomeCasa: String) : void
+    - menuEscalonamentos(nomeCasa: String) : void
+    - menuDispositivos(nomeCasa: String, nomeDivisao: String) : void
+    - menuEstatisticas() : void
+}
+
+Menu +-- MenuHandler
+Menu +-- MenuPreCondition
+
+MainUI "1" --> "1" TextUI : cria
+TextUI "1" --> "1" Menu : menu
+TextUI "1" --> "1" Controller : controller
+TextUI "1" --> "1" MenuAdmin : cria
+MenuAdmin "1" --> "1" Menu : menu
+
+@enduml

@@ -1,9 +1,11 @@
 package model.automatismos;
 
+import java.io.Serializable;
+
 import model.dispositivos.Termostato;
 import model.dispositivos.Dispositivo.Estado;
 
-public class AutomacaoTemperatura implements Automacao{
+public class AutomacaoTemperatura implements Automacao, Serializable{
     private Termostato termostato;
 
     public AutomacaoTemperatura(Termostato termostato) {

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,7 +21,6 @@ import model.automatismos.Escalonamento;
 import model.casas.Casa;
 import model.casas.Cenario;
 import model.casas.Divisao;
-import model.casas.EstrategiaCenario;
 import model.dispositivos.Dispositivo;
 import model.dispositivos.Lampada;
 import model.dispositivos.SensorChuva;
@@ -49,7 +48,7 @@ class CasaTest {
         cenario = new Cenario("cenario1", false, new ArrayList<>(), new ArrayList<>());
         SensorChuva sensor = new SensorChuva("sensor1", "Marca", "Modelo", 0.5, Estado.LIGADO, 0, 0, 1.5, true);
         automacao = new AutomacaoChuva(sensor, new ArrayList<>());
-        escalonamento = new Escalonamento("esc1", LocalDateTime.of(2026, 5, 1, 10, 30), new ArrayList<>(), d -> true, d -> {});
+        escalonamento = new Escalonamento("esc1", LocalTime.of(10, 30), new ArrayList<>(), d -> true, d -> {});
     }
 
     @Test
@@ -220,21 +219,19 @@ class CasaTest {
 
     @Test
     void ativarCenarioPorFiltro() {
-        Cenario c = new Cenario("cenarioX", false, new ArrayList<>(), new ArrayList<>());
-        AtomicBoolean executado = new AtomicBoolean(false);
-        c.adicionarEstrategia(d -> true, d -> executado.set(true));
+        List<Dispositivo> dispositivos = new ArrayList<>();
+        dispositivos.add(lampada);
+        Cenario c = new Cenario("cenarioX", false, dispositivos, new ArrayList<>());
+        c.adicionarEstrategia(d -> true, d -> d.setEstado(Estado.DESLIGADO));
         casa.adicionarCenario(c);
-
         casa.ativarCenarioPorFiltro(cen -> cen.getNome().equals("cenarioX"));
-
         assertTrue(casa.getCenarios().get(0).isAtivo());
-        assertTrue(executado.get());
+        assertEquals(Estado.DESLIGADO, lampada.getEstado());
     }
 
     @Test
     void executarFiltros() {
         AtomicBoolean automacaoExecutada = new AtomicBoolean(false);
-        AtomicBoolean escalonamentoExecutado = new AtomicBoolean(false);
 
         SensorChuva sensor = new SensorChuva("sensor2", "Marca", "Modelo", 0.5, Estado.LIGADO, 0, 0, 1.0, true);
         Automacao auto = new AutomacaoChuva(sensor, new ArrayList<>()) {
@@ -244,16 +241,19 @@ class CasaTest {
             }
         };
 
-        Escalonamento esc = new Escalonamento("esc2", LocalDateTime.of(2026, 5, 1, 11, 0), new ArrayList<>(), d -> true, d -> escalonamentoExecutado.set(true));
+        Escalonamento esc = new Escalonamento("esc2", LocalTime.of(11, 0), 
+            new ArrayList<>(List.of(lampada)),  // ← lampada aqui
+            d -> true, 
+            d -> d.setEstado(Estado.DESLIGADO)
+        );
 
         casa.adicionarAutomacao(auto);
         casa.adicionarEscalonamento(esc);
-
         casa.executarAutomacoesPorFiltro(a -> true);
         casa.executarEscalonamentosPorFiltro(e -> true);
 
         assertTrue(automacaoExecutada.get());
-        assertTrue(escalonamentoExecutado.get());
+        assertEquals(Estado.DESLIGADO, lampada.getEstado());
     }
 
     @Test

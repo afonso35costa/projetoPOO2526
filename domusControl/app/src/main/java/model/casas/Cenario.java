@@ -7,9 +7,10 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Cenario {
+public class Cenario implements Serializable{
     private String nome;
     private boolean ativo;
     private List<Dispositivo> dispositivos;

@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import model.casas.Divisao;
 import model.dispositivos.Dispositivo;
 import model.utilizadores.Utilizador;
 
-public class DomusControl {
+public class DomusControl implements Serializable{
     private Map<String, Casa> casas;
     private Map<String, Utilizador> utilizadores;
 
@@ -236,6 +237,18 @@ public class DomusControl {
 
     public void executarEscalonamentos(String idCasa, Predicate<Escalonamento> filtro) {
         this.casas.get(idCasa).executarEscalonamentosPorFiltro(filtro);
+    }
+
+    public List<Cenario> getCenariosAtivos(String idCasa) {
+        return this.casas.get(idCasa).getCenariosAtivos();
+    }
+
+    public List<Automacao> getAutomacoes(String idCasa) {
+        return this.casas.get(idCasa).getAutomacoesAtivas();
+    }
+
+    public List<Escalonamento> getEscalonamentos(String idCasa) {
+        return this.casas.get(idCasa).getEscalonamentos();
     }
 
     public List<Dispositivo> percorreDivisoesEfiltraDispositivos(String idCasa, List<String> idsDivisoes, String classe) {

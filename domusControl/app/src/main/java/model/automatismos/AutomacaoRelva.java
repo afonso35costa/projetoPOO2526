@@ -1,12 +1,13 @@
 package model.automatismos;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import model.dispositivos.Irrigacao;
 import model.dispositivos.SensorChuva;
 import model.dispositivos.SensorHumidadeSolo;
 
-public class AutomacaoRelva implements Automacao {
+public class AutomacaoRelva implements Automacao, Serializable {
 
     private Irrigacao irrigacao;
     private SensorChuva sensorChuva;

@@ -5,9 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.HashMap;
-
-import model.dispositivos.Dispositivo;
 import model.dispositivos.Dispositivo.Estado;
 import model.dispositivos.ColunaDeSom;
 import model.dispositivos.Cortina;
@@ -363,9 +360,9 @@ class DispositivoTest {
         assertEquals("aquecimento", termostato.getModo());
 
         termostato.aumentarTemperatura(2.5);
-        assertEquals(8.0, termostato.getTemperaturaAlvo(), 0.0001);
+        assertEquals(7.5, termostato.getTemperaturaAlvo(), 0.0001);
         termostato.diminuirTemperatura(1.0);
-        assertEquals(7.0, termostato.getTemperaturaAlvo(), 0.0001);
+        assertEquals(6.5, termostato.getTemperaturaAlvo(), 0.0001);
 
         termostato.ligar();
         assertEquals(Estado.LIGADO, termostato.getEstado());

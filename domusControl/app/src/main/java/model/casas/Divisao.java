@@ -1,5 +1,6 @@
 package model.casas;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -7,7 +8,7 @@ import java.util.stream.Collectors;
 
 import model.dispositivos.Dispositivo;
 
-public class Divisao {
+public class Divisao implements Serializable{
     private String id;
     private Map<String, Dispositivo> dispositivos;
 

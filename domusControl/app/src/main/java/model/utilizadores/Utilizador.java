@@ -1,8 +1,9 @@
 package model.utilizadores;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Utilizador{
+public class Utilizador implements Serializable {
     private String username;
     private String nome;
     private boolean isAdmin;

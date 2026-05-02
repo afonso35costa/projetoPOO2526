@@ -1,6 +1,7 @@
 package model.automatismos;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,14 +10,14 @@ import java.util.function.Predicate;
 
 import model.dispositivos.Dispositivo;
 
-public class Escalonamento {
+public class Escalonamento implements Serializable{
     private String id;
-    private LocalDateTime hora;
+    private LocalTime hora;
     private List<Dispositivo> dispositivos;
     private Predicate<Dispositivo> condicao;
     private Consumer<Dispositivo> acao;
 
-    public Escalonamento(String id, LocalDateTime hora, List<Dispositivo> dispositivos, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+    public Escalonamento(String id, LocalTime hora, List<Dispositivo> dispositivos, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
         this.id = id;
         this.hora = hora;
         this.dispositivos = dispositivos;
@@ -34,7 +35,7 @@ public class Escalonamento {
 
     public Escalonamento() {
         this.id = "";
-        this.hora = LocalDateTime.now();
+        this.hora = LocalTime.now();
         this.dispositivos = new ArrayList<>();
         this.condicao = d -> true;
         this.acao = d -> {};
@@ -48,11 +49,11 @@ public class Escalonamento {
         this.id = id;
     }
 
-    public LocalDateTime getHora() {
+    public LocalTime getHora() {
         return hora;
     }
 
-    public void setHora(LocalDateTime hora) {
+    public void setHora(LocalTime hora) {
         this.hora = hora;
     }
 
@@ -106,7 +107,7 @@ public class Escalonamento {
         return Objects.hash(id, hora, dispositivos, condicao, acao);
     }
 
-    public boolean verificaHora(LocalDateTime agora) {
+    public boolean verificaHora(LocalTime agora) {
         return this.hora.getHour() == agora.getHour() && this.hora.getMinute() == agora.getMinute();
     }
 

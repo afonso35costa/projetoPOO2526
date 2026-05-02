@@ -1,5 +1,6 @@
 package model.automatismos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,7 +9,7 @@ import model.dispositivos.Lampada;
 import model.dispositivos.SensorLuminosidade;
 import model.dispositivos.Dispositivo.Estado;
 
-public class AutomacaoLuzExterior implements Automacao{
+public class AutomacaoLuzExterior implements Automacao, Serializable{
     private SensorLuminosidade sensorLuminosidade;
     private List<Lampada> lampadas;
 

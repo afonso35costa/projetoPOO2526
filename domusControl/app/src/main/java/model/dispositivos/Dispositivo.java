@@ -1,8 +1,9 @@
 package model.dispositivos;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Dispositivo{
+public abstract class Dispositivo implements Serializable{
 
     public enum Estado {
         LIGADO,

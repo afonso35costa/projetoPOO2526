@@ -5,14 +5,32 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import model.casas.EstrategiaCenario;
-import model.dispositivos.Dispositivo;
 import model.dispositivos.Lampada;
+import model.dispositivos.Dispositivo;
 import model.dispositivos.Dispositivo.Estado;
 
 class EstrategiaCenarioTest {
+
+	// No topo do ficheiro de teste, dentro da classe
+	static class CondicaoLamp1 implements Predicate<Dispositivo>, Serializable {
+		@Override public boolean test(Dispositivo d) { 
+			return d.getIdentificador().equals("lamp1"); 
+		}
+		@Override public boolean equals(Object o) { return o instanceof CondicaoLamp1; }
+		@Override public int hashCode() { return getClass().hashCode(); }
+	}
+
+	static class AcaoVazia implements Consumer<Dispositivo>, Serializable {
+		@Override public void accept(Dispositivo d) {}
+		@Override public boolean equals(Object o) { return o instanceof AcaoVazia; }
+		@Override public int hashCode() { return getClass().hashCode(); }
+	}
 
 	private EstrategiaCenario estrategia;
 	private Lampada lampada;
@@ -20,7 +38,7 @@ class EstrategiaCenarioTest {
 	@BeforeEach
 	void setUp() {
 		lampada = new Lampada("lamp1", "Philips", "Hue", 1.0, Estado.LIGADO, 60, 10, 75);
-		estrategia = new EstrategiaCenario(d -> d.getIdentificador().equals("lamp1"), d -> {});
+		estrategia = new EstrategiaCenario(new CondicaoLamp1(), new AcaoVazia());
 	}
 
 	@Test
@@ -68,8 +86,9 @@ class EstrategiaCenarioTest {
 
 	@Test
 	void toStringEqualsEHashCode() {
-		EstrategiaCenario outra = new EstrategiaCenario(d -> d.getIdentificador().equals("lamp1"), d -> {});
-
+		EstrategiaCenario outra = new EstrategiaCenario(new CondicaoLamp1(), new AcaoVazia());
+		// estrategia também tem de ser criada com new CondicaoLamp1(), new AcaoVazia()
+		
 		assertNotNull(estrategia.toString());
 		assertEquals(estrategia, outra);
 		assertEquals(estrategia.hashCode(), outra.hashCode());
