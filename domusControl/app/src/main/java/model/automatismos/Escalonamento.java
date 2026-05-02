@@ -5,19 +5,19 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import model.dispositivos.Dispositivo;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
 
 public class Escalonamento implements Serializable{
     private String id;
     private LocalTime hora;
     private List<Dispositivo> dispositivos;
-    private Predicate<Dispositivo> condicao;
-    private Consumer<Dispositivo> acao;
+    private SerializablePredicate<Dispositivo> condicao;
+    private SerializableConsumer<Dispositivo> acao;
 
-    public Escalonamento(String id, LocalTime hora, List<Dispositivo> dispositivos, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+    public Escalonamento(String id, LocalTime hora, List<Dispositivo> dispositivos, SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao) {
         this.id = id;
         this.hora = hora;
         this.dispositivos = dispositivos;
@@ -65,19 +65,19 @@ public class Escalonamento implements Serializable{
         this.dispositivos = dispositivos;
     }
 
-    public Predicate<Dispositivo> getCondicao() {
+    public SerializablePredicate<Dispositivo> getCondicao() {
         return condicao;
     }
 
-    public void setCondicao(Predicate<Dispositivo> condicao) {
+    public void setCondicao(SerializablePredicate<Dispositivo> condicao) {
         this.condicao = condicao;
     }
 
-    public Consumer<Dispositivo> getAcao() {
+    public SerializableConsumer<Dispositivo> getAcao() {
         return acao;
     }
 
-    public void setAcao(Consumer<Dispositivo> acao) {
+    public void setAcao(SerializableConsumer<Dispositivo> acao) {
         this.acao = acao;
     }
 

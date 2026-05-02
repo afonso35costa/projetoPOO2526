@@ -1,11 +1,11 @@
 package model.casas;
 
 import model.dispositivos.Dispositivo;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class Cenario implements Serializable{
     }
 
 
-    public void adicionarEstrategia(Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+    public void adicionarEstrategia(SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao) {
         this.estrategias.add(new EstrategiaCenario(condicao, acao));
     }
 

@@ -2,13 +2,15 @@ package domuscontrol;
 
 import model.automatismos.*;
 import model.dispositivos.*;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -134,9 +136,9 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(50);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
         assertEquals(dispensador, automacao.getDispensadorRacao());
     }
 
@@ -147,10 +149,10 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(50);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao1", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
-        
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao1", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+
         AutomacaoEscalonamentoAnimais copia = new AutomacaoEscalonamentoAnimais(automacao);
         assertEquals(automacao.getDispensadorRacao(), copia.getDispensadorRacao());
         assertNotSame(automacao, copia);
@@ -163,9 +165,9 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(50);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao2", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao2", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
         assertTrue(automacao.verificar());
     }
 
@@ -176,9 +178,9 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(0);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao3", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao3", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
         assertTrue(automacao.verificar());
     }
 
@@ -189,9 +191,9 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(50);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao4", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao4", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
         assertFalse(automacao.verificar());
     }
 
@@ -202,9 +204,9 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(50);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao5", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao5", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
         automacao.executar();
         assertEquals(100, dispensador.getNivelRacao());
     }
@@ -216,9 +218,9 @@ public class AutomatismosTest {
         dispensador.setNivelAgua(0);
         List<Dispositivo> dispositivos = new ArrayList<>();
         dispositivos.add(dispensador);
-        Predicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
+        SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao6", hora, dispositivos, condicao, d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao6", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
         automacao.executar();
         assertEquals(100, dispensador.getNivelAgua());
     }

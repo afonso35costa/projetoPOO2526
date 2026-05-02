@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
 
 import model.casas.EstrategiaCenario;
 import model.dispositivos.Lampada;
@@ -18,7 +17,7 @@ import model.dispositivos.Dispositivo.Estado;
 class EstrategiaCenarioTest {
 
 	// No topo do ficheiro de teste, dentro da classe
-	static class CondicaoLamp1 implements Predicate<Dispositivo>, Serializable {
+	static class CondicaoLamp1 implements SerializablePredicate<Dispositivo> {
 		@Override public boolean test(Dispositivo d) { 
 			return d.getIdentificador().equals("lamp1"); 
 		}
@@ -26,7 +25,7 @@ class EstrategiaCenarioTest {
 		@Override public int hashCode() { return getClass().hashCode(); }
 	}
 
-	static class AcaoVazia implements Consumer<Dispositivo>, Serializable {
+	static class AcaoVazia implements SerializableConsumer<Dispositivo> {
 		@Override public void accept(Dispositivo d) {}
 		@Override public boolean equals(Object o) { return o instanceof AcaoVazia; }
 		@Override public int hashCode() { return getClass().hashCode(); }

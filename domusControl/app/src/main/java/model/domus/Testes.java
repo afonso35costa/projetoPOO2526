@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import exceptions.*;
 import model.automatismos.*;
 import model.casas.*;
 import model.dispositivos.*;
 import model.dispositivos.Dispositivo.Estado;
-import model.domus.DomusControl;
 import model.utilizadores.Utilizador;
 
 public class Testes {

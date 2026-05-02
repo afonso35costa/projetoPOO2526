@@ -274,7 +274,7 @@ public class DomusControl implements Serializable{
             .toList();
     }
 
-    public void writeToFile(String filename) throws IOException {
+    public void guardarEstado(String filename) throws IOException {
         FileOutputStream fos = new FileOutputStream(filename);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(this);
@@ -282,7 +282,7 @@ public class DomusControl implements Serializable{
         oos.close();
     }
 
-    public DomusControl readFromFile (String filename) throws IOException, ClassNotFoundException{
+    public DomusControl carregarEstado (String filename) throws IOException, ClassNotFoundException{
         FileInputStream fis = new FileInputStream(filename);
         ObjectInputStream ois = new ObjectInputStream(fis);
         DomusControl domus = null;
@@ -311,23 +311,6 @@ public class DomusControl implements Serializable{
         return this.utilizadores.containsKey(username);
     }
 
-    // Necessário no Controller.guardarEstado() — substitui writeToFile()
-    public void guardarEstado(String ficheiro) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(ficheiro))) {
-            oos.writeObject(this);
-        }
-    }
-
-    // Necessário no Controller.carregarEstado() — substitui readFromFile()
-    public static DomusControl carregarEstado(String ficheiro) 
-            throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(ficheiro))) {
-            return (DomusControl) ois.readObject();
-        }
-    }
-
     // Necessário no top3DispositivosPorTempoLigado() e top3DispositivosPorAtivacoes()
     // que no Controller chamam casaQueMaisConsome() mas deviam percorrer TODAS as casas
     public List<Dispositivo> tresDispositivosMaisUtilizadosGlobal(
@@ -338,5 +321,12 @@ public class DomusControl implements Serializable{
                 .sorted(comparator.reversed())
                 .limit(3)
                 .collect(Collectors.toList());
+    }
+
+    public List<Casa> getCasasDoUtilizador(String idUser) {
+        return this.casas.values().stream()
+            .filter(c -> c.getUtilizadores().stream()
+                .anyMatch(u -> u.getUsername().equals(idUser)))
+            .toList();
     }
 }

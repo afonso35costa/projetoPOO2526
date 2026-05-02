@@ -750,18 +750,22 @@ public class MenuAdmin extends TextUI {
     // ==================== FICHEIROS ====================
 
     private void guardarEstado() {
+        System.out.print("Nome do ficheiro para guardar (ex: estado.obj): ");
+        String nomeFicheiro = this.sc.nextLine();
         try {
-            this.controller.guardarEstado("estado.obj");
-            System.out.println("Estado guardado com sucesso.");
+            this.controller.guardarEstado(nomeFicheiro);
+            System.out.println("Estado guardado com sucesso em '" + nomeFicheiro + "'.");
         } catch (Exception e) {
             System.out.println("Erro ao guardar: " + e.getMessage());
         }
     }
 
     private void carregarEstado() {
+        System.out.print("Nome do ficheiro a carregar (ex: estado.obj): ");
+        String nomeFicheiro = this.sc.nextLine();
         try {
-            this.controller.carregarEstado("estado.obj");
-            System.out.println("Estado carregado com sucesso.");
+            this.controller.carregarEstado(nomeFicheiro);
+            System.out.println("Estado carregado com sucesso de '" + nomeFicheiro + "'.");
         } catch (Exception e) {
             System.out.println("Erro ao carregar: " + e.getMessage());
         }

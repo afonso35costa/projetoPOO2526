@@ -32,6 +32,8 @@ import model.dispositivos.LampadaCor;
 import model.dispositivos.Televisao;
 import model.domus.DomusControl;
 import model.utilizadores.Utilizador;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
 
 public class Controller {
     private DomusControl sistema;
@@ -157,6 +159,20 @@ public class Controller {
 
     public List<Dispositivo> top3DispositivosPorAtivacoes() {
         return this.sistema.tresDispositivosMaisUtilizadosGlobal(
+                Comparator.comparingInt(Dispositivo::getNumActivacoes));
+    }
+
+    public List<Dispositivo> top3DispositivosPorTempoLigadoNumaCasa(){
+        if (this.idCasa == null || this.idCasa.isEmpty()) return List.of();
+        Casa casa = this.sistema.getCasas().get(this.idCasa);
+        return this.sistema.tresDispositivosMaisUtilizados(casa,
+                Comparator.comparingInt(Dispositivo::getMinutosLigado));
+    }
+
+    public List<Dispositivo> top3DispositivosPorAtivacoesNumaCasa(){
+        if (this.idCasa == null || this.idCasa.isEmpty()) return List.of();
+        Casa casa = this.sistema.getCasas().get(this.idCasa);
+        return this.sistema.tresDispositivosMaisUtilizados(casa,
                 Comparator.comparingInt(Dispositivo::getNumActivacoes));
     }
 
@@ -301,8 +317,8 @@ public class Controller {
         LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
         Escalonamento e = new Escalonamento("abre_cortinas", h, dispositivos,
-                                            d -> d instanceof Cortina,
-                                            d -> ((Cortina) d).abrir(100));
+                                            (SerializablePredicate<Dispositivo>)d -> d instanceof Cortina,
+                                            (SerializableConsumer<Dispositivo>)d -> ((Cortina) d).abrir(100));
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
@@ -310,8 +326,8 @@ public class Controller {
         LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
         Escalonamento e = new Escalonamento("fecha_cortinas", h, dispositivos,
-                                            d -> d instanceof Cortina,
-                                            d -> ((Cortina) d).fechar(100));
+                                            (SerializablePredicate<Dispositivo>)d -> d instanceof Cortina,
+                                            (SerializableConsumer<Dispositivo>)d -> ((Cortina) d).fechar(100));
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
@@ -320,8 +336,8 @@ public class Controller {
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("acende_lampadas", h, dispositivos,
-                                            d -> d instanceof Lampada,
-                                            d -> ((Lampada) d).ligar());
+                                            (SerializablePredicate<Dispositivo>)d -> d instanceof Lampada,
+                                            (SerializableConsumer<Dispositivo>)d -> ((Lampada) d).ligar());
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
@@ -330,8 +346,8 @@ public class Controller {
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("desliga_lampadas", h, dispositivos,
-                                            d -> d instanceof Lampada,
-                                            d -> ((Lampada) d).desligar());
+                                            (SerializablePredicate<Dispositivo>)d -> d instanceof Lampada,
+                                            (SerializableConsumer<Dispositivo>)d -> ((Lampada) d).desligar());
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
@@ -339,8 +355,8 @@ public class Controller {
         LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
         Escalonamento e = new Escalonamento("liga_colunas", h, dispositivos,
-                                            d -> d instanceof ColunaDeSom,
-                                            d -> ((ColunaDeSom) d).ligar());
+                                            (SerializablePredicate<Dispositivo>)d -> d instanceof ColunaDeSom,
+                                            (SerializableConsumer<Dispositivo>)d -> ((ColunaDeSom) d).ligar());
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
@@ -348,8 +364,8 @@ public class Controller {
         LocalTime h = LocalTime.parse(hora);
         List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
         Escalonamento e = new Escalonamento("desliga_colunas", h, dispositivos,
-                                            d -> d instanceof ColunaDeSom,
-                                            d -> ((ColunaDeSom) d).desligar());
+                                            (SerializablePredicate<Dispositivo>)d -> d instanceof ColunaDeSom,
+                                            (SerializableConsumer<Dispositivo>)d -> ((ColunaDeSom) d).desligar());
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
@@ -495,12 +511,17 @@ public class Controller {
         return this.sistema.getCasas().get(nomeCasa).calcularConsumoTotal();
     }
 
+    public List<Casa> getCasasDoUtilizador() {
+        return sistema.getCasasDoUtilizador(this.idUser);
+    }
+
     public void guardarEstado(String ficheiro) throws Exception {
         this.sistema.guardarEstado(ficheiro);
     }
 
     public void carregarEstado(String ficheiro) throws Exception {
-        DomusControl sistemaCarregado = DomusControl.carregarEstado(ficheiro);
+        DomusControl sistemaCarregado = new DomusControl();
+        sistemaCarregado.carregarEstado(ficheiro);
         this.sistema = sistemaCarregado;
     }
 }

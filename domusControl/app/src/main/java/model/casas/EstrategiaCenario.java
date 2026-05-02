@@ -2,16 +2,16 @@ package model.casas;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import model.dispositivos.Dispositivo;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
 
 public class EstrategiaCenario implements Serializable{
-    private Predicate<Dispositivo> condicao;
-    private Consumer<Dispositivo> acao;
+    private SerializablePredicate<Dispositivo> condicao;
+    private SerializableConsumer<Dispositivo> acao;
 
-    public EstrategiaCenario(Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+    public EstrategiaCenario(SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao) {
         this.condicao = condicao;
         this.acao = acao;
     }
@@ -26,20 +26,20 @@ public class EstrategiaCenario implements Serializable{
         this.acao = estrategia.acao;
     }
 
-    public Predicate<Dispositivo> getCondicao() { 
+    public SerializablePredicate<Dispositivo> getCondicao() {
         return condicao; 
     }
 
-    public Consumer<Dispositivo> getAcao() { 
-        return acao; 
+    public SerializableConsumer<Dispositivo> getAcao() {
+        return acao;
     }
 
-    public void setCondicao(Predicate<Dispositivo> condicao) { 
-        this.condicao = condicao; 
+    public void setCondicao(SerializablePredicate<Dispositivo> condicao) {
+        this.condicao = condicao;
     }
 
-    public void setAcao(Consumer<Dispositivo> acao) { 
-        this.acao = acao; 
+    public void setAcao(SerializableConsumer<Dispositivo> acao) {
+        this.acao = acao;
     }
 
     public EstrategiaCenario clone() {
