@@ -20,6 +20,7 @@ import exceptions.CasaNaoExisteException;
 import exceptions.DispositivoNaoExisteException;
 import exceptions.DivisaoNaoExisteException;
 import exceptions.UtilizadorJaExisteException;
+import exceptions.UtilizadorNaoExisteException;
 import model.automatismos.Automacao;
 import model.automatismos.Escalonamento;
 import model.casas.Casa;
@@ -33,9 +34,14 @@ public class DomusControl implements Serializable{
     private Map<String, Utilizador> utilizadores;
 
     public DomusControl(DomusControl sistema) {
-        this.casas = new HashMap<>(sistema.casas);
-        this.utilizadores = new HashMap<>(sistema.utilizadores);
-    }
+        this.casas = sistema.casas.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().clone()));
+         this.utilizadores = sistema.utilizadores.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().clone()));
+}
+//      this.casas = new HashMap<>(sistema.casas);
+//      this.utilizadores = new HashMap<>(sistema.utilizadores);
+
 
     public DomusControl(Map<String, Casa> casas, Map<String, Utilizador> utilizadores) {
         this.casas = casas;
@@ -243,8 +249,12 @@ public class DomusControl implements Serializable{
         return this.casas.get(idCasa).getCenariosAtivos();
     }
 
+    public List<Cenario> getCenarios(String idCasa) {
+        return this.casas.get(idCasa).getCenarios();
+    }
+
     public List<Automacao> getAutomacoes(String idCasa) {
-        return this.casas.get(idCasa).getAutomacoesAtivas();
+        return this.casas.get(idCasa).getAutomacoes();
     }
 
     public List<Escalonamento> getEscalonamentos(String idCasa) {
@@ -285,4 +295,48 @@ public class DomusControl implements Serializable{
         return domus;
     }
 
+
+    // Necessário no Controller.associarUtilizadorACasa()
+    public void associarUtilizadorACasa(String nomeCasa, String username) 
+            throws CasaNaoExisteException, UtilizadorNaoExisteException {
+        if (!this.casas.containsKey(nomeCasa))
+            throw new CasaNaoExisteException(nomeCasa);
+        if (!this.utilizadores.containsKey(username))
+            throw new UtilizadorNaoExisteException(username);
+        this.casas.get(nomeCasa).adicionarUtilizador(this.utilizadores.get(username));
+    }
+
+    // Necessário no Controller.associarUtilizadorACasa() e no MenuAdmin
+    public boolean existeUtilizador(String username) {
+        return this.utilizadores.containsKey(username);
+    }
+
+    // Necessário no Controller.guardarEstado() — substitui writeToFile()
+    public void guardarEstado(String ficheiro) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(ficheiro))) {
+            oos.writeObject(this);
+        }
+    }
+
+    // Necessário no Controller.carregarEstado() — substitui readFromFile()
+    public static DomusControl carregarEstado(String ficheiro) 
+            throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(ficheiro))) {
+            return (DomusControl) ois.readObject();
+        }
+    }
+
+    // Necessário no top3DispositivosPorTempoLigado() e top3DispositivosPorAtivacoes()
+    // que no Controller chamam casaQueMaisConsome() mas deviam percorrer TODAS as casas
+    public List<Dispositivo> tresDispositivosMaisUtilizadosGlobal(
+            Comparator<Dispositivo> comparator) {
+        return this.casas.values().stream()
+                .flatMap(casa -> casa.getDivisoes().values().stream())
+                .flatMap(divisao -> divisao.getDispositivos().values().stream())
+                .sorted(comparator.reversed())
+                .limit(3)
+                .collect(Collectors.toList());
+    }
 }

@@ -52,7 +52,7 @@ public class TextUI {
 
             System.out.println("\nLogin efetuado com sucesso!");
             if (isAdmin) {
-                new MenuAdmin(sc).run();
+                new MenuAdmin(sc, controller).run();
             } else {
                 menuUtilizador();
             }
@@ -67,13 +67,14 @@ public class TextUI {
         System.out.print("Novo utilizador: ");
         String user = this.sc.nextLine();
 
-        System.out.print("Email: ");
-        String email = this.sc.nextLine();
-
         System.out.print("Nova palavra-passe: ");
         String pass = this.sc.nextLine();
+
+        System.out.print("É administrador? (sim/nao): ");
+        String isAdmin = this.sc.nextLine();
+
         try {
-            this.controller.criaUtilizador(user, user, email, pass);
+            this.controller.criaUtilizador(user, user, isAdmin, pass);
             System.out.println("Registo feito! Pode agora fazer login.");
         } catch (Exception e) {
             System.out.println("Não foi possível registar o utilizador.");

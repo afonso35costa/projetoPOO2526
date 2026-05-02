@@ -151,15 +151,13 @@ public class Controller {
     }
 
     public List<Dispositivo> top3DispositivosPorTempoLigado() {
-        Casa casa = this.sistema.casaQueMaisConsome();
-        if (casa == null) return List.of();
-        return this.sistema.tresDispositivosMaisUtilizados(casa, Comparator.comparingInt(Dispositivo::getMinutosLigado));
+        return this.sistema.tresDispositivosMaisUtilizadosGlobal(
+                Comparator.comparingInt(Dispositivo::getMinutosLigado));
     }
 
     public List<Dispositivo> top3DispositivosPorAtivacoes() {
-        Casa casa = this.sistema.casaQueMaisConsome();
-        if (casa == null) return List.of();
-        return this.sistema.tresDispositivosMaisUtilizados(casa, Comparator.comparingInt(Dispositivo::getNumActivacoes));
+        return this.sistema.tresDispositivosMaisUtilizadosGlobal(
+                Comparator.comparingInt(Dispositivo::getNumActivacoes));
     }
 
     public List<Map.Entry<Casa, Divisao>> top3DivisoesComMaisDispositivos() {
@@ -443,7 +441,7 @@ public class Controller {
     }
 
     public List<Cenario> getCenarios(String nomeCasa) {
-        return this.sistema.getCenariosAtivos(nomeCasa);
+        return this.sistema.getCenarios(nomeCasa);
     }
 
     public void removeCenario(String nomeCasa, String nomeCenario) {
@@ -461,5 +459,48 @@ public class Controller {
 
     public void ativarTodosCenarios(){
         this.sistema.ativarCenario(idCasa, c -> !c.isAtivo());
+    }
+
+    public boolean temCasasNoSistema() {
+        return !this.sistema.getCasas().isEmpty();
+    }
+
+    public boolean temUtilizadoresNoSistema() {
+        return !this.sistema.getUtilizadores().isEmpty();
+    }
+
+    public boolean temDivisoes(String nomeCasa) {
+        if (!this.sistema.casaExiste(nomeCasa)) return false;
+        return !this.sistema.getCasas().get(nomeCasa).getDivisoes().isEmpty();
+    }
+
+    public boolean temDispositivos(String nomeCasa) {
+        if (!this.sistema.casaExiste(nomeCasa)) return false;
+        return this.sistema.getCasas().get(nomeCasa).getDivisoes().values()
+                .stream()
+                .anyMatch(d -> !d.getDispositivos().isEmpty());
+    }
+
+    public void associarUtilizadorACasa(String nomeCasa, String username)
+            throws CasaNaoExisteException, UtilizadorNaoExisteException {
+        if (!this.sistema.casaExiste(nomeCasa))
+            throw new CasaNaoExisteException(nomeCasa);
+        if (!this.sistema.existeUtilizador(username))
+            throw new UtilizadorNaoExisteException(username);
+        this.sistema.associarUtilizadorACasa(nomeCasa, username);
+    }
+
+    public double getConsumoCasa(String nomeCasa) {
+        if (!this.sistema.casaExiste(nomeCasa)) return 0.0;
+        return this.sistema.getCasas().get(nomeCasa).calcularConsumoTotal();
+    }
+
+    public void guardarEstado(String ficheiro) throws Exception {
+        this.sistema.guardarEstado(ficheiro);
+    }
+
+    public void carregarEstado(String ficheiro) throws Exception {
+        DomusControl sistemaCarregado = DomusControl.carregarEstado(ficheiro);
+        this.sistema = sistemaCarregado;
     }
 }
