@@ -1,10 +1,12 @@
 package controller;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import exceptions.CasaJaExisteException;
 import exceptions.CasaNaoExisteException;
@@ -16,6 +18,7 @@ import exceptions.DivisaoNaoSelecionadaException;
 import exceptions.SessaoNaoIniciadaException;
 import exceptions.UtilizadorJaExisteException;
 import exceptions.UtilizadorNaoExisteException;
+import exceptions.UtilizadorNaoRemovivelException;
 import model.automatismos.Automacao;
 import model.automatismos.AutomacaoFactory;
 import model.automatismos.Escalonamento;
@@ -27,6 +30,8 @@ import model.dispositivos.ColunaDeSom;
 import model.dispositivos.Cortina;
 import model.dispositivos.Dispositivo;
 import model.dispositivos.DispositivoFactory;
+import model.dispositivos.DispositivoQueAbre;
+import model.dispositivos.DispositivoQueLiga;
 import model.dispositivos.Lampada;
 import model.dispositivos.LampadaCor;
 import model.dispositivos.Televisao;
@@ -104,6 +109,21 @@ public class Controller {
         return Objects.hash(sistema);
     }
 
+    private LocalTime tempoAtual = LocalTime.of(7,0);
+
+    public LocalTime getHoraAtual(String idCasa) {
+        return this.tempoAtual;
+    }
+
+    public void avancarTempo(String horaStr, String idCasa) throws CasaNaoExisteException {
+        String[] partes = horaStr.split(":");
+        int hora = Integer.parseInt(partes[0]);
+        int minuto = Integer.parseInt(partes[1]);
+        this.tempoAtual = this.tempoAtual.withHour(hora).withMinute(minuto);
+        this.sistema.executarEscalonamentos(idCasa,
+            e -> e.verificaHora(this.tempoAtual));
+    }
+
     public void criaCasa(String nome, String morada) throws SessaoNaoIniciadaException, CasaJaExisteException {
         if (this.idUser == null || this.idUser.isEmpty())
             throw new SessaoNaoIniciadaException();
@@ -122,14 +142,15 @@ public class Controller {
     public void selecionaCasa(String nome) throws CasaNaoExisteException {
         if (!sistema.casaExiste(nome))
             throw new CasaNaoExisteException(nome);
+        if (!sistema.utilizadorAssociadoACasa(idUser, nome))
+            throw new CasaNaoExisteException(nome);
         this.idCasa = nome;
     }
 
-    public void criaUtilizador(String nome, String username, String isAdmin, String password) throws UtilizadorJaExisteException{
+    public void criaUtilizador(String nome, String username, String password) throws UtilizadorJaExisteException{
         Utilizador u = new Utilizador();
         u.setNome(nome);
         u.setUsername(username);
-        u.setAdmin(isAdmin.equalsIgnoreCase("sim"));
         u.setPassword(password);
         sistema.adicionarUtilizador(u);
     }
@@ -143,22 +164,20 @@ public class Controller {
 
     public boolean utilizadorTemCasas() {
         if (this.idUser == null || this.idUser.isEmpty()) return false;
-        return this.sistema.getCasas().values().stream()
-                .anyMatch(c -> c.getUtilizadores().stream()
-                        .anyMatch(u -> u.getUsername().equals(this.idUser)));
+        return this.sistema.utilizadorAssociadoACasas(idUser);
     }
 
     public Casa casaQueMaisConsome() {
-        return this.sistema.casaQueMaisConsome();
+        return this.sistema.casaQueMaisConsome(this.idUser);
     }
 
     public List<Dispositivo> top3DispositivosPorTempoLigado() {
-        return this.sistema.tresDispositivosMaisUtilizadosGlobal(
+        return this.sistema.tresDispositivosMaisUtilizadosGlobal(this.idUser,
                 Comparator.comparingInt(Dispositivo::getMinutosLigado));
     }
 
     public List<Dispositivo> top3DispositivosPorAtivacoes() {
-        return this.sistema.tresDispositivosMaisUtilizadosGlobal(
+        return this.sistema.tresDispositivosMaisUtilizadosGlobal(this.idUser,
                 Comparator.comparingInt(Dispositivo::getNumActivacoes));
     }
 
@@ -177,7 +196,7 @@ public class Controller {
     }
 
     public List<Map.Entry<Casa, Divisao>> top3DivisoesComMaisDispositivos() {
-        return this.sistema.tresDivisoesComMaisDispositivos();
+        return this.sistema.tresDivisoesComMaisDispositivos(this.idUser);
     }
 
     public String getDescricaoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
@@ -192,22 +211,18 @@ public class Controller {
         return dispositivo.getEstado() == Dispositivo.Estado.LIGADO || dispositivo.getEstado() == Dispositivo.Estado.ABERTO;
     }
 
-    public void ligarDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+    public void ligarOuAbrirDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
         Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
         if (dispositivo == null) return;
-        Dispositivo.Estado novoEstado = dispositivo.getEstado() == Dispositivo.Estado.FECHADO
-                ? Dispositivo.Estado.ABERTO
-                : Dispositivo.Estado.LIGADO;
-        this.sistema.setEstadoDispositivo(nomeCasa, nomeDivisao, idDisp, novoEstado);
+        if (dispositivo instanceof DispositivoQueAbre) ((DispositivoQueAbre)dispositivo).abrir(100);
+        else ((DispositivoQueLiga)dispositivo).ligar();
     }
 
-    public void desligarDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+    public void desligarOuFecharDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
         Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
         if (dispositivo == null) return;
-        Dispositivo.Estado novoEstado = dispositivo.getEstado() == Dispositivo.Estado.ABERTO
-                ? Dispositivo.Estado.FECHADO
-                : Dispositivo.Estado.DESLIGADO;
-        this.sistema.setEstadoDispositivo(nomeCasa, nomeDivisao, idDisp, novoEstado);
+        if (dispositivo instanceof DispositivoQueAbre) ((DispositivoQueAbre)dispositivo).fechar(100);
+        else ((DispositivoQueLiga)dispositivo).desligar();
     }
 
     public String getEstadoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
@@ -220,10 +235,21 @@ public class Controller {
         return this.sistema.getConsumoDivisao(nomeCasa, nomeDivisao);
     }
 
-    //ate aqui
+    public String getInfoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+        Dispositivo dispositivo = this.sistema.getDispositivo(nomeCasa, nomeDivisao, idDisp);
+        if (dispositivo == null) return "Dispositivo inexistente";
+        return dispositivo.toString();
+    }
 
-    
-    public void removeUtilizador(String username) throws SessaoNaoIniciadaException, UtilizadorNaoExisteException {
+    public void desassociarUtilizador(String username) throws CasaNaoExisteException, SessaoNaoIniciadaException, UtilizadorNaoExisteException, UtilizadorNaoRemovivelException {
+        if (this.idUser == null || this.idUser.isEmpty())
+            throw new SessaoNaoIniciadaException();
+        if (sistema.utilizadorIsAdmin(username, this.idCasa))
+            throw new UtilizadorNaoRemovivelException(username);
+        sistema.desassociarUtilizador(username, this.idCasa);
+    }
+
+    public void removerUtilizador(String username) throws SessaoNaoIniciadaException, UtilizadorNaoExisteException {
         if (this.idUser == null || this.idUser.isEmpty())
             throw new SessaoNaoIniciadaException();
         sistema.removerUtilizador(username);
@@ -313,27 +339,27 @@ public class Controller {
         return this.sistema.getAutomacoes(nomeCasa);
     }
 
-    public void criaEscalonamentoAbrirCortinas(String hora, List<String> idsDivisoes) {
+    public void criaEscalonamentoAbrirCortinas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina"));
         Escalonamento e = new Escalonamento("abre_cortinas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Cortina,
                                             (SerializableConsumer<Dispositivo>)d -> ((Cortina) d).abrir(100));
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDivisoes) {
+    public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina"));
         Escalonamento e = new Escalonamento("fecha_cortinas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Cortina,
                                             (SerializableConsumer<Dispositivo>)d -> ((Cortina) d).fechar(100));
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    public void criaEscalonamentoAcenderLampadas(String hora, List<String> idsDivisoes) {
+    public void criaEscalonamentoAcenderLampadas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("acende_lampadas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Lampada,
@@ -341,9 +367,9 @@ public class Controller {
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    public void criaEscalonamentoDesligarLampadas(String hora, List<String> idsDivisoes) {
+    public void criaEscalonamentoDesligarLampadas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("desliga_lampadas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Lampada,
@@ -351,29 +377,34 @@ public class Controller {
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    public void criaEscalonamentoLigarColunas(String hora, List<String> idsDivisoes) {
+    public void criaEscalonamentoLigarColunas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom"));
         Escalonamento e = new Escalonamento("liga_colunas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof ColunaDeSom,
                                             (SerializableConsumer<Dispositivo>)d -> ((ColunaDeSom) d).ligar());
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    public void criaEscalonamentoDesligarColunas(String hora, List<String> idsDivisoes) {
+    public void criaEscalonamentoDesligarColunas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom"));
         Escalonamento e = new Escalonamento("desliga_colunas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof ColunaDeSom,
                                             (SerializableConsumer<Dispositivo>)d -> ((ColunaDeSom) d).desligar());
         sistema.adicionarEscalonamento(this.idCasa, e);
     }
 
-    public void ativaEscalonamento(String idEscalonamento){
-        this.sistema.executarEscalonamentos(this.idCasa, e -> e.getId().equals(idEscalonamento));
+    public void atualizaDispositivosEscalonamento(String idCasa, String idEscalonamento, String tipoDispositivo, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
+        Escalonamento e = this.sistema.getEscalonamento(idCasa, idEscalonamento);
+        e.getDispositivos().addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, idsDivisoes, tipoDispositivo));
     }
 
-    public void ativarTodosEscalonamentos(){
+    public void ativaEscalonamento(String idCasa, String idEscalonamento){
+        this.sistema.executarEscalonamentos(idCasa, e -> e.getId().equals(idEscalonamento));
+    }
+
+    public void ativarTodosEscalonamentos(String idCasa){
         this.sistema.executarEscalonamentos(idCasa, e -> e.verificaHora(LocalTime.now()));
     }
 
@@ -385,11 +416,11 @@ public class Controller {
         this.sistema.removerEscalonamento(nomeCasa, idEscalonamento);
     }
 
-    public void criaCenarioSairdeCasa(){
+    public void criaCenarioSairdeCasa() throws CasaNaoExisteException, DivisaoNaoExisteException{
         Cenario c = new Cenario();
         c.setNome("sair_de_casa");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
         c.setDispositivos(dispositivos);
@@ -401,11 +432,11 @@ public class Controller {
         sistema.adicionarCenario(idCasa, c);
     }
 
-    public void criaCenarioJantarComAmigos(){
+    public void criaCenarioJantarComAmigos() throws CasaNaoExisteException, DivisaoNaoExisteException{
         Cenario c = new Cenario();
         c.setNome("jantar_com_amigos");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "colunaDeSom"));
         c.setDispositivos(dispositivos);
@@ -418,11 +449,11 @@ public class Controller {
         sistema.adicionarCenario(idCasa, c);
     }
 
-    public void criaCenarioAcordar(){
+    public void criaCenarioAcordar() throws CasaNaoExisteException, DivisaoNaoExisteException{
         Cenario c = new Cenario();
         c.setNome("acordar");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "colunaDeSom"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
@@ -436,11 +467,11 @@ public class Controller {
         sistema.adicionarCenario(idCasa, c);
     }
 
-    public void criaCenarioDeitar(){
+    public void criaCenarioDeitar() throws CasaNaoExisteException, DivisaoNaoExisteException{
         Cenario c = new Cenario();
         c.setNome("deitar");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor");
+        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "colunaDeSom"));
         dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
@@ -520,8 +551,45 @@ public class Controller {
     }
 
     public void carregarEstado(String ficheiro) throws Exception {
-        DomusControl sistemaCarregado = new DomusControl();
-        sistemaCarregado.carregarEstado(ficheiro);
-        this.sistema = sistemaCarregado;
+        this.sistema = this.sistema.carregarEstado(ficheiro);
+    }
+
+    public List<Casa> casasEmQueSouAdmin(){
+        return this.sistema.getCasas().values().stream()
+                .filter(c -> sistema.utilizadorIsAdmin(this.idUser, c.getId()))
+                .toList();
+    }
+
+    public Set<Utilizador> listarUtilizadoresCasa(String nomeCasa) throws CasaNaoExisteException {
+        if (!this.sistema.casaExiste(nomeCasa))
+            throw new CasaNaoExisteException(nomeCasa);
+        return this.sistema.listarUtilizadoresCasa(nomeCasa);
+    }
+
+    public void addAdminCasa(String nomeCasa, String username) throws CasaNaoExisteException, UtilizadorNaoExisteException {
+        if (!this.sistema.casaExiste(nomeCasa))
+            throw new CasaNaoExisteException(nomeCasa);
+        if (!this.sistema.existeUtilizador(username))
+            throw new UtilizadorNaoExisteException(username);
+        this.sistema.addAdminCasa(nomeCasa, username);
+    }
+
+    public void removeAdminCasa(String nomeCasa, String username) throws CasaNaoExisteException, UtilizadorNaoExisteException {
+        if (!this.sistema.casaExiste(nomeCasa))
+            throw new CasaNaoExisteException(nomeCasa);
+        if (!this.sistema.existeUtilizador(username))
+            throw new UtilizadorNaoExisteException(username);
+        this.sistema.removerAdminCasa(nomeCasa, username);
+    }
+
+    public boolean souAdminDaCasa(String nomeCasa, String username) throws CasaNaoExisteException {
+        if (!this.sistema.casaExiste(nomeCasa))
+            throw new CasaNaoExisteException(nomeCasa);
+        return this.sistema.utilizadorIsAdmin(username, nomeCasa);
+    }
+
+    public boolean divisaoExiste(String nomeCasa, String nomeDivisao) throws DivisaoNaoExisteException{
+        if (!this.sistema.casaExiste(nomeCasa)) throw new DivisaoNaoExisteException(nomeDivisao);
+        return this.sistema.divisaoExiste(nomeCasa, nomeDivisao);
     }
 }

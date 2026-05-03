@@ -68,6 +68,7 @@ public class ColunaDeSom extends Dispositivo implements DispositivoQueLiga{
     public void ligar() {
         super.setEstado(Estado.LIGADO);
         this.volume = 100;
+        this.setNumActivacoes(this.getNumActivacoes() + 1);
     }
 
     @Override

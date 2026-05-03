@@ -11,26 +11,32 @@ public class MenuAdmin extends TextUI {
     private final Controller controller;
     private final Menu menu;
 
-    public MenuAdmin(Scanner sc, Controller controller) {
+    public MenuAdmin(Scanner sc, Controller controller, String nomeCasa) {
         super(controller);
         this.sc = sc;
         this.controller = controller;
-        this.menu = new Menu("Menu Admin", new String[]{
+        this.menu = new Menu("Gerir Casa: " + nomeCasa, new String[]{
                 "Gerir Utilizadores",
-                "Gerir Casas",
-                "Estatísticas Globais",
-                "Guardar Estado",
-                "Carregar Estado"
+                "Gerir Divisões",
+                "Gerir Dispositivos",
+                "Gerir Cenários",
+                "Gerir Automações",
+                "Gerir Escalonamentos",
+                "Ver consumo total",
+                "Remover Casa"
         }, this.sc);
 
         this.menu.setPreCondition(2, () -> true);
         this.menu.setPreCondition(3, () -> this.controller.temCasasNoSistema());
 
-        this.menu.setHandler(1, this::menuUtilizadores);
-        this.menu.setHandler(2, this::menuCasas);
-        this.menu.setHandler(3, this::menuEstatisticasGlobais);
-        this.menu.setHandler(4, this::guardarEstado);
-        this.menu.setHandler(5, this::carregarEstado);
+        menu.setHandler(1, () -> menuUtilizadores(nomeCasa));
+        menu.setHandler(2, () -> menuDivisoesAdmin(nomeCasa));
+        menu.setHandler(3, () -> menuDispositivosAdmin(nomeCasa));
+        menu.setHandler(4, () -> menuCenariosAdmin(nomeCasa));
+        menu.setHandler(5, () -> menuAutomacoesAdmin(nomeCasa));
+        menu.setHandler(6, () -> menuEscalonamentosAdmin(nomeCasa));
+        menu.setHandler(7, () -> verConsumoCasa(nomeCasa));
+        menu.setHandler(8, () -> removerCasa(nomeCasa));
     }
 
     public void run() {
@@ -39,175 +45,96 @@ public class MenuAdmin extends TextUI {
 
     // ==================== UTILIZADORES ====================
 
-    private void menuUtilizadores() {
+    private void menuUtilizadores(String nomeCasa) {
         Menu menu = new Menu("Gerir Utilizadores", new String[]{
                 "Criar Utilizador",
-                "Criar Administrador",
                 "Listar Utilizadores",
-                "Remover Utilizador"
+                "Associar Utilizador a Casa",
+                "Desassociar Utilizador de Casa",
         }, this.sc);
 
-        menu.setPreCondition(4, () -> this.controller.temUtilizadoresNoSistema());
+        menu.setPreCondition(1, () -> this.controller.temUtilizadoresNoSistema());
 
-        menu.setHandler(1, this::criarUtilizador);
-        menu.setHandler(2, this::criarAdmin);
-        menu.setHandler(3, this::listarUtilizadores);
-        menu.setHandler(4, this::removerUtilizador);
+        menu.setHandler(1, () -> this.criarUtilizador(nomeCasa));
+        menu.setHandler(2, () -> this.listarUtilizadores(nomeCasa));
+        menu.setHandler(3, () -> associarUtilizadorACasa(nomeCasa));
+        menu.setHandler(4, () -> this.removerUtilizador(nomeCasa));
         menu.run();
     }
 
-    private void criarUtilizador() {
+    private void criarUtilizador(String nomeCasa) {
         System.out.print("Username: ");
         String username = this.sc.nextLine();
         System.out.print("Nome: ");
         String nome = this.sc.nextLine();
         System.out.print("Password: ");
         String pass = this.sc.nextLine();
+        System.out.print("Este utilizador será admin da casa " + nomeCasa + "? (s/n): ");
+        String resposta = this.sc.nextLine();
         try {
-            this.controller.criaUtilizador(nome, username, "nao", pass);
+            this.controller.criaUtilizador(nome, username, pass);
+            this.controller.associarUtilizadorACasa(nomeCasa, username);
+            if (resposta.equalsIgnoreCase("s")) {
+                this.controller.addAdminCasa(nomeCasa, username);
+            }
             System.out.println("Utilizador '" + username + "' criado com sucesso.");
         } catch (UtilizadorJaExisteException e) {
             System.out.println("Erro: utilizador já existe.");
+        } catch (CasaNaoExisteException e) {
+            System.out.println("Erro: casa não existe.");
+        } catch (UtilizadorNaoExisteException e) {
+            System.out.println("Erro: utilizador não existe.");
         }
+
     }
 
-    private void criarAdmin() {
-        System.out.print("Username: ");
-        String username = this.sc.nextLine();
-        System.out.print("Nome: ");
-        String nome = this.sc.nextLine();
-        System.out.print("Password: ");
-        String pass = this.sc.nextLine();
-        try {
-            this.controller.criaUtilizador(nome, username, "sim", pass);
-            System.out.println("Administrador '" + username + "' criado com sucesso.");
-        } catch (UtilizadorJaExisteException e) {
-            System.out.println("Erro: utilizador já existe.");
-        }
-    }
 
-    private void listarUtilizadores() {
+    private void listarUtilizadores(String nomeCasa) {
         System.out.println("\nUtilizadores registados:");
-        var utilizadores = this.controller.getSistema().getUtilizadores();
-        if (utilizadores.isEmpty()) {
+        try{
+            var utilizadores = this.controller.listarUtilizadoresCasa(nomeCasa);
+            if (utilizadores.isEmpty()) {
+                System.out.println("(sem utilizadores associados a esta casa)");
+                return;
+            }
+            if (utilizadores.isEmpty()) {
             System.out.println("(sem utilizadores)");
             return;
-        }
-        utilizadores.values().forEach(u ->
+            }
+            utilizadores.forEach(u ->
             System.out.println("- " + u.getUsername() +
-                               " | " + u.getNome() +
-                               " | " + (u.isAdmin() ? "Admin" : "Utilizador"))
-        );
+                            " | " + u.getNome()
+                        ));
+        } catch (CasaNaoExisteException e) {
+            System.out.println("Casa não encontrada.");
+        }
     }
 
-    private void removerUtilizador() {
-        listarUtilizadores();
+    private void removerUtilizador(String nomeCasa) {
+        listarUtilizadores(nomeCasa);
         System.out.print("\nUsername a remover (ENTER para voltar): ");
         String username = this.sc.nextLine();
         if (username.isBlank()) return;
         try {
-            this.controller.removeUtilizador(username);
+            this.controller.desassociarUtilizador(username);
             System.out.println("Utilizador '" + username + "' removido.");
         } catch (SessaoNaoIniciadaException e) {
             System.out.println("Erro: sessão não iniciada.");
         } catch (UtilizadorNaoExisteException e) {
             System.out.println("Erro: utilizador não existe.");
         }
-    }
-
-    // ==================== CASAS ====================
-
-    private void menuCasas() {
-        Menu menu = new Menu("Gerir Casas", new String[]{
-                "Criar Casa",
-                "Listar Casas",
-                "Selecionar Casa",
-                "Remover Casa"
-        }, this.sc);
-
-        menu.setPreCondition(3, () -> this.controller.temCasasNoSistema());
-        menu.setPreCondition(4, () -> this.controller.temCasasNoSistema());
-
-        menu.setHandler(1, this::criarCasa);
-        menu.setHandler(2, this::listarTodasCasas);
-        menu.setHandler(3, this::selecionarCasaAdmin);
-        menu.setHandler(4, this::removerCasa);
-        menu.run();
-    }
-
-    private void criarCasa() {
-        System.out.print("Nome/ID da casa: ");
-        String nome = this.sc.nextLine();
-        System.out.print("Morada: ");
-        String morada = this.sc.nextLine();
-        try {
-            this.controller.criaCasa(nome, morada);
-            System.out.println("Casa '" + nome + "' criada.");
-            // pergunta se quer associar um utilizador logo
-            System.out.print("Associar utilizador à casa? (s/n): ");
-            String resp = this.sc.nextLine();
-            if (resp.equalsIgnoreCase("s")) {
-                associarUtilizadorACasa(nome);
-            }
-        } catch (SessaoNaoIniciadaException e) {
-            System.out.println("Erro: sessão não iniciada.");
-        } catch (CasaJaExisteException e) {
-            System.out.println("Erro: casa já existe.");
+        catch (UtilizadorNaoRemovivelException e) {
+            System.out.println("Erro: utilizador não pode ser removido.");
+        }
+        catch (CasaNaoExisteException e) {
+            System.out.println("Erro: casa não existe.");
         }
     }
 
-    private void listarTodasCasas() {
-        System.out.println("\nTodas as casas do sistema:");
-        var casas = this.controller.getSistema().getCasas();
-        if (casas.isEmpty()) {
-            System.out.println("(sem casas)");
-            return;
-        }
-        casas.values().forEach(c ->
-            System.out.println("- " + c.getId() + " | " + c.getMorada() +
-                               " | " + c.getDivisoes().size() + " divisões")
-        );
-    }
 
-    private void selecionarCasaAdmin() {
-        listarTodasCasas();
-        System.out.print("\nNome da casa a gerir (ENTER para voltar): ");
-        String nomeCasa = this.sc.nextLine();
-        if (nomeCasa.isBlank()) return;
-        try {
-            this.controller.selecionaCasa(nomeCasa);
-            menuCasaAdmin(nomeCasa);
-        } catch (CasaNaoExisteException e) {
-            System.out.println("Casa não encontrada.");
-        }
-    }
+    //...............REMOVER CASA..................//
 
-    private void menuCasaAdmin(String nomeCasa) {
-        Menu menu = new Menu("Gerir Casa: " + nomeCasa, new String[]{
-                "Gerir Divisões",
-                "Gerir Dispositivos",
-                "Gerir Cenários",
-                "Gerir Automações",
-                "Gerir Escalonamentos",
-                "Associar Utilizador",
-                "Ver consumo total"
-        }, this.sc);
-
-        menu.setHandler(1, () -> menuDivisoesAdmin(nomeCasa));
-        menu.setHandler(2, () -> menuDispositivosAdmin(nomeCasa));
-        menu.setHandler(3, () -> menuCenariosAdmin(nomeCasa));
-        menu.setHandler(4, () -> menuAutomacoesAdmin(nomeCasa));
-        menu.setHandler(5, () -> menuEscalonamentosAdmin(nomeCasa));
-        menu.setHandler(6, () -> associarUtilizadorACasa(nomeCasa));
-        menu.setHandler(7, () -> verConsumoCasa(nomeCasa));
-        menu.run();
-    }
-
-    private void removerCasa() {
-        listarTodasCasas();
-        System.out.print("\nNome da casa a remover (ENTER para voltar): ");
-        String nome = this.sc.nextLine();
-        if (nome.isBlank()) return;
+    private void removerCasa(String nome) {
         System.out.print("Confirmar remoção de '" + nome + "'? (s/n): ");
         String conf = this.sc.nextLine();
         if (!conf.equalsIgnoreCase("s")) return;
@@ -222,7 +149,6 @@ public class MenuAdmin extends TextUI {
     }
 
     private void associarUtilizadorACasa(String nomeCasa) {
-        listarUtilizadores();
         System.out.print("\nUsername a associar (ENTER para voltar): ");
         String username = this.sc.nextLine();
         if (username.isBlank()) return;
@@ -300,22 +226,23 @@ public class MenuAdmin extends TextUI {
     private void menuDispositivosAdmin(String nomeCasa) {
         Menu menu = new Menu("Dispositivos - " + nomeCasa, new String[]{
                 "Adicionar Dispositivo",
-                "Ligar Dispositivo",
-                "Desligar Dispositivo",
+                "Ligar/Abrir Dispositivo",
+                "Desligar/Fechar Dispositivo",
                 "Ver Estado",
+                "Consultar Info Dispositivo",
                 "Remover Dispositivo"
         }, this.sc);
 
         menu.setPreCondition(2, () -> this.controller.temDispositivos(nomeCasa));
         menu.setPreCondition(3, () -> this.controller.temDispositivos(nomeCasa));
         menu.setPreCondition(4, () -> this.controller.temDispositivos(nomeCasa));
-        menu.setPreCondition(5, () -> this.controller.temDispositivos(nomeCasa));
 
         menu.setHandler(1, () -> adicionarDispositivo(nomeCasa));
-        menu.setHandler(2, () -> ligarDispositivoAdmin(nomeCasa));
-        menu.setHandler(3, () -> desligarDispositivoAdmin(nomeCasa));
+        menu.setHandler(2, () -> ligarOuAbrirDispositivoAdmin(nomeCasa));
+        menu.setHandler(3, () -> desligarOuFecharDispositivoAdmin(nomeCasa));
         menu.setHandler(4, () -> verEstadoAdmin(nomeCasa));
-        menu.setHandler(5, () -> removerDispositivoAdmin(nomeCasa));
+        menu.setHandler(5, () -> consultarInfoDispositivoAdmin(nomeCasa));
+        menu.setHandler(6, () -> removerDispositivoAdmin(nomeCasa));
         menu.run();
     }
 
@@ -324,6 +251,15 @@ public class MenuAdmin extends TextUI {
         System.out.print("\nDivisão onde adicionar (ENTER para voltar): ");
         String nomeDivisao = this.sc.nextLine();
         if (nomeDivisao.isBlank()) return;
+        try {
+            if (!this.controller.divisaoExiste(nomeCasa, nomeDivisao)) {
+                System.out.println("Divisão inexistente.");
+                return;
+            }
+        } catch (DivisaoNaoExisteException e) {
+            System.out.println("Divisão não encontrada.");
+            return;
+        }
 
         System.out.println("\nTipo de dispositivo:");
         System.out.println("1-rele  2-lampada  3-lampada_cor  4-coluna_som");
@@ -342,13 +278,28 @@ public class MenuAdmin extends TextUI {
         System.out.print("Consumo por hora (Wh): ");
         String consumo = this.sc.nextLine();
 
-        try {
-            this.controller.selecionaCasa(nomeCasa);
-            this.controller.selecionaDivisao(nomeDivisao);
-            this.controller.criaDispositivo(tipo, id, marca, modelo, consumo);
-            System.out.println("Dispositivo adicionado com sucesso.");
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+        System.out.println("\nQueres adicionar o dispositivo a algum escalonamento? (s/n): ");
+        String resposta = this.sc.nextLine();
+        listarEscalonamentosAdmin(nomeCasa);
+        if (resposta.equalsIgnoreCase("s")) {
+            System.out.print("\nID do escalonamento: ");
+            String idEscalonamento = this.sc.nextLine();
+            try {
+                this.controller.atualizaDispositivosEscalonamento(nomeCasa, idEscalonamento, tipo, List.of(nomeDivisao));
+            } catch (CasaNaoExisteException e) {
+                System.out.println("Casa não encontrada.");
+            } catch (DivisaoNaoExisteException e) {
+                System.out.println("Divisão não encontrada.");
+            }
+
+            try {
+                this.controller.selecionaCasa(nomeCasa);
+                this.controller.selecionaDivisao(nomeDivisao);
+                this.controller.criaDispositivo(tipo, id, marca, modelo, consumo);
+                System.out.println("Dispositivo adicionado com sucesso.");
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+            }
         }
     }
 
@@ -371,16 +322,20 @@ public class MenuAdmin extends TextUI {
         };
     }
 
-    private void ligarDispositivoAdmin(String nomeCasa) {
-        pedirEOperarDispositivo(nomeCasa, "ligar");
+    private void ligarOuAbrirDispositivoAdmin(String nomeCasa) {
+        pedirEOperarDispositivo(nomeCasa, "ligar/abrir");
     }
 
-    private void desligarDispositivoAdmin(String nomeCasa) {
-        pedirEOperarDispositivo(nomeCasa, "desligar");
+    private void desligarOuFecharDispositivoAdmin(String nomeCasa) {
+        pedirEOperarDispositivo(nomeCasa, "desligar/fechar");
     }
 
     private void verEstadoAdmin(String nomeCasa) {
         pedirEOperarDispositivo(nomeCasa, "estado");
+    }
+
+    private void consultarInfoDispositivoAdmin(String nomeCasa) {
+        pedirEOperarDispositivo(nomeCasa, "info");
     }
 
     private void removerDispositivoAdmin(String nomeCasa) {
@@ -396,7 +351,7 @@ public class MenuAdmin extends TextUI {
         System.out.println("Dispositivos de '" + nomeDivisao + "':");
         this.controller.getSistema().getCasas().get(nomeCasa)
                 .getDivisaoById(nomeDivisao).getDispositivos()
-                .forEach((k, v) -> System.out.println("- " + k + " | " + v));
+                .values().forEach(d -> System.out.println("- " + d.getIdentificador()));
 
         System.out.print("ID do dispositivo (ENTER para voltar): ");
         String idDisp = this.sc.nextLine();
@@ -404,16 +359,20 @@ public class MenuAdmin extends TextUI {
 
         try {
             switch (operacao) {
-                case "ligar" -> {
-                    this.controller.ligarDispositivo(nomeCasa, nomeDivisao, idDisp);
-                    System.out.println("Dispositivo ligado.");
+                case "ligar/abrir" -> {
+                    this.controller.ligarOuAbrirDispositivo(nomeCasa, nomeDivisao, idDisp);
+                    System.out.println("Dispositivo ligado/aberto.");
                 }
-                case "desligar" -> {
-                    this.controller.desligarDispositivo(nomeCasa, nomeDivisao, idDisp);
-                    System.out.println("Dispositivo desligado.");
+                case "desligar/fechar" -> {
+                    this.controller.desligarOuFecharDispositivo(nomeCasa, nomeDivisao, idDisp);
+                    System.out.println("Dispositivo desligado/fechado.");
                 }
                 case "estado" -> System.out.println(
                         this.controller.getEstadoDispositivo(nomeCasa, nomeDivisao, idDisp));
+
+                case "info" -> System.out.println(
+                        this.controller.getInfoDispositivo(nomeCasa, nomeDivisao, idDisp));
+
                 case "remover" -> {
                     this.controller.selecionaCasa(nomeCasa);
                     this.controller.selecionaDivisao(nomeDivisao);
@@ -461,6 +420,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Cenário 'Sair de Casa' criado.");
             } catch (CasaNaoExisteException e) {
                 System.out.println("Casa não encontrada.");
+            } catch (DivisaoNaoExisteException e) {
+                System.out.println("Divisão não encontrada.");
             }
         });
         menu.setHandler(2, () -> {
@@ -470,6 +431,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Cenário 'Jantar com Amigos' criado.");
             } catch (CasaNaoExisteException e) {
                 System.out.println("Casa não encontrada.");
+            } catch (DivisaoNaoExisteException e) {
+                System.out.println("Divisão não encontrada.");
             }
         });
         menu.setHandler(3, () -> {
@@ -479,6 +442,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Cenário 'Deitar' criado.");
             } catch (CasaNaoExisteException e) {
                 System.out.println("Casa não encontrada.");
+            } catch (DivisaoNaoExisteException e) {
+                System.out.println("Divisão não encontrada.");
             }
         });
         menu.setHandler(4, () -> {
@@ -488,6 +453,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Cenário 'Acordar' criado.");
             } catch (CasaNaoExisteException e) {
                 System.out.println("Casa não encontrada.");
+            } catch (DivisaoNaoExisteException e) {
+                System.out.println("Divisão não encontrada.");
             }
         });
         menu.run();
@@ -622,8 +589,8 @@ public class MenuAdmin extends TextUI {
         Menu menu = new Menu("Escalonamentos - " + nomeCasa, new String[]{
                 "Criar Escalonamento",
                 "Listar Escalonamentos",
-                "Executar Escalonamentos",
-                "Remover Escalonamento"
+                "Remover Escalonamento",
+                "Simular Avanço de Tempo"
         }, this.sc);
 
         menu.setPreCondition(3, () -> this.controller.getEscalonamentos(nomeCasa).size() > 0);
@@ -631,8 +598,8 @@ public class MenuAdmin extends TextUI {
 
         menu.setHandler(1, () -> criarEscalonamentoAdmin(nomeCasa));
         menu.setHandler(2, () -> listarEscalonamentosAdmin(nomeCasa));
-        menu.setHandler(3, () -> executarEscalonamentosAdmin(nomeCasa));
-        menu.setHandler(4, () -> removerEscalonamentoAdmin(nomeCasa));
+        menu.setHandler(3, () -> removerEscalonamentoAdmin(nomeCasa));
+        menu.setHandler(4, () -> simularHora(nomeCasa));
         menu.run();
     }
 
@@ -689,16 +656,6 @@ public class MenuAdmin extends TextUI {
             System.out.println("- " + e.getId() + " | " + e.getHora()));
     }
 
-    private void executarEscalonamentosAdmin(String nomeCasa) {
-        try {
-            this.controller.selecionaCasa(nomeCasa);
-            this.controller.ativarTodosEscalonamentos();
-            System.out.println("Escalonamentos executados.");
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
-        }
-    }
-
     private void removerEscalonamentoAdmin(String nomeCasa) {
         listarEscalonamentosAdmin(nomeCasa);
         System.out.print("\nID do escalonamento a remover (ENTER para voltar): ");
@@ -707,6 +664,20 @@ public class MenuAdmin extends TextUI {
         try {
             this.controller.removeEscalonamento(nomeCasa, id);
             System.out.println("Escalonamento '" + id + "' removido.");
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+    }
+
+    private void simularHora(String nomeCasa) {
+        System.out.print("Hora atual (formato HH:mm): " + this.controller.getHoraAtual(nomeCasa));
+        System.out.print("\nIntroduz a hora (formato HH:mm): ");
+        String hora = this.sc.nextLine();
+        if (hora.isBlank()) return;
+        try {
+            this.controller.selecionaCasa(nomeCasa);
+            this.controller.avancarTempo(hora, nomeCasa);
+            System.out.println("Hora avançada para " + hora);
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }
@@ -747,27 +718,4 @@ public class MenuAdmin extends TextUI {
         menu.run();
     }
 
-    // ==================== FICHEIROS ====================
-
-    private void guardarEstado() {
-        System.out.print("Nome do ficheiro para guardar (ex: estado.obj): ");
-        String nomeFicheiro = this.sc.nextLine();
-        try {
-            this.controller.guardarEstado(nomeFicheiro);
-            System.out.println("Estado guardado com sucesso em '" + nomeFicheiro + "'.");
-        } catch (Exception e) {
-            System.out.println("Erro ao guardar: " + e.getMessage());
-        }
-    }
-
-    private void carregarEstado() {
-        System.out.print("Nome do ficheiro a carregar (ex: estado.obj): ");
-        String nomeFicheiro = this.sc.nextLine();
-        try {
-            this.controller.carregarEstado(nomeFicheiro);
-            System.out.println("Estado carregado com sucesso de '" + nomeFicheiro + "'.");
-        } catch (Exception e) {
-            System.out.println("Erro ao carregar: " + e.getMessage());
-        }
-    }
 }

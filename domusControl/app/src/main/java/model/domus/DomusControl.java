@@ -9,9 +9,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -119,9 +121,16 @@ public class DomusControl implements Serializable{
         this.utilizadores.put(utilizador.getUsername(), utilizador.clone());
     }
 
-    public void removerUtilizador(String username) {
+    public void removerUtilizador(String username) throws UtilizadorNaoExisteException {
+        if (!this.utilizadores.containsKey(username))
+            throw new UtilizadorNaoExisteException(username);
         this.utilizadores.remove(username);
-        this.casas.values().forEach(casa -> casa.removerUtilizadorPorUsername(username));
+    }
+
+    public void desassociarUtilizador(String username, String idCasa) throws CasaNaoExisteException, UtilizadorNaoExisteException {
+        if (!this.casas.containsKey(idCasa))
+            throw new CasaNaoExisteException(idCasa);
+        this.casas.get(idCasa).removerUtilizadorPorUsername(username);
     }
 
     public boolean existeUtilizador(String username, String password) {
@@ -189,9 +198,9 @@ public class DomusControl implements Serializable{
         return divisao.calcularConsumoDivisao();
     }
 
-    public Casa casaQueMaisConsome() {
+    public Casa casaQueMaisConsome(String idUser) {
         Comparator<Casa> comparador = (c1, c2) -> Double.compare(c1.calcularConsumoTotal(), c2.calcularConsumoTotal());
-        return this.casas.values().stream()
+        return this.getCasasDoUtilizador(idUser).stream()
             .max(comparador)
             .orElse(null);
     }
@@ -200,9 +209,9 @@ public class DomusControl implements Serializable{
         return casa.dispositivosMaisUtilizados(comparator).stream().limit(3).toList();
     }
 
-    public List<Map.Entry<Casa, Divisao>> tresDivisoesComMaisDispositivos() {
+    public List<Map.Entry<Casa, Divisao>> tresDivisoesComMaisDispositivos(String idUser) {
         List<Map.Entry<Casa, Divisao>> lista = new ArrayList<>();
-        for (Casa casa : this.casas.values()) {
+        for (Casa casa : this.getCasasDoUtilizador(idUser)) {
             lista.addAll(casa.getDivisoesComCasa());
         }
         lista.sort(Comparator.comparingInt((Map.Entry<Casa, Divisao> e) -> e.getValue().getNumDispositivos()).reversed());
@@ -260,16 +269,39 @@ public class DomusControl implements Serializable{
     public List<Escalonamento> getEscalonamentos(String idCasa) {
         return this.casas.get(idCasa).getEscalonamentos();
     }
+    
+    public Automacao getAutomacao(String idCasa, String idAutomacao) {
+        return this.casas.get(idCasa).getAutomacaoById(idAutomacao);
+    }
 
-    public List<Dispositivo> percorreDivisoesEfiltraDispositivos(String idCasa, List<String> idsDivisoes, String classe) {
-        if (idsDivisoes == null || idsDivisoes.isEmpty()) {
-            return this.casas.get(idCasa).getDivisoes().values().stream()
-                .flatMap(divisao -> divisao.getDispositivos().values().stream())
-                .filter(d -> d.getClass().getSimpleName().equalsIgnoreCase(classe))
-                .toList();
+    public Escalonamento getEscalonamento(String idCasa, String idEscalonamento) {
+        return this.casas.get(idCasa).getEscalonamentoById(idEscalonamento);
+    }
+
+    public Cenario getCenario(String idCasa, String nomeCenario) {
+        return this.casas.get(idCasa).getCenarioByNome(nomeCenario);
+    }
+
+    public List<Dispositivo> percorreDivisoesEfiltraDispositivos(String idCasa, List<String> idsDivisoes, String classe) throws CasaNaoExisteException, DivisaoNaoExisteException {
+        if (!this.casas.containsKey(idCasa)) {
+            throw new CasaNaoExisteException(idCasa);
         }
+        Casa casa = this.casas.get(idCasa);
+        if (idsDivisoes == null || idsDivisoes.isEmpty()) {
+            return casa.getDivisoes().values().stream()
+            .flatMap(divisao -> divisao.getDispositivos().values().stream())
+            .filter(d -> d.getClass().getSimpleName().equalsIgnoreCase(classe))
+            .toList();
+        }
+
+        // lança DivisaoNaoExisteException se alguma das divisões não existir
+        for (String idDivisao : idsDivisoes) {
+            if (!casa.getDivisoes().containsKey(idDivisao))
+            throw new DivisaoNaoExisteException(idDivisao);
+        }
+
         return idsDivisoes.stream()
-            .flatMap(idDivisao -> this.casas.get(idCasa).getDivisoes().get(idDivisao).getDispositivos().values().stream())
+            .flatMap(idDivisao -> casa.getDivisoes().get(idDivisao).getDispositivos().values().stream())
             .filter(d -> d.getClass().getSimpleName().equalsIgnoreCase(classe))
             .toList();
     }
@@ -313,9 +345,9 @@ public class DomusControl implements Serializable{
 
     // Necessário no top3DispositivosPorTempoLigado() e top3DispositivosPorAtivacoes()
     // que no Controller chamam casaQueMaisConsome() mas deviam percorrer TODAS as casas
-    public List<Dispositivo> tresDispositivosMaisUtilizadosGlobal(
+    public List<Dispositivo> tresDispositivosMaisUtilizadosGlobal(String idUser,
             Comparator<Dispositivo> comparator) {
-        return this.casas.values().stream()
+        return this.getCasasDoUtilizador(idUser).stream()
                 .flatMap(casa -> casa.getDivisoes().values().stream())
                 .flatMap(divisao -> divisao.getDispositivos().values().stream())
                 .sorted(comparator.reversed())
@@ -328,5 +360,45 @@ public class DomusControl implements Serializable{
             .filter(c -> c.getUtilizadores().stream()
                 .anyMatch(u -> u.getUsername().equals(idUser)))
             .toList();
+    }
+
+    public boolean utilizadorAssociadoACasas(String idUser) {
+        return this.casas.values().stream()
+            .anyMatch(c -> c.getUtilizadores().stream()
+                .anyMatch(u -> u.getUsername().equals(idUser)));
+    }
+
+    public boolean utilizadorAssociadoACasa(String idUser, String idCasa) {
+        if (idUser == null || idUser.isEmpty()) return false;
+        if (idCasa == null || idCasa.isEmpty()) return false;
+        return this.casas.get(idCasa).getUtilizadores().stream()
+            .anyMatch(u -> u.getUsername().equals(idUser));
+    }
+
+    public boolean utilizadorIsAdmin(String idUser, String idCasa) {
+        if (idUser == null || idUser.isEmpty()) return false;
+        if (idCasa == null || idCasa.isEmpty()) return false;
+        return this.casas.get(idCasa).isAdmin(idUser);
+    }
+
+    public Set<Utilizador> listarUtilizadoresCasa (String idCasa) {
+        if (idCasa == null || idCasa.isEmpty()) return new HashSet<>();
+        return new HashSet<>(this.casas.get(idCasa).getUtilizadores());
+    }
+
+    public void addAdminCasa(String idCasa, String idUser) throws CasaNaoExisteException, UtilizadorNaoExisteException {
+        if (!this.casas.containsKey(idCasa))
+            throw new CasaNaoExisteException(idCasa);
+        if (!this.utilizadores.containsKey(idUser))
+            throw new UtilizadorNaoExisteException(idUser);
+        this.casas.get(idCasa).adicionarAdmin(idUser);
+    }
+
+    public void removerAdminCasa(String idCasa, String idUser) throws CasaNaoExisteException, UtilizadorNaoExisteException {
+    if (!this.casas.containsKey(idCasa))
+        throw new CasaNaoExisteException(idCasa);
+    if (!this.utilizadores.containsKey(idUser))
+        throw new UtilizadorNaoExisteException(idUser);
+    this.casas.get(idCasa).removerAdmin(idUser);
     }
 }

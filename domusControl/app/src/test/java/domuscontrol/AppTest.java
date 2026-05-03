@@ -26,8 +26,8 @@ class AppTest {
 
     @BeforeEach
     void setUp() {
-        casa1 = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        casa2 = new Casa("casa2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        casa1 = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
+        casa2 = new Casa("casa2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
     }
 
     @Test

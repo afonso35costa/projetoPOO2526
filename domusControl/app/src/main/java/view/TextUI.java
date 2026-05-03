@@ -5,10 +5,13 @@ import java.util.Map;
 import java.util.Scanner;
 
 import controller.Controller;
+import exceptions.CasaJaExisteException;
 import exceptions.CasaNaoExisteException;
 import exceptions.CasaNaoSelecionadaException;
 import exceptions.CredenciaisInvalidasException;
 import exceptions.DivisaoNaoExisteException;
+import exceptions.SessaoNaoIniciadaException;
+import exceptions.UtilizadorNaoExisteException;
 import model.casas.Casa;
 import model.casas.Divisao;
 import model.dispositivos.Dispositivo;
@@ -27,11 +30,13 @@ public class TextUI {
         this.controller = controller;
         this.menu = new Menu("DomusControl", new String[] {
                 "Login",
-                "Registar"
+                "Registar",
+                "Carregar Estado"
         }, this.sc);
 
         this.menu.setHandler(1, this::login);
         this.menu.setHandler(2, this::registar);
+        menu.setHandler(3, this::carregarEstado);
     }
 
     public void run() {
@@ -48,14 +53,9 @@ public class TextUI {
         String pass = this.sc.nextLine();
         try {
             this.controller.loginUtilizador(user, pass);
-            boolean isAdmin = this.controller.getSistema().getUtilizadores().get(user).isAdmin();
 
             System.out.println("\nLogin efetuado com sucesso!");
-            if (isAdmin) {
-                new MenuAdmin(sc, controller).run();
-            } else {
-                menuUtilizador();
-            }
+            menuUtilizador(user);
         } catch (CredenciaisInvalidasException e) {
             System.out.println("\nCredenciais inválidas!");
         }
@@ -64,17 +64,17 @@ public class TextUI {
     //-------------------REGISTO---------------------//
 
     private void registar() {
-        System.out.print("Novo utilizador: ");
+        System.out.print("Nome: ");
+        String nome = this.sc.nextLine();
+
+        System.out.print("Username: ");
         String user = this.sc.nextLine();
 
-        System.out.print("Nova palavra-passe: ");
+        System.out.print("Palavra-passe: ");
         String pass = this.sc.nextLine();
 
-        System.out.print("É administrador? (sim/nao): ");
-        String isAdmin = this.sc.nextLine();
-
         try {
-            this.controller.criaUtilizador(user, user, isAdmin, pass);
+            this.controller.criaUtilizador(nome, user, pass);
             System.out.println("Registo feito! Pode agora fazer login.");
         } catch (Exception e) {
             System.out.println("Não foi possível registar o utilizador.");
@@ -85,17 +85,45 @@ public class TextUI {
     //------------------MENU UTILIZADOR-----------------//
     //...............MENU PRINCIPAL DO UTILIZADOR...........//
 
-    private void menuUtilizador() {
+    private void menuUtilizador(String user) {
         Menu menu = new Menu("Menu Principal", new String[]{
             "As minhas casas",
-            "Estatísticas"            
+            "Criar nova casa",
+            "Estatísticas",
+            "Guardar Estado",            
         }, this.sc);
 
         menu.setPreCondition(2, () -> this.controller.utilizadorTemCasas());
 
-        menu.setHandler(1, this::menuCasas);
-        menu.setHandler(2, this::menuEstatisticas);
+        menu.setHandler(1, () -> this.menuCasas(user));
+        menu.setHandler(2, () -> this.criarCasa(user));
+        menu.setHandler(3, this::menuEstatisticas);
+        menu.setHandler(4, this::guardarEstado);
         menu.run(); //quando sai, volta ao menu principal
+    }
+
+    // ==================== FICHEIROS ====================
+
+    private void guardarEstado() {
+        System.out.print("Nome do ficheiro para guardar (ex: estado.obj): ");
+        String nomeFicheiro = this.sc.nextLine();
+        try {
+            this.controller.guardarEstado(nomeFicheiro);
+            System.out.println("Estado guardado com sucesso em '" + nomeFicheiro + "'.");
+        } catch (Exception e) {
+            System.out.println("Erro ao guardar: " + e.getMessage());
+        }
+    }
+
+    private void carregarEstado() {
+        System.out.print("Nome do ficheiro a carregar (ex: estado.obj): ");
+        String nomeFicheiro = this.sc.nextLine();
+        try {
+            this.controller.carregarEstado(nomeFicheiro);
+            System.out.println("Estado carregado com sucesso de '" + nomeFicheiro + "'.");
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar: " + e.getMessage());
+        }
     }
 
 
@@ -157,9 +185,9 @@ public class TextUI {
 
     //...................CASAS...................//
 
-    private void menuCasas() {
+    private void menuCasas(String idUser) {
         System.out.println("\nAs suas casas: ");
-        this.controller.getSistema().getCasas().keySet().forEach(System.out::println);
+        this.controller.getCasasDoUtilizador().forEach(c -> System.out.println("- " + c.getId()));
 
         System.out.println("Nome da casa a selecionar: ");
         String nomeCasa = sc.nextLine();
@@ -171,7 +199,17 @@ public class TextUI {
             System.out.println("Casa não encontrada.");
             return;
         }
-        menuCasa(nomeCasa);
+        try {
+            if (this.controller.souAdminDaCasa(nomeCasa, idUser)) {
+                MenuAdmin menuAdmin = new MenuAdmin(this.sc, this.controller, nomeCasa);
+                menuAdmin.run();
+            } else {
+                System.out.println("Acedendo à casa '" + nomeCasa + "'...");
+                menuCasa(nomeCasa);
+            }
+        } catch (CasaNaoExisteException e) {
+            System.out.println("Erro: casa não selecionada.");
+        }
     }
 
     private void menuCasa(String nomeCasa) {
@@ -179,7 +217,7 @@ public class TextUI {
             "Ver divisões",
             "Gerir Cenários",
             "Gerir Automações",
-            "Gerir Escalonamentos"
+            "Gerir Escalonamentos",
         }, this.sc);
 
         menu.setHandler(1, () -> menuDivisoes(nomeCasa));
@@ -188,7 +226,31 @@ public class TextUI {
         menu.setHandler(4, () -> menuEscalonamentos(nomeCasa));
         menu.run();
     }
-    
+
+    private void criarCasa(String idUser) {
+        System.out.print("Nome/ID da casa: ");
+        String nome = this.sc.nextLine();
+        System.out.print("Morada: ");
+        String morada = this.sc.nextLine();
+        try {
+            this.controller.criaCasa(nome, morada);
+            System.out.println("Casa '" + nome + "' criada.");
+            // pergunta se quer associar um utilizador logo
+            System.out.print("Associar utilizador à casa? (s/n): ");
+            String resp = this.sc.nextLine();
+            if (resp.equalsIgnoreCase("s")) {
+                this.controller.associarUtilizadorACasa(nome, idUser);
+            }
+        } catch (SessaoNaoIniciadaException e) {
+            System.out.println("Erro: sessão não iniciada.");
+        } catch (CasaJaExisteException e) {
+            System.out.println("Erro: casa já existe.");
+        } catch (CasaNaoExisteException e) {
+            System.out.println("Erro: casa não encontrada.");
+        } catch (UtilizadorNaoExisteException e) {
+            System.out.println("Erro: utilizador não encontrado.");
+        }
+    }
 
     //...............DIVISÕES..................//
 
@@ -240,7 +302,8 @@ public class TextUI {
         Menu menu = new Menu("Dispositivo " + idDisp, new String[]{
                 "Ligar",
                 "Desligar",
-                "Ver estado"
+                "Ver estado",
+                "Consultar Info Dispositivo"
         }, this.sc);
 
         menu.setPreCondition(1, () ->
@@ -251,12 +314,13 @@ public class TextUI {
         menu.setHandler(1, () -> ligarDispositivo(nomeCasa, nomeDivisao, idDisp));
         menu.setHandler(2, () -> desligarDispositivo(nomeCasa, nomeDivisao, idDisp));
         menu.setHandler(3, () -> verEstadoDispositivo(nomeCasa, nomeDivisao, idDisp));
+        menu.setHandler(4, () -> consultarInfoDispositivo(nomeCasa, nomeDivisao, idDisp));
         menu.run();
     }
 
     private void ligarDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
         try {
-            this.controller.ligarDispositivo(nomeCasa, nomeDivisao, idDisp);
+            this.controller.ligarOuAbrirDispositivo(nomeCasa, nomeDivisao, idDisp);
             System.out.println("Dispositivo ligado.");
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
@@ -265,7 +329,7 @@ public class TextUI {
 
     private void desligarDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
         try {
-            this.controller.desligarDispositivo(nomeCasa, nomeDivisao, idDisp);
+            this.controller.desligarOuFecharDispositivo(nomeCasa, nomeDivisao, idDisp);
             System.out.println("Dispositivo desligado.");
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
@@ -275,6 +339,11 @@ public class TextUI {
     private void verEstadoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
         System.out.println("\nEstado atual:");
         System.out.println(this.controller.getEstadoDispositivo(nomeCasa, nomeDivisao, idDisp));
+    }
+
+    private void consultarInfoDispositivo(String nomeCasa, String nomeDivisao, String idDisp) {
+        System.out.println("\nInformação do dispositivo:");
+        System.out.println(this.controller.getInfoDispositivo(nomeCasa, nomeDivisao, idDisp));
     }
 
     private void verConsumoDivisao(String nomeCasa, String nomeDivisao) {
@@ -346,12 +415,12 @@ public class TextUI {
     private void menuEscalonamentos(String nomeCasa) {
         Menu menu = new Menu("Escalonamentos de " + nomeCasa, new String[]{
             "Listar escalonamentos",
-            "Executar escalonamentos"
+            "Simular avanço de tempo"
         }, this.sc);
 
         menu.setPreCondition(2, () -> this.controller.getEscalonamentos(nomeCasa).size() > 0);
         menu.setHandler(1, () -> listarEscalonamentos(nomeCasa));
-        menu.setHandler(2, () -> executarEscalonamentos(nomeCasa));
+        menu.setHandler(2, () -> simularHora(nomeCasa));
 
         menu.run();
     }
@@ -362,11 +431,19 @@ public class TextUI {
         System.out.println("[lista de escalonamentos]");
     }
 
-    private void executarEscalonamentos(String nomeCasa) {
-        System.out.println("Escalonamentos de " + nomeCasa + " executados.");
+    private void simularHora(String nomeCasa) {
+        System.out.print("Hora atual (formato HH:mm): " + this.controller.getHoraAtual(nomeCasa));
+        System.out.print("\nIntroduz a hora (formato HH:mm): ");
+        String hora = this.sc.nextLine();
+        if (hora.isBlank()) return;
+        try {
+            this.controller.selecionaCasa(nomeCasa);
+            this.controller.avancarTempo(hora, nomeCasa);
+            System.out.println("Hora avançada para " + hora);
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
     }
-
-    
     
 }
 

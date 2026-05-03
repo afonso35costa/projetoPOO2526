@@ -13,6 +13,7 @@ public class PortaoGaragem extends Dispositivo implements DispositivoQueAbre {
 
     public PortaoGaragem() {
         super();
+        super.setEstado(Estado.FECHADO);
         this.abertura = 0;
     }
 

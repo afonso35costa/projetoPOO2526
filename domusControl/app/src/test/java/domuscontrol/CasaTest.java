@@ -26,6 +26,8 @@ import model.dispositivos.Lampada;
 import model.dispositivos.SensorChuva;
 import model.dispositivos.Dispositivo.Estado;
 import model.utilizadores.Utilizador;
+import utils.SerializableConsumer;
+import utils.SerializablePredicate;
 
 class CasaTest {
 
@@ -40,11 +42,11 @@ class CasaTest {
 
     @BeforeEach
     void setUp() {
-        casa = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        outraCasa = new Casa("casa2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        casa = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
+        outraCasa = new Casa("casa2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
         divisao = new Divisao("div1", new HashMap<>());
         lampada = new Lampada("lamp1", "Philips", "Hue", 0.9, Estado.LIGADO, 120, 10, 75);
-        utilizador = new Utilizador("user1", "Nome", false, "pass");
+        utilizador = new Utilizador("user1", "Nome", "pass");
         cenario = new Cenario("cenario1", false, new ArrayList<>(), new ArrayList<>());
         SensorChuva sensor = new SensorChuva("sensor1", "Marca", "Modelo", 0.5, Estado.LIGADO, 0, 0, 1.5, true);
         automacao = new AutomacaoChuva(sensor, new ArrayList<>());
@@ -114,7 +116,7 @@ class CasaTest {
 
     @Test
     void toStringEEqualsEHashCode() {
-        Casa casaIgual = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Casa casaIgual = new Casa("casa1", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
 
         assertNotNull(casa.toString());
         assertEquals(casa, casaIgual);
@@ -243,8 +245,8 @@ class CasaTest {
 
         Escalonamento esc = new Escalonamento("esc2", LocalTime.of(11, 0), 
             new ArrayList<>(List.of(lampada)),  // ← lampada aqui
-            d -> true, 
-            d -> d.setEstado(Estado.DESLIGADO)
+            (SerializablePredicate<Dispositivo>) d -> true, 
+            (SerializableConsumer<Dispositivo>) d -> d.setEstado(Estado.DESLIGADO)
         );
 
         casa.adicionarAutomacao(auto);

@@ -20,6 +20,7 @@ import exceptions.CasaNaoExisteException;
 import exceptions.DispositivoNaoExisteException;
 import exceptions.DivisaoNaoExisteException;
 import exceptions.UtilizadorJaExisteException;
+import exceptions.UtilizadorNaoExisteException;
 import model.casas.Casa;
 import model.casas.Divisao;
 import model.casas.Cenario;
@@ -46,10 +47,10 @@ class DomusControlTest {
     @BeforeEach
     public void setUp() {
         domusControl = new DomusControl();
-        utilizador = new Utilizador("user1", "nome1", true, "password");
-        utilizador2 = new Utilizador("user2", "nome2", false, "pass2");
-        casa = new Casa("casaId", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        casa2 = new Casa("casaId2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        utilizador = new Utilizador("user1", "nome1", "password");
+        utilizador2 = new Utilizador("user2", "nome2", "pass2");
+        casa = new Casa("casaId", "morada1", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
+        casa2 = new Casa("casaId2", "morada2", new HashMap<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
         divisao = new Divisao("divisaoId", new HashMap<>());
         dispositivo = new Lampada("lampId", "Philips", "Hue", 0.9, Estado.DESLIGADO, 0, 5, 50);
     }
@@ -248,7 +249,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testRemoverUtilizador() throws UtilizadorJaExisteException {
+    public void testRemoverUtilizador() throws UtilizadorJaExisteException, CasaNaoExisteException, UtilizadorNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.removerUtilizador(utilizador.getUsername());
         
@@ -374,14 +375,14 @@ class DomusControlTest {
     public void testCasaQueMaisConsome() throws UtilizadorJaExisteException, CasaJaExisteException, CasaNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
-        
-        Casa resultados = domusControl.casaQueMaisConsome();
+
+        Casa resultados = domusControl.casaQueMaisConsome(utilizador.getUsername());
         assertNotNull(resultados);
     }
 
     @Test
     public void testCasaQueMaisConsomeVazio() {
-        Casa resultado = domusControl.casaQueMaisConsome();
+        Casa resultado = domusControl.casaQueMaisConsome("");
         assertNull(resultado);
     }
 
@@ -410,7 +411,7 @@ class DomusControlTest {
         domusControl.adicionarDivisao(casa.getId(), divisao);
         domusControl.adicionarDispositivo(casa.getId(), divisao.getId(), dispositivo);
         
-        List<Map.Entry<Casa, Divisao>> resultado = domusControl.tresDivisoesComMaisDispositivos();
+        List<Map.Entry<Casa, Divisao>> resultado = domusControl.tresDivisoesComMaisDispositivos(utilizador.getUsername());
         
         assertNotNull(resultado);
     }
@@ -565,7 +566,7 @@ class DomusControlTest {
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
         String filename = "test_domus.dat";
-        domusControl.writeToFile(filename);
+        domusControl.guardarEstado(filename);
         
         File file = new File(filename);
         assertTrue(file.exists());
@@ -578,9 +579,9 @@ class DomusControlTest {
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
         String filename = "test_domus_read.dat";
-        domusControl.writeToFile(filename);
+        domusControl.guardarEstado(filename);
         
-        DomusControl domusLido = domusControl.readFromFile(filename);
+        DomusControl domusLido = domusControl.carregarEstado(filename);
         
         assertNotNull(domusLido);
         assertEquals(domusControl.getCasas().size(), domusLido.getCasas().size());

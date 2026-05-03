@@ -24,12 +24,13 @@ public class Casa implements Serializable{
     private String morada;
     private Map<String, Divisao> divisoes;
     private Set<Utilizador> utilizadores;
+    private Set<String> admins;
     private List<Cenario> cenarios;
     private List<Automacao> automacoes;
     private List<Escalonamento> escalonamentos;
 
     public Casa(String id, String morada, Map<String, Divisao> divisoes, Set<Utilizador> utilizadores,
-            List<Cenario> cenarios, List<Automacao> automacoes, List<Escalonamento> escalonamentos) {
+            List<Cenario> cenarios, List<Automacao> automacoes, List<Escalonamento> escalonamentos, Set<String> admins) {
         this.id = id;
         this.morada = morada;
         this.divisoes = divisoes.entrySet().stream()
@@ -40,6 +41,7 @@ public class Casa implements Serializable{
             .collect(Collectors.toCollection(ArrayList::new));
         this.automacoes = new ArrayList<>(automacoes);
         this.escalonamentos = new ArrayList<>(escalonamentos);
+        this.admins = new HashSet<>(admins);
     }
 
     public Casa() {
@@ -50,6 +52,7 @@ public class Casa implements Serializable{
         this.cenarios = new ArrayList<>();
         this.automacoes = new ArrayList<>();
         this.escalonamentos = new ArrayList<>();
+        this.admins = new HashSet<>();
     }
 
     public Casa(Casa outraCasa) {
@@ -63,6 +66,7 @@ public class Casa implements Serializable{
             .collect(Collectors.toCollection(ArrayList::new));
         this.automacoes = new ArrayList<>(outraCasa.automacoes);
         this.escalonamentos = new ArrayList<>(outraCasa.escalonamentos);
+        this.admins = new HashSet<>(outraCasa.admins);
     }
 
     public String getId() {
@@ -94,6 +98,10 @@ public class Casa implements Serializable{
 
     public List<Escalonamento> getEscalonamentos() {
         return new ArrayList<>(this.escalonamentos);
+    }
+
+    public Set<String> getAdmins() {
+        return new HashSet<>(this.admins);
     }
 
     public void setId(String id) {
@@ -129,6 +137,10 @@ public class Casa implements Serializable{
         this.escalonamentos = new ArrayList<>(escalonamentos);
     }
 
+    public void setAdmins(Set<String> admins) {
+        this.admins = new HashSet<>(admins);
+    }
+
     public Casa clone() {
         return new Casa(this);
     }
@@ -143,6 +155,7 @@ public class Casa implements Serializable{
                 ", cenarios=" + cenarios +
                 ", automacoes=" + automacoes +
                 ", escalonamentos=" + escalonamentos +
+                ", admins=" + admins +
                 '}';
     }
 
@@ -157,12 +170,13 @@ public class Casa implements Serializable{
         if (!utilizadores.equals(casa.utilizadores)) return false;
         if (!cenarios.equals(casa.cenarios)) return false;
         if (!escalonamentos.equals(casa.escalonamentos)) return false;
+        if (!admins.equals(casa.admins)) return false;
         return automacoes.equals(casa.automacoes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, morada, divisoes, utilizadores, cenarios, automacoes, escalonamentos);
+        return Objects.hash(id, morada, divisoes, utilizadores, cenarios, automacoes, escalonamentos, admins);
     }
 
     public double calcularConsumoTotal() {
@@ -176,7 +190,7 @@ public class Casa implements Serializable{
     }
 
     public void adicionarCenario(Cenario cenario) {
-        this.cenarios.add(cenario);
+        this.cenarios.add(cenario.clone());
     }
 
     public void adicionarAutomacao(Automacao automacao) {
@@ -189,6 +203,10 @@ public class Casa implements Serializable{
 
     public void adicionarEscalonamento(Escalonamento escalonamento) {
         this.escalonamentos.add(escalonamento);
+    }
+
+    public void adicionarAdmin(String username) {
+        this.admins.add(username);
     }
 
     public void removerUtilizador(Utilizador utilizador) {
@@ -211,6 +229,10 @@ public class Casa implements Serializable{
         this.escalonamentos.remove(escalonamento);
     }
 
+    public void removerAdmin(String username) {
+        this.admins.remove(username);
+    }
+
     public List<Dispositivo> dispositivosMaisUtilizados(Comparator<Dispositivo> comparator) {
         List<Dispositivo> lista = new ArrayList<>();
         for (Divisao divisao : divisoes.values()) {
@@ -230,6 +252,27 @@ public class Casa implements Serializable{
 
     public Divisao getDivisaoById(String id) {
         return this.divisoes.get(id);
+    }
+
+    public Automacao getAutomacaoById(String id) {
+        return this.automacoes.stream()
+            .filter(a -> a.getClass().getSimpleName().equalsIgnoreCase(id))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public Escalonamento getEscalonamentoById(String id) {
+        return this.escalonamentos.stream()
+            .filter(e -> e.getId().equalsIgnoreCase(id))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public Cenario getCenarioByNome(String nome) {
+        return this.cenarios.stream()
+            .filter(c -> c.getNome().equalsIgnoreCase(nome))
+            .findFirst()
+            .orElse(null);
     }
 
     public void removerAutomacaoPorId(String idAutomacao) {
@@ -278,5 +321,9 @@ public class Casa implements Serializable{
             .filter(a -> a.verificar())
             .map(Automacao::clone)
             .collect(Collectors.toList());
+    }
+
+    public boolean isAdmin(String username) {
+        return this.admins.contains(username);
     }
 }

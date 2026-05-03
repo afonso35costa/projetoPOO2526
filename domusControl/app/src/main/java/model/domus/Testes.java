@@ -19,18 +19,21 @@ public class Testes {
 
         try {
             // ===== UTILIZADORES =====
-            Utilizador admin = new Utilizador("admin", "Administrador", true, "admin123");
-            Utilizador joao = new Utilizador("joao", "João Silva", false, "joao123");
-            Utilizador maria = new Utilizador("maria", "Maria Santos", false, "maria123");
+            Utilizador admin = new Utilizador("admin", "Administrador", "admin123");
+            Utilizador joao = new Utilizador("joao", "João Silva", "joao123");
+            Utilizador maria = new Utilizador("maria", "Maria Santos", "maria123");
+            Utilizador bot = new Utilizador("bot", "Bot de Testes", "bot123");
 
             sistema.adicionarUtilizador(admin);
             sistema.adicionarUtilizador(joao);
             sistema.adicionarUtilizador(maria);
+            sistema.adicionarUtilizador(bot);
 
             // ===== CASA 1 — Casa do João =====
             Casa casa1 = new Casa("casa_joao", "Rua das Flores, 10",
                     new HashMap<>(), new HashSet<>(),
-                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
+
 
             // Divisões da casa 1
             Divisao sala = new Divisao("sala", new HashMap<>());
@@ -105,6 +108,8 @@ public class Testes {
             casa1.adicionarDivisao(garagem);
 
             sistema.adicionarCasa(casa1, "joao");
+            sistema.associarUtilizadorACasa(casa1.getId(), "admin");
+            sistema.addAdminCasa(casa1.getId(), "admin");
 
             // Associa maria à casa do joão também
             sistema.associarUtilizadorACasa("casa_joao", "maria");
@@ -112,7 +117,7 @@ public class Testes {
             // ===== CASA 2 — Casa da Maria =====
             Casa casa2 = new Casa("casa_maria", "Av. da República, 45",
                     new HashMap<>(), new HashSet<>(),
-                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashSet<>());
 
             Divisao salaMaria = new Divisao("sala", new HashMap<>());
             Divisao quartoPrincipal = new Divisao("quarto_principal", new HashMap<>());
@@ -140,6 +145,8 @@ public class Testes {
             casa2.adicionarDivisao(quartoPrincipal);
 
             sistema.adicionarCasa(casa2, "maria");
+            sistema.associarUtilizadorACasa(casa2.getId(), "admin");
+            sistema.addAdminCasa(casa2.getId(), "admin");
 
             // ===== CENÁRIOS — Casa do João =====
             // criados via controller seria o ideal mas aqui fazemos direto

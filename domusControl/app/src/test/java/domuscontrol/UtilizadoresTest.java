@@ -13,8 +13,8 @@ public class UtilizadoresTest {
 
     @BeforeEach
     public void setUp() {
-        utilizador = new Utilizador("joao", "João Silva", true, "senha123");
-        utilizador2 = new Utilizador("maria", "Maria Santos", false, "senha456");
+        utilizador = new Utilizador("joao", "João Silva", "senha123");
+        utilizador2 = new Utilizador("maria", "Maria Santos", "senha456");
     }
 
     @Test
@@ -23,7 +23,6 @@ public class UtilizadoresTest {
         assertAll(
             () -> assertEquals("", u.getUsername()),
             () -> assertEquals("", u.getNome()),
-            () -> assertFalse(u.isAdmin()),
             () -> assertEquals("", u.getPassword())
         );
     }
@@ -33,7 +32,6 @@ public class UtilizadoresTest {
         assertAll(
             () -> assertEquals("joao", utilizador.getUsername()),
             () -> assertEquals("João Silva", utilizador.getNome()),
-            () -> assertTrue(utilizador.isAdmin()),
             () -> assertEquals("senha123", utilizador.getPassword())
         );
     }
@@ -44,7 +42,6 @@ public class UtilizadoresTest {
         assertAll(
             () -> assertEquals(utilizador.getUsername(), copia.getUsername()),
             () -> assertEquals(utilizador.getNome(), copia.getNome()),
-            () -> assertEquals(utilizador.isAdmin(), copia.isAdmin()),
             () -> assertEquals(utilizador.getPassword(), copia.getPassword()),
             () -> assertNotSame(utilizador, copia)
         );
@@ -55,7 +52,6 @@ public class UtilizadoresTest {
         assertAll(
             () -> assertEquals("joao", utilizador.getUsername()),
             () -> assertEquals("João Silva", utilizador.getNome()),
-            () -> assertTrue(utilizador.isAdmin()),
             () -> assertEquals("senha123", utilizador.getPassword())
         );
     }
@@ -75,16 +71,6 @@ public class UtilizadoresTest {
     }
 
     @Test
-    public void testSetAdmin() {
-        assertTrue(utilizador.isAdmin());
-        utilizador.setAdmin(false);
-        assertFalse(utilizador.isAdmin());
-        
-        utilizador.setAdmin(true);
-        assertTrue(utilizador.isAdmin());
-    }
-
-    @Test
     public void testSetPassword() {
         utilizador.setPassword("novaSenha");
         assertEquals("novaSenha", utilizador.getPassword());
@@ -97,7 +83,6 @@ public class UtilizadoresTest {
         assertAll(
             () -> assertEquals(utilizador.getUsername(), clon.getUsername()),
             () -> assertEquals(utilizador.getNome(), clon.getNome()),
-            () -> assertEquals(utilizador.isAdmin(), clon.isAdmin()),
             () -> assertEquals(utilizador.getPassword(), clon.getPassword()),
             () -> assertNotSame(utilizador, clon)
         );
@@ -105,7 +90,7 @@ public class UtilizadoresTest {
 
     @Test
     public void testToString() {
-        String expected = "Utilizador{username='joao', nome='João Silva', isAdmin=true}";
+        String expected = "Utilizador{username='joao', nome='João Silva', password='senha123'}";
         assertEquals(expected, utilizador.toString());
     }
 
@@ -116,7 +101,7 @@ public class UtilizadoresTest {
 
     @Test
     public void testEqualsComObjetoIgual() {
-        Utilizador outro = new Utilizador("joao", "João Silva", true, "senha123");
+        Utilizador outro = new Utilizador("joao", "João Silva", "senha123");
         assertEquals(utilizador, outro);
         assertEquals(outro, utilizador);
     }
@@ -139,31 +124,25 @@ public class UtilizadoresTest {
 
     @Test
     public void testEqualsApenasUsernameIgual() {
-        Utilizador outro = new Utilizador("joao", "Outro Nome", true, "senha123");
+        Utilizador outro = new Utilizador("joao", "Outro Nome", "senha123");
         assertNotEquals(utilizador, outro);
     }
 
     @Test
     public void testEqualsApenasNomeIgual() {
-        Utilizador outro = new Utilizador("outro", "João Silva", true, "senha123");
-        assertNotEquals(utilizador, outro);
-    }
-
-    @Test
-    public void testEqualsApenasAdminIgual() {
-        Utilizador outro = new Utilizador("joao", "João Silva", false, "senha123");
+        Utilizador outro = new Utilizador("outro", "João Silva", "senha123");
         assertNotEquals(utilizador, outro);
     }
 
     @Test
     public void testEqualsApenasPasswordIgual() {
-        Utilizador outro = new Utilizador("joao", "João Silva", true, "outraSenha");
+        Utilizador outro = new Utilizador("joao", "João Silva", "outraSenha");
         assertNotEquals(utilizador, outro);
     }
 
     @Test
     public void testHashCodeIguaisParaObjetosIguais() {
-        Utilizador outro = new Utilizador("joao", "João Silva", true, "senha123");
+        Utilizador outro = new Utilizador("joao", "João Silva", "senha123");
         assertEquals(utilizador.hashCode(), outro.hashCode());
     }
 

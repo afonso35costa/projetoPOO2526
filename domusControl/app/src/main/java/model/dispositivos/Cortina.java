@@ -13,6 +13,7 @@ public class Cortina extends Dispositivo{
 
     public Cortina() {
         super();
+        super.setEstado(Estado.FECHADO);
         this.abertura = 0;
     }
 
