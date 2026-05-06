@@ -153,8 +153,14 @@ public class MenuAdmin extends TextUI {
         String username = this.sc.nextLine();
         if (username.isBlank()) return;
         try {
+            System.out.println("Quer que esse utilizador seja admin da casa? (s/n): ");
+            String resp = this.sc.nextLine();
             this.controller.associarUtilizadorACasa(nomeCasa, username);
-            System.out.println("Utilizador '" + username + "' associado à casa '" + nomeCasa + "'.");
+            if (resp.equalsIgnoreCase("s")) {
+                this.controller.addAdminCasa(nomeCasa, username);
+                System.out.println("Utilizador '" + username + "' adicionado como admin da casa '" + nomeCasa + "'.");
+            }
+            else System.out.println("Utilizador '" + username + "' associado à casa '" + nomeCasa + "'.");
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }
@@ -677,7 +683,6 @@ public class MenuAdmin extends TextUI {
         try {
             this.controller.selecionaCasa(nomeCasa);
             this.controller.avancarTempo(hora, nomeCasa);
-            System.out.println("Hora avançada para " + hora);
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }

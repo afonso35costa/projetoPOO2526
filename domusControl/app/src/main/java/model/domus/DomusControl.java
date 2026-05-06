@@ -401,4 +401,24 @@ public class DomusControl implements Serializable{
         throw new UtilizadorNaoExisteException(idUser);
     this.casas.get(idCasa).removerAdmin(idUser);
     }
+
+    public boolean casaTemDivisoes(String idCasa) {
+        if (idCasa == null || idCasa.isEmpty()) return false;
+        return !this.casas.get(idCasa).casaTemDivisoes();
+    }
+
+    public boolean casaTemCenarios(String idCasa) {
+        if (idCasa == null || idCasa.isEmpty()) return false;
+        return !this.casas.get(idCasa).casaTemCenarios();
+    }
+
+    public boolean casaTemAutomacoes(String idCasa) {
+        if (idCasa == null || idCasa.isEmpty()) return false;
+        return !this.casas.get(idCasa).casaTemAutomacoes();
+    }
+
+    public boolean casaTemEscalonamentos(String idCasa) {
+        if (idCasa == null || idCasa.isEmpty()) return false;
+        return !this.casas.get(idCasa).casaTemEscalonamentos();
+    }
 }

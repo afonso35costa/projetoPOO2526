@@ -93,7 +93,7 @@ public class TextUI {
             "Guardar Estado",            
         }, this.sc);
 
-        menu.setPreCondition(2, () -> this.controller.utilizadorTemCasas());
+        menu.setPreCondition(1, () -> this.controller.utilizadorTemCasas());
 
         menu.setHandler(1, () -> this.menuCasas(user));
         menu.setHandler(2, () -> this.criarCasa(user));
@@ -189,7 +189,7 @@ public class TextUI {
         System.out.println("\nAs suas casas: ");
         this.controller.getCasasDoUtilizador().forEach(c -> System.out.println("- " + c.getId()));
 
-        System.out.println("Nome da casa a selecionar: ");
+        System.out.println("Nome da casa a selecionar: (Enter para voltar)");
         String nomeCasa = sc.nextLine();
         if (nomeCasa.isEmpty()) return;
 
@@ -220,11 +220,34 @@ public class TextUI {
             "Gerir Escalonamentos",
         }, this.sc);
 
+        menu.setPreCondition(1, () -> this.controller.casaTemDivisoes(nomeCasa));
+        menu.setPreCondition(2, () -> this.controller.casaTemCenarios(nomeCasa));
+        menu.setPreCondition(3, () -> this.controller.casaTemAutomacoes(nomeCasa));
+        menu.setPreCondition(4, () -> this.controller.casaTemEscalonamentos(nomeCasa));
+
         menu.setHandler(1, () -> menuDivisoes(nomeCasa));
         menu.setHandler(2, () -> menuCenarios(nomeCasa));
         menu.setHandler(3, () -> menuAutomacoes(nomeCasa));
         menu.setHandler(4, () -> menuEscalonamentos(nomeCasa));
         menu.run();
+    }
+
+    private void associarUtilizadorACasa(String nomeCasa) {
+        System.out.print("\nUsername a associar (ENTER para voltar): ");
+        String username = this.sc.nextLine();
+        if (username.isBlank()) return;
+        try {
+            System.out.println("Quer que esse utilizador seja admin da casa? (s/n): ");
+            String resp = this.sc.nextLine();
+            this.controller.associarUtilizadorACasa(nomeCasa, username);
+            if (resp.equalsIgnoreCase("s")) {
+                this.controller.addAdminCasa(nomeCasa, username);
+                System.out.println("Utilizador '" + username + "' adicionado como admin da casa '" + nomeCasa + "'.");
+            }
+            else System.out.println("Utilizador '" + username + "' associado à casa '" + nomeCasa + "'.");
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
     }
 
     private void criarCasa(String idUser) {
@@ -235,11 +258,13 @@ public class TextUI {
         try {
             this.controller.criaCasa(nome, morada);
             System.out.println("Casa '" + nome + "' criada.");
+            this.controller.associarUtilizadorACasa(nome, idUser);
+            this.controller.addAdminCasa(nome, idUser);
             // pergunta se quer associar um utilizador logo
             System.out.print("Associar utilizador à casa? (s/n): ");
             String resp = this.sc.nextLine();
             if (resp.equalsIgnoreCase("s")) {
-                this.controller.associarUtilizadorACasa(nome, idUser);
+                associarUtilizadorACasa(nome);
             }
         } catch (SessaoNaoIniciadaException e) {
             System.out.println("Erro: sessão não iniciada.");
@@ -258,9 +283,9 @@ public class TextUI {
         System.out.println(" Divisões de " + nomeCasa + "");
         this.controller.getSistema().getCasas().get(nomeCasa).getDivisoes().keySet().forEach(System.out::println);
 
-        System.out.print("Nome da divisão a selecionar: ");
+        System.out.print("Nome da divisão a selecionar: (Enter para voltar) ");
         String nomeDivisao = sc.nextLine();
-        if (nomeDivisao.isEmpty()) return;
+        if (nomeDivisao.isBlank()) return;
 
         try {
             this.controller.selecionaDivisao(nomeDivisao);
@@ -439,7 +464,6 @@ public class TextUI {
         try {
             this.controller.selecionaCasa(nomeCasa);
             this.controller.avancarTempo(hora, nomeCasa);
-            System.out.println("Hora avançada para " + hora);
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }

@@ -120,6 +120,7 @@ public class Controller {
         int hora = Integer.parseInt(partes[0]);
         int minuto = Integer.parseInt(partes[1]);
         this.tempoAtual = this.tempoAtual.withHour(hora).withMinute(minuto);
+        System.out.println("Hora avançada para " + hora + ":" + minuto);
         this.sistema.executarEscalonamentos(idCasa,
             e -> e.verificaHora(this.tempoAtual));
     }
@@ -592,4 +593,21 @@ public class Controller {
         if (!this.sistema.casaExiste(nomeCasa)) throw new DivisaoNaoExisteException(nomeDivisao);
         return this.sistema.divisaoExiste(nomeCasa, nomeDivisao);
     }
+
+    public boolean casaTemDivisoes(String nomeCasa) {
+        return this.sistema.getCasas().get(nomeCasa).casaTemDivisoes();
+    }
+
+    public boolean casaTemAutomacoes(String nomeCasa) {
+        return this.sistema.getCasas().get(nomeCasa).casaTemAutomacoes();
+    }
+
+     public boolean casaTemCenarios(String nomeCasa) {
+        return this.sistema.getCasas().get(nomeCasa).casaTemCenarios();
+    }
+
+     public boolean casaTemEscalonamentos(String nomeCasa) {
+        return this.sistema.getCasas().get(nomeCasa).casaTemEscalonamentos();
+    }
+
 }

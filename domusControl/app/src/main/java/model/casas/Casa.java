@@ -326,4 +326,20 @@ public class Casa implements Serializable{
     public boolean isAdmin(String username) {
         return this.admins.contains(username);
     }
+
+    public boolean casaTemDivisoes() {
+        return !this.divisoes.isEmpty();
+    }
+
+     public boolean casaTemCenarios() {
+        return !this.cenarios.isEmpty();
+    }
+
+     public boolean casaTemAutomacoes() {
+        return !this.automacoes.isEmpty();
+    }
+
+     public boolean casaTemEscalonamentos() {
+        return !this.escalonamentos.isEmpty();
+    }
 }
