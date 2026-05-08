@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -190,7 +191,7 @@ public class Casa implements Serializable{
     }
 
     public void adicionarCenario(Cenario cenario) {
-        this.cenarios.add(cenario.clone());
+        this.cenarios.add(cenario);
     }
 
     public void adicionarAutomacao(Automacao automacao) {
@@ -198,7 +199,7 @@ public class Casa implements Serializable{
     }
 
     public void adicionarDivisao(Divisao divisao) {
-        this.divisoes.put(divisao.getId(), divisao.clone());
+        this.divisoes.put(divisao.getId(), divisao);
     }
 
     public void adicionarEscalonamento(Escalonamento escalonamento) {
@@ -290,7 +291,7 @@ public class Casa implements Serializable{
     public void ativarCenarioPorFiltro(Predicate<Cenario> filtro) {
         this.cenarios.stream()
             .filter(filtro)
-            .forEach(c -> { c.setAtivo(true); c.executar(); });
+            .forEach(c -> { c.setAtivo(true); c.executar(this); });
     }
 
     public void executarAutomacoesPorFiltro(Predicate<Automacao> filtro) {
@@ -302,7 +303,7 @@ public class Casa implements Serializable{
     public void executarEscalonamentosPorFiltro(Predicate<Escalonamento> filtro) {
         this.escalonamentos.stream()
             .filter(filtro)
-            .forEach(Escalonamento::executar);
+            .forEach(e -> e.executar(this));
     }
 
     public void removerUtilizadorPorUsername(String username) {
@@ -341,5 +342,16 @@ public class Casa implements Serializable{
 
      public boolean casaTemEscalonamentos() {
         return !this.escalonamentos.isEmpty();
+    }
+
+    public void alteraDispositivo(String idDivisao, String idDispositivo, Consumer<Dispositivo> acao) {
+        Divisao divisao = this.divisoes.get(idDivisao);
+        if (divisao != null) {
+            divisao.alteraDispositivo(idDispositivo, acao);
+        }
+    }
+
+    public void atuarSobreDispositivos(List<String> ids, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+        this.divisoes.values().forEach(d -> d.atuarSobreDispositivos(ids, condicao, acao));
     }
 }

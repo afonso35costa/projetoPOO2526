@@ -152,77 +152,58 @@ public class Testes {
             // criados via controller seria o ideal mas aqui fazemos direto
 
             // Cenário Sair de Casa
-            List<Dispositivo> dispSair = new ArrayList<>();
-            dispSair.add(lampSala); dispSair.add(lampCorSala);
-            dispSair.add(lampCozinha); dispSair.add(lampQuarto);
-            dispSair.add(cortinaSala); dispSair.add(cortinaQuarto);
-            dispSair.add(colunaSala); dispSair.add(colunaQuarto);
+                List<String> idsSair = List.of(
+                "lamp_sala", "lampcor_sala", "lamp_cozinha", "lamp_quarto",
+                "cortina_sala", "cortina_quarto", "coluna_sala", "coluna_quarto"
+                );
+                List<EstrategiaCenario> estrategiasSair = List.of(
+                new EstrategiaCenario(d -> d instanceof Lampada, d -> ((Lampada) d).desligar()),
+                new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).fechar(100)),
+                new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).desligar())
+                );
+                Cenario cenarioSair = new Cenario("sair_de_casa", false, idsSair, estrategiasSair);
+                sistema.adicionarCenario("casa_joao", cenarioSair);
 
-            List<EstrategiaCenario> estrategiasSair = List.of(
-                new EstrategiaCenario(d -> d instanceof Lampada,
-                        d -> ((Lampada) d).desligar()),
-                new EstrategiaCenario(d -> d instanceof Cortina,
-                        d -> ((Cortina) d).fechar(100)),
-                new EstrategiaCenario(d -> d instanceof ColunaDeSom,
-                        d -> ((ColunaDeSom) d).desligar())
-            );
-            Cenario cenarioSair = new Cenario("sair_de_casa", false,
-                    dispSair, estrategiasSair);
-            sistema.adicionarCenario("casa_joao", cenarioSair);
+                // Cenário Deitar
+                List<String> idsDeitar = List.of(
+                "lamp_sala", "lampcor_sala", "lamp_cozinha", "lamp_quarto",
+                "cortina_sala", "cortina_quarto", "coluna_sala", "coluna_quarto", "tv_sala"
+                );
+                List<EstrategiaCenario> estrategiasDeitar = List.of(
+                new EstrategiaCenario(d -> d instanceof Lampada, d -> ((Lampada) d).desligar()),
+                new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).fechar(100)),
+                new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).desligar()),
+                new EstrategiaCenario(d -> d instanceof Televisao, d -> ((Televisao) d).desligar())
+                );
+                Cenario cenarioDeitar = new Cenario("deitar", false, idsDeitar, estrategiasDeitar);
+                sistema.adicionarCenario("casa_joao", cenarioDeitar);
 
-            // Cenário Deitar
-            List<Dispositivo> dispDeitar = new ArrayList<>(dispSair);
-            dispDeitar.add(tvSala);
-            List<EstrategiaCenario> estrategiasDeitar = List.of(
-                new EstrategiaCenario(d -> d instanceof Lampada,
-                        d -> ((Lampada) d).desligar()),
-                new EstrategiaCenario(d -> d instanceof Cortina,
-                        d -> ((Cortina) d).fechar(100)),
-                new EstrategiaCenario(d -> d instanceof ColunaDeSom,
-                        d -> ((ColunaDeSom) d).desligar()),
-                new EstrategiaCenario(d -> d instanceof Televisao,
-                        d -> ((Televisao) d).desligar())
-            );
-            Cenario cenarioDeitar = new Cenario("deitar", false,
-                    dispDeitar, estrategiasDeitar);
-            sistema.adicionarCenario("casa_joao", cenarioDeitar);
+                // Cenário Acordar
+                List<String> idsAcordar = List.of(
+                "lamp_quarto", "lampcor_quarto", "cortina_quarto", "coluna_quarto"
+                );
+                List<EstrategiaCenario> estrategiasAcordar = List.of(
+                new EstrategiaCenario(d -> d instanceof Lampada, d -> ((Lampada) d).ligar()),
+                new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).abrir(50)),
+                new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).setVolume(40))
+                );
+                Cenario cenarioAcordar = new Cenario("acordar", false, idsAcordar, estrategiasAcordar);
+                sistema.adicionarCenario("casa_joao", cenarioAcordar);
 
-            // Cenário Acordar
-            List<Dispositivo> dispAcordar = new ArrayList<>();
-            dispAcordar.add(lampQuarto); dispAcordar.add(lampCorQuarto);
-            dispAcordar.add(cortinaQuarto); dispAcordar.add(colunaQuarto);
-            List<EstrategiaCenario> estrategiasAcordar = List.of(
-                new EstrategiaCenario(d -> d instanceof Lampada,
-                        d -> ((Lampada) d).ligar()),
-                new EstrategiaCenario(d -> d instanceof Cortina,
-                        d -> ((Cortina) d).abrir(50)),
-                new EstrategiaCenario(d -> d instanceof ColunaDeSom,
-                        d -> ((ColunaDeSom) d).setVolume(40))
-            );
-            Cenario cenarioAcordar = new Cenario("acordar", false,
-                    dispAcordar, estrategiasAcordar);
-            sistema.adicionarCenario("casa_joao", cenarioAcordar);
-
-            // Cenário Jantar com Amigos
-            List<Dispositivo> dispJantar = new ArrayList<>();
-            dispJantar.add(lampCorSala); dispJantar.add(cortinaSala);
-            dispJantar.add(colunaSala);
-            List<EstrategiaCenario> estrategiasJantar = List.of(
-                new EstrategiaCenario(d -> d instanceof LampadaCor,
-                        d -> ((LampadaCor) d).maisQuente()),
-                new EstrategiaCenario(d -> d instanceof Cortina,
-                        d -> ((Cortina) d).fechar(75)),
-                new EstrategiaCenario(d -> d instanceof ColunaDeSom,
-                        d -> ((ColunaDeSom) d).setVolume(50))
-            );
-            Cenario cenarioJantar = new Cenario("jantar_com_amigos", false,
-                    dispJantar, estrategiasJantar);
-            sistema.adicionarCenario("casa_joao", cenarioJantar);
+                // Cenário Jantar com Amigos
+                List<String> idsJantar = List.of("lampcor_sala", "cortina_sala", "coluna_sala");
+                List<EstrategiaCenario> estrategiasJantar = List.of(
+                new EstrategiaCenario(d -> d instanceof LampadaCor, d -> ((LampadaCor) d).maisQuente()),
+                new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).fechar(75)),
+                new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).setVolume(50))
+                );
+                Cenario cenarioJantar = new Cenario("jantar_com_amigos", false, idsJantar, estrategiasJantar);
+                sistema.adicionarCenario("casa_joao", cenarioJantar);
 
             // ===== ESCALONAMENTOS — Casa do João =====
-            List<Dispositivo> cortinasTodas = List.of(cortinaSala, cortinaQuarto);
-            List<Dispositivo> lampadasTodas = List.of(lampSala, lampCorSala,
-                    lampCozinha, lampQuarto);
+            List<String> cortinasTodas = List.of(cortinaSala.getIdentificador(), cortinaQuarto.getIdentificador());
+            List<String> lampadasTodas = List.of(lampSala.getIdentificador(), lampCorSala.getIdentificador(),
+                    lampCozinha.getIdentificador(), lampQuarto.getIdentificador());
 
             Escalonamento abrirCortinasManh = new Escalonamento(
                     "abre_cortinas_manha", LocalTime.of(7, 30),

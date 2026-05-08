@@ -1,6 +1,8 @@
 package domuscontrol;
 
 import model.automatismos.*;
+import model.casas.Casa;
+import model.casas.Divisao;
 import model.dispositivos.*;
 import utils.SerializableConsumer;
 import utils.SerializablePredicate;
@@ -134,11 +136,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(50);
         dispensador.setNivelAgua(50);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
         assertEquals(dispensador, automacao.getDispensadorRacao());
     }
 
@@ -147,11 +148,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(50);
         dispensador.setNivelAgua(50);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao1", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao1", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
 
         AutomacaoEscalonamentoAnimais copia = new AutomacaoEscalonamentoAnimais(automacao);
         assertEquals(automacao.getDispensadorRacao(), copia.getDispensadorRacao());
@@ -163,11 +163,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(0);
         dispensador.setNivelAgua(50);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao2", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao2", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
         assertTrue(automacao.verificar());
     }
 
@@ -176,11 +175,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(50);
         dispensador.setNivelAgua(0);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao3", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao3", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
         assertTrue(automacao.verificar());
     }
 
@@ -189,11 +187,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(50);
         dispensador.setNivelAgua(50);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao4", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao4", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
         assertFalse(automacao.verificar());
     }
 
@@ -202,11 +199,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(0);
         dispensador.setNivelAgua(50);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao5", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao5", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
         automacao.executar();
         assertEquals(100, dispensador.getNivelRacao());
     }
@@ -216,11 +212,10 @@ public class AutomatismosTest {
         DispensadorRacao dispensador = new DispensadorRacao();
         dispensador.setNivelRacao(50);
         dispensador.setNivelAgua(0);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(dispensador);
+        List<String> dispositivos = new ArrayList<>();
         SerializablePredicate<Dispositivo> condicao = d -> d instanceof DispensadorRacao;
         LocalTime hora = LocalTime.of(8, 0);
-        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao6", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();});
+        AutomacaoEscalonamentoAnimais automacao = new AutomacaoEscalonamentoAnimais("automacao6", hora, dispositivos, condicao, (SerializableConsumer<Dispositivo>) d -> {((DispensadorRacao) d).encherAguaSeVazia(); ((DispensadorRacao) d).encherRacaoSeVazia();}, dispensador);
         automacao.executar();
         assertEquals(100, dispensador.getNivelAgua());
     }
@@ -438,10 +433,10 @@ public class AutomatismosTest {
     @Test
     public void testEscalonamentoComArgumentos() {
         LocalTime hora = LocalTime.of(14, 30);
-        List<Dispositivo> dispositivos = new ArrayList<>();
+        List<String> dispositivos = new ArrayList<>();
         Lampada lampada = new Lampada();
-        dispositivos.add(lampada);
-        
+        dispositivos.add(lampada.getIdentificador());
+
         Escalonamento escalonamento = new Escalonamento(
             "esc1", 
             hora, 
@@ -458,9 +453,9 @@ public class AutomatismosTest {
     @Test
     public void testEscalonamentoConstrutorCopia() {
         LocalTime hora = LocalTime.of(14, 30);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(new Lampada());
-        
+        List<String> dispositivos = new ArrayList<>();
+        dispositivos.add(new Lampada().getIdentificador());
+
         Escalonamento escalonamento = new Escalonamento(
             "esc1",
             hora,
@@ -494,9 +489,9 @@ public class AutomatismosTest {
     @Test
     public void testEscalonamentoSetDispositivos() {
         Escalonamento escalonamento = new Escalonamento();
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(new Lampada());
-        
+        List<String> dispositivos = new ArrayList<>();
+        dispositivos.add(new Lampada().getIdentificador());
+
         escalonamento.setDispositivos(dispositivos);
         assertEquals(1, escalonamento.getDispositivos().size());
     }
@@ -528,17 +523,17 @@ public class AutomatismosTest {
         );
 
         LocalTime agora = LocalTime.of(15, 30);
-        assertFalse(escalonamento.verificaHora(agora));
+        assertTrue(escalonamento.verificaHora(agora));
     }
 
     @Test
     public void testEscalonamentoExecutarComCondicao() {
         LocalTime hora = LocalTime.of(14, 30);
-        List<Dispositivo> dispositivos = new ArrayList<>();
+        List<String> dispositivos = new ArrayList<>();
         Lampada lampada = new Lampada();
         lampada.desligar();
-        dispositivos.add(lampada);
-        
+        dispositivos.add(lampada.getIdentificador());
+
         AtomicBoolean foiExecutada = new AtomicBoolean(false);
         
         Escalonamento escalonamento = new Escalonamento(
@@ -551,8 +546,13 @@ public class AutomatismosTest {
                 foiExecutada.set(true);
             }
         );
-        
-        escalonamento.executar();
+
+        Divisao divisao = new Divisao();
+        divisao.adicionarDispositivo(lampada);
+        Casa casa = new Casa();
+        casa.adicionarDivisao(divisao);
+        casa.adicionarEscalonamento(escalonamento);
+        escalonamento.executar(casa);
         assertTrue(foiExecutada.get());
         assertEquals(Dispositivo.Estado.LIGADO, lampada.getEstado());
     }
@@ -560,9 +560,9 @@ public class AutomatismosTest {
     @Test
     public void testEscalonamentoClone() {
         LocalTime hora = LocalTime.of(14, 30);
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(new Lampada());
-        
+        List<String> dispositivos = new ArrayList<>();
+        dispositivos.add(new Lampada().getIdentificador());
+
         Escalonamento escalonamento = new Escalonamento(
             "esc1",
             hora,

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -287,7 +288,7 @@ public class DomusControl implements Serializable{
             throw new CasaNaoExisteException(idCasa);
         }
         Casa casa = this.casas.get(idCasa);
-        if (idsDivisoes == null || idsDivisoes.isEmpty()) {
+        if (idsDivisoes == null || idsDivisoes.isEmpty()) {       // explicar decisoes de arquitetura
             return casa.getDivisoes().values().stream()
             .flatMap(divisao -> divisao.getDispositivos().values().stream())
             .filter(d -> d.getClass().getSimpleName().equalsIgnoreCase(classe))
@@ -420,5 +421,19 @@ public class DomusControl implements Serializable{
     public boolean casaTemEscalonamentos(String idCasa) {
         if (idCasa == null || idCasa.isEmpty()) return false;
         return !this.casas.get(idCasa).casaTemEscalonamentos();
+    }
+
+    public void alteraDispositivo(String idCasa, String idDivisao, String idDispositivo, Consumer<Dispositivo> acao) {
+        if (!this.casas.containsKey(idCasa)) return;
+        Casa casa = this.casas.get(idCasa);
+        if (casa != null) {
+            casa.alteraDispositivo(idDivisao, idDispositivo, acao);
+        }
+    }
+
+    public List<String> percorreDivisoesEfiltraDispositivosIds(String idCasa, List<String> idsDivisoes, String classe) throws CasaNaoExisteException, DivisaoNaoExisteException {
+        return percorreDivisoesEfiltraDispositivos(idCasa, idsDivisoes, classe).stream()
+            .map(Dispositivo::getIdentificador)
+            .toList();
     }
 }

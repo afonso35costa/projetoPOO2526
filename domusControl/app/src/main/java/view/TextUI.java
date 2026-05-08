@@ -1,5 +1,6 @@
 package view;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -461,11 +462,13 @@ public class TextUI {
         System.out.print("\nIntroduz a hora (formato HH:mm): ");
         String hora = this.sc.nextLine();
         if (hora.isBlank()) return;
-        try {
-            this.controller.selecionaCasa(nomeCasa);
-            this.controller.avancarTempo(hora, nomeCasa);
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+        if (this.controller.getHoraAtual(nomeCasa).isBefore(LocalTime.parse(hora))) {
+            try{
+                this.controller.selecionaCasa(nomeCasa);
+                this.controller.avancarTempo(hora, nomeCasa);
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+            }
         }
     }
     

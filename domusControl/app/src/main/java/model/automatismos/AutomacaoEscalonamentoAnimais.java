@@ -9,17 +9,21 @@ import utils.SerializableConsumer;
 import utils.SerializablePredicate;
 
 public class AutomacaoEscalonamentoAnimais extends Escalonamento implements Automacao{
+    private DispensadorRacao dispensadorRacao;
 
-    public AutomacaoEscalonamentoAnimais(String id, LocalTime hora, List<Dispositivo> dispositivos, SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao) {
+    public AutomacaoEscalonamentoAnimais(String id, LocalTime hora, List<String> dispositivos, SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao, DispensadorRacao dispensadorRacao) {
         super(id, hora, dispositivos, condicao, acao);
+        this.dispensadorRacao = dispensadorRacao;
     }
 
     public AutomacaoEscalonamentoAnimais() {
         super();
+        this.dispensadorRacao = null;
     }
 
     public AutomacaoEscalonamentoAnimais(AutomacaoEscalonamentoAnimais automacaoEscalonamentoAnimais) {
         super(automacaoEscalonamentoAnimais);
+        this.dispensadorRacao = automacaoEscalonamentoAnimais.dispensadorRacao;
     }
 
     public AutomacaoEscalonamentoAnimais clone() {
@@ -47,23 +51,19 @@ public class AutomacaoEscalonamentoAnimais extends Escalonamento implements Auto
 
     @Override
     public boolean verificar() {
-        DispensadorRacao dispensador = (DispensadorRacao) this.getDispositivos().get(0);
-        return dispensador.racaoVazia() || dispensador.aguaVazia();
+        return this.dispensadorRacao.racaoVazia() || this.dispensadorRacao.aguaVazia();
     }
 
     @Override
     public void executar() {
-        DispensadorRacao dispensador = (DispensadorRacao) this.getDispositivos().get(0);
         if (this.verificar()) {
-            dispensador.encherAguaSeVazia();
-            dispensador.encherRacaoSeVazia();
+            this.dispensadorRacao.encherAguaSeVazia();
+            this.dispensadorRacao.encherRacaoSeVazia();
         }
     }
 
     public DispensadorRacao getDispensadorRacao() {
-        if (this.getDispositivos().isEmpty()) {
-            return null;
-        }
-        return (DispensadorRacao) this.getDispositivos().get(0);
+        return dispensadorRacao;
     }
+
 }

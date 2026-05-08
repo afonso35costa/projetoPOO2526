@@ -13,10 +13,10 @@ import java.util.ArrayList;
 public class Cenario implements Serializable{
     private String nome;
     private boolean ativo;
-    private List<Dispositivo> dispositivos;
+    private List<String> dispositivos;
     private List<EstrategiaCenario> estrategias;
 
-    public Cenario(String nome, boolean ativo, List<Dispositivo> dispositivos, List<EstrategiaCenario> estrategias) {
+    public Cenario(String nome, boolean ativo, List<String> dispositivos, List<EstrategiaCenario> estrategias) {
         this.nome = nome;
         this.ativo = ativo;
         this.dispositivos = dispositivos;
@@ -33,7 +33,7 @@ public class Cenario implements Serializable{
     public Cenario(Cenario outroCenario) {
         this.nome = outroCenario.nome;
         this.ativo = outroCenario.ativo;
-        this.dispositivos = new ArrayList<>(outroCenario.dispositivos); // agregação
+        this.dispositivos = new ArrayList<>(outroCenario.dispositivos);
         this.estrategias = outroCenario.estrategias.stream()
             .map(EstrategiaCenario::clone)
             .collect(Collectors.toCollection(ArrayList::new)); // composição
@@ -47,7 +47,7 @@ public class Cenario implements Serializable{
         return ativo;
     }
 
-    public List<Dispositivo> getDispositivos() {
+    public List<String> getDispositivos() {
         return new ArrayList<>(this.dispositivos);
     }
 
@@ -65,7 +65,7 @@ public class Cenario implements Serializable{
         this.ativo = ativo;
     }
 
-    public void setDispositivos(List<Dispositivo> dispositivos) {
+    public void setDispositivos(List<String> dispositivos) {
         this.dispositivos = new ArrayList<>(dispositivos);
     }
 
@@ -106,12 +106,10 @@ public class Cenario implements Serializable{
         this.estrategias.add(new EstrategiaCenario(condicao, acao));
     }
 
-    public void executar() {
+    public void executar(Casa casa) {
         if (!this.ativo) return;
-        for (EstrategiaCenario estrategia : this.estrategias) {
-            this.dispositivos.stream()
-                .filter(estrategia.getCondicao())
-                .forEach(estrategia.getAcao());
+        for (EstrategiaCenario e : this.estrategias) {
+            casa.atuarSobreDispositivos(this.dispositivos, e.getCondicao(), e.getAcao());
         }
     }
 }

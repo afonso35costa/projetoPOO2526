@@ -221,12 +221,17 @@ class CasaTest {
 
     @Test
     void ativarCenarioPorFiltro() {
-        List<Dispositivo> dispositivos = new ArrayList<>();
-        dispositivos.add(lampada);
-        Cenario c = new Cenario("cenarioX", false, dispositivos, new ArrayList<>());
+        Divisao divisao = new Divisao("sala", new HashMap<>());
+        divisao.adicionarDispositivo(lampada);
+        casa.adicionarDivisao(divisao);
+
+        Cenario c = new Cenario("cenarioX", false,
+            List.of(lampada.getIdentificador()), new ArrayList<>());
         c.adicionarEstrategia(d -> true, d -> d.setEstado(Estado.DESLIGADO));
         casa.adicionarCenario(c);
+
         casa.ativarCenarioPorFiltro(cen -> cen.getNome().equals("cenarioX"));
+
         assertTrue(casa.getCenarios().get(0).isAtivo());
         assertEquals(Estado.DESLIGADO, lampada.getEstado());
     }
@@ -235,7 +240,16 @@ class CasaTest {
     void executarFiltros() {
         AtomicBoolean automacaoExecutada = new AtomicBoolean(false);
 
-        SensorChuva sensor = new SensorChuva("sensor2", "Marca", "Modelo", 0.5, Estado.LIGADO, 0, 0, 1.0, true);
+        Divisao divisao = new Divisao("sala", new HashMap<>());
+        divisao.adicionarDispositivo(lampada);
+        casa.adicionarDivisao(divisao);
+
+        SensorChuva sensor = new SensorChuva(
+            "sensor2", "Marca", "Modelo",
+            0.5, Estado.LIGADO,
+            0, 0, 1.0, true
+        );
+
         Automacao auto = new AutomacaoChuva(sensor, new ArrayList<>()) {
             @Override
             public void executar() {
@@ -243,14 +257,17 @@ class CasaTest {
             }
         };
 
-        Escalonamento esc = new Escalonamento("esc2", LocalTime.of(11, 0), 
-            new ArrayList<>(List.of(lampada)),  // ← lampada aqui
-            (SerializablePredicate<Dispositivo>) d -> true, 
+        Escalonamento esc = new Escalonamento(
+            "esc2",
+            LocalTime.of(11, 0),
+            new ArrayList<>(List.of(lampada.getIdentificador())),
+            (SerializablePredicate<Dispositivo>) d -> true,
             (SerializableConsumer<Dispositivo>) d -> d.setEstado(Estado.DESLIGADO)
         );
 
         casa.adicionarAutomacao(auto);
         casa.adicionarEscalonamento(esc);
+
         casa.executarAutomacoesPorFiltro(a -> true);
         casa.executarEscalonamentosPorFiltro(e -> true);
 

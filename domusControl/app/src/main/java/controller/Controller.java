@@ -342,7 +342,7 @@ public class Controller {
 
     public void criaEscalonamentoAbrirCortinas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina"));
+        List<String> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "cortina"));
         Escalonamento e = new Escalonamento("abre_cortinas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Cortina,
                                             (SerializableConsumer<Dispositivo>)d -> ((Cortina) d).abrir(100));
@@ -351,7 +351,7 @@ public class Controller {
 
     public void criaEscalonamentoFecharCortinas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "cortina"));
+        List<String> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "cortina"));
         Escalonamento e = new Escalonamento("fecha_cortinas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Cortina,
                                             (SerializableConsumer<Dispositivo>)d -> ((Cortina) d).fechar(100));
@@ -360,8 +360,8 @@ public class Controller {
 
     public void criaEscalonamentoAcenderLampadas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
+        List<String> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "lampada"));
+        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("acende_lampadas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Lampada,
                                             (SerializableConsumer<Dispositivo>)d -> ((Lampada) d).ligar());
@@ -370,8 +370,8 @@ public class Controller {
 
     public void criaEscalonamentoDesligarLampadas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampada"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "lampadaCor"));
+        List<String> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "lampada"));
+        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "lampadaCor"));
         Escalonamento e = new Escalonamento("desliga_lampadas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof Lampada,
                                             (SerializableConsumer<Dispositivo>)d -> ((Lampada) d).desligar());
@@ -380,7 +380,7 @@ public class Controller {
 
     public void criaEscalonamentoLigarColunas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom"));
+        List<String> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "colunaDeSom"));
         Escalonamento e = new Escalonamento("liga_colunas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof ColunaDeSom,
                                             (SerializableConsumer<Dispositivo>)d -> ((ColunaDeSom) d).ligar());
@@ -389,7 +389,7 @@ public class Controller {
 
     public void criaEscalonamentoDesligarColunas(String hora, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         LocalTime h = LocalTime.parse(hora);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(this.idCasa, idsDivisoes, "colunaDeSom"));
+        List<String> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(this.idCasa, idsDivisoes, "colunaDeSom"));
         Escalonamento e = new Escalonamento("desliga_colunas", h, dispositivos,
                                             (SerializablePredicate<Dispositivo>)d -> d instanceof ColunaDeSom,
                                             (SerializableConsumer<Dispositivo>)d -> ((ColunaDeSom) d).desligar());
@@ -398,7 +398,7 @@ public class Controller {
 
     public void atualizaDispositivosEscalonamento(String idCasa, String idEscalonamento, String tipoDispositivo, List<String> idsDivisoes) throws CasaNaoExisteException, DivisaoNaoExisteException {
         Escalonamento e = this.sistema.getEscalonamento(idCasa, idEscalonamento);
-        e.getDispositivos().addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, idsDivisoes, tipoDispositivo));
+        e.getDispositivos().addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, idsDivisoes, tipoDispositivo));
     }
 
     public void ativaEscalonamento(String idCasa, String idEscalonamento){
@@ -417,72 +417,96 @@ public class Controller {
         this.sistema.removerEscalonamento(nomeCasa, idEscalonamento);
     }
 
-    public void criaCenarioSairdeCasa() throws CasaNaoExisteException, DivisaoNaoExisteException{
+    public void criaCenarioSairdeCasa() throws CasaNaoExisteException, DivisaoNaoExisteException {
         Cenario c = new Cenario();
         c.setNome("sair_de_casa");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
-        c.setDispositivos(dispositivos);
+        List<String> ids = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampada"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampadaCor"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "cortina"));
+        c.setDispositivos(ids);
         List<EstrategiaCenario> estrategias = List.of(
-            new EstrategiaCenario(d -> d instanceof Lampada, d -> ((Lampada) d).desligar()),
-            new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).fechar(100))
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Lampada,
+                (SerializableConsumer<Dispositivo>) d -> ((Lampada) d).desligar()),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Cortina,
+                (SerializableConsumer<Dispositivo>) d -> ((Cortina) d).fechar(100))
         );
         c.setEstrategias(estrategias);
         sistema.adicionarCenario(idCasa, c);
     }
 
-    public void criaCenarioJantarComAmigos() throws CasaNaoExisteException, DivisaoNaoExisteException{
+    public void criaCenarioJantarComAmigos() throws CasaNaoExisteException, DivisaoNaoExisteException {
         Cenario c = new Cenario();
         c.setNome("jantar_com_amigos");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "colunaDeSom"));
-        c.setDispositivos(dispositivos);
+        List<String> ids = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampadaCor"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "cortina"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "colunaDeSom"));
+        c.setDispositivos(ids);
         List<EstrategiaCenario> estrategias = List.of(
-            new EstrategiaCenario(d -> d instanceof LampadaCor, d -> ((LampadaCor) d).maisQuente()),
-            new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).fechar(75)),
-            new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).setVolume(50))
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof LampadaCor,
+                (SerializableConsumer<Dispositivo>) d -> ((LampadaCor) d).maisQuente()),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Cortina,
+                (SerializableConsumer<Dispositivo>) d -> ((Cortina) d).fechar(75)),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof ColunaDeSom,
+                (SerializableConsumer<Dispositivo>) d -> ((ColunaDeSom) d).setVolume(50))
         );
         c.setEstrategias(estrategias);
         sistema.adicionarCenario(idCasa, c);
     }
 
-    public void criaCenarioAcordar() throws CasaNaoExisteException, DivisaoNaoExisteException{
+    public void criaCenarioAcordar() throws CasaNaoExisteException, DivisaoNaoExisteException {
         Cenario c = new Cenario();
         c.setNome("acordar");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "colunaDeSom"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
-        c.setDispositivos(dispositivos);
+        List<String> ids = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampadaCor"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampada"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "colunaDeSom"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "cortina"));
+        c.setDispositivos(ids);
         List<EstrategiaCenario> estrategias = List.of(
-            new EstrategiaCenario(d -> d instanceof Lampada, d -> ((Lampada) d).ligar()),
-            new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).abrir(50)),
-            new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).setVolume(100))
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Lampada,
+                (SerializableConsumer<Dispositivo>) d -> ((Lampada) d).ligar()),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Cortina,
+                (SerializableConsumer<Dispositivo>) d -> ((Cortina) d).abrir(50)),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof ColunaDeSom,
+                (SerializableConsumer<Dispositivo>) d -> ((ColunaDeSom) d).setVolume(50))
         );
         c.setEstrategias(estrategias);
         sistema.adicionarCenario(idCasa, c);
     }
 
-    public void criaCenarioDeitar() throws CasaNaoExisteException, DivisaoNaoExisteException{
+    public void criaCenarioDeitar() throws CasaNaoExisteException, DivisaoNaoExisteException {
         Cenario c = new Cenario();
         c.setNome("deitar");
         c.setAtivo(false);
-        List<Dispositivo> dispositivos = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampadaCor"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "lampada"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "colunaDeSom"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "cortina"));
-        dispositivos.addAll(sistema.percorreDivisoesEfiltraDispositivos(idCasa, null, "televisao"));
-        c.setDispositivos(dispositivos);
+        List<String> ids = new ArrayList<>(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampadaCor"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "lampada"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "colunaDeSom"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "cortina"));
+        ids.addAll(sistema.percorreDivisoesEfiltraDispositivosIds(idCasa, null, "televisao"));
+        c.setDispositivos(ids);
         List<EstrategiaCenario> estrategias = List.of(
-            new EstrategiaCenario(d -> d instanceof Lampada, d -> ((Lampada) d).desligar()),
-            new EstrategiaCenario(d -> d instanceof Cortina, d -> ((Cortina) d).fechar(100)),
-            new EstrategiaCenario(d -> d instanceof ColunaDeSom, d -> ((ColunaDeSom) d).desligar()),
-            new EstrategiaCenario(d -> d instanceof Televisao, d -> ((Televisao) d).desligar())
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Lampada,
+                (SerializableConsumer<Dispositivo>) d -> ((Lampada) d).desligar()),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Cortina,
+                (SerializableConsumer<Dispositivo>) d -> ((Cortina) d).fechar(100)),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof ColunaDeSom,
+                (SerializableConsumer<Dispositivo>) d -> ((ColunaDeSom) d).desligar()),
+            new EstrategiaCenario(
+                (SerializablePredicate<Dispositivo>) d -> d instanceof Televisao,
+                (SerializableConsumer<Dispositivo>) d -> ((Televisao) d).desligar())
         );
         c.setEstrategias(estrategias);
         sistema.adicionarCenario(idCasa, c);

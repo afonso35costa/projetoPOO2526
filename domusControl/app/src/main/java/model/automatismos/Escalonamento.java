@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import model.casas.Casa;
 import model.dispositivos.Dispositivo;
 import utils.SerializableConsumer;
 import utils.SerializablePredicate;
@@ -13,11 +14,11 @@ import utils.SerializablePredicate;
 public class Escalonamento implements Serializable{
     private String id;
     private LocalTime hora;
-    private List<Dispositivo> dispositivos;
+    private List<String> dispositivos;
     private SerializablePredicate<Dispositivo> condicao;
     private SerializableConsumer<Dispositivo> acao;
 
-    public Escalonamento(String id, LocalTime hora, List<Dispositivo> dispositivos, SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao) {
+    public Escalonamento(String id, LocalTime hora, List<String> dispositivos, SerializablePredicate<Dispositivo> condicao, SerializableConsumer<Dispositivo> acao) {
         this.id = id;
         this.hora = hora;
         this.dispositivos = dispositivos;
@@ -57,11 +58,11 @@ public class Escalonamento implements Serializable{
         this.hora = hora;
     }
 
-    public List<Dispositivo> getDispositivos() {
+    public List<String> getDispositivos() {
         return dispositivos;
     }
 
-    public void setDispositivos(List<Dispositivo> dispositivos) {
+    public void setDispositivos(List<String> dispositivos) {
         this.dispositivos = dispositivos;
     }
 
@@ -108,12 +109,13 @@ public class Escalonamento implements Serializable{
     }
 
     public boolean verificaHora(LocalTime agora) {
-        return this.hora.getHour() == agora.getHour() && this.hora.getMinute() == agora.getMinute();
+        if (agora.getHour() > this.hora.getHour()) {
+            return true;
+        }
+        return agora.getMinute() >= this.hora.getMinute();
     }
 
-    public void executar() {
-        this.dispositivos.stream()
-            .filter(condicao)
-            .forEach(acao);
+    public void executar(Casa casa) {
+        casa.atuarSobreDispositivos(this.dispositivos, this.condicao, this.acao);
     }
 }

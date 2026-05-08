@@ -2,8 +2,11 @@ package model.casas;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import model.dispositivos.Dispositivo;
@@ -100,5 +103,19 @@ public class Divisao implements Serializable{
         return dispositivos.values().stream()
             .mapToDouble(d -> (d.getMinutosLigado() / 60.0) * d.getConsumoPorHora())
             .sum();
+    }
+
+    public void alteraDispositivo(String idDispositivo, Consumer<Dispositivo> acao) {
+        Dispositivo dispositivo = this.dispositivos.get(idDispositivo);
+        if (dispositivo != null) {
+            acao.accept(dispositivo);
+        }
+    }
+
+    public void atuarSobreDispositivos(List<String> ids, Predicate<Dispositivo> condicao, Consumer<Dispositivo> acao) {
+        this.dispositivos.values().stream()
+            .filter(d -> ids.contains(d.getIdentificador()))
+            .filter(condicao)
+            .forEach(acao);
     }
 }
