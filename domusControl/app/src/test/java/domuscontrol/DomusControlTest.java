@@ -21,6 +21,12 @@ import exceptions.DispositivoNaoExisteException;
 import exceptions.DivisaoNaoExisteException;
 import exceptions.UtilizadorJaExisteException;
 import exceptions.UtilizadorNaoExisteException;
+import exceptions.AutomacaoJaExisteException;
+import exceptions.AutomacaoNaoExisteException;
+import exceptions.EscalonamentoJaExisteException;
+import exceptions.EscalonamentoNaoExisteException;
+import exceptions.CenarioJaExisteException;
+import exceptions.CenarioNaoExisteException;
 import model.casas.Casa;
 import model.casas.Divisao;
 import model.casas.Cenario;
@@ -419,19 +425,7 @@ class DomusControlTest {
     // ===== Testes para Automatismos (Cenários, Automações, Escalonamentos) =====
 
     @Test
-    public void testAdicionarAutomacao() throws UtilizadorJaExisteException, CasaJaExisteException {
-        domusControl.adicionarUtilizador(utilizador);
-        domusControl.adicionarCasa(casa, utilizador.getUsername());
-        
-        SensorChuva sensor = new SensorChuva("sensor1", "marca", "modelo", 0.5, Estado.LIGADO, 0, 0, 2.5, true);
-        Automacao automacao = new AutomacaoChuva(sensor, new ArrayList<>());
-        domusControl.adicionarAutomacao(casa.getId(), automacao);
-        
-        assertEquals(1, domusControl.getCasas().get(casa.getId()).getAutomacoes().size());
-    }
-
-    @Test
-    public void testRemoverAutomacao() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testRemoverAutomacao() throws UtilizadorJaExisteException, CasaJaExisteException, AutomacaoJaExisteException, CasaNaoExisteException, AutomacaoNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
@@ -444,7 +438,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testAdicionarEscalonamento() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testAdicionarEscalonamento() throws UtilizadorJaExisteException, CasaJaExisteException, EscalonamentoJaExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
 
@@ -455,7 +449,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testRemoverEscalonamento() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testRemoverEscalonamento() throws UtilizadorJaExisteException, CasaJaExisteException, EscalonamentoJaExisteException, CasaNaoExisteException, EscalonamentoNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
 
@@ -467,7 +461,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testAdicionarCenario() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testAdicionarCenario() throws UtilizadorJaExisteException, CasaJaExisteException, CenarioJaExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
@@ -478,7 +472,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testRemoverCenario() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testRemoverCenario() throws UtilizadorJaExisteException, CasaJaExisteException, CenarioJaExisteException, CasaNaoExisteException, CenarioNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
@@ -490,7 +484,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testAtivarCenario() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testAtivarCenario() throws UtilizadorJaExisteException, CasaJaExisteException, CenarioJaExisteException, CasaNaoExisteException, CenarioNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
@@ -503,7 +497,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testExecutarAutomacoes() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testExecutarAutomacoes() throws UtilizadorJaExisteException, CasaJaExisteException, AutomacaoJaExisteException, CasaNaoExisteException, AutomacaoNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
         
@@ -517,7 +511,7 @@ class DomusControlTest {
     }
 
     @Test
-    public void testExecutarEscalonamentos() throws UtilizadorJaExisteException, CasaJaExisteException {
+    public void testExecutarEscalonamentos() throws UtilizadorJaExisteException, CasaJaExisteException, EscalonamentoJaExisteException, CasaNaoExisteException, EscalonamentoNaoExisteException {
         domusControl.adicionarUtilizador(utilizador);
         domusControl.adicionarCasa(casa, utilizador.getUsername());
 

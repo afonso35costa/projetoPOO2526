@@ -18,10 +18,13 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import exceptions.AutomacaoJaExisteException;
 import exceptions.CasaJaExisteException;
 import exceptions.CasaNaoExisteException;
+import exceptions.CenarioJaExisteException;
 import exceptions.DispositivoNaoExisteException;
 import exceptions.DivisaoNaoExisteException;
+import exceptions.EscalonamentoJaExisteException;
 import exceptions.UtilizadorJaExisteException;
 import exceptions.UtilizadorNaoExisteException;
 import model.automatismos.Automacao;
@@ -219,40 +222,91 @@ public class DomusControl implements Serializable{
         return lista.stream().limit(3).toList();
     }
 
-    public void adicionarAutomacao(String casaId, Automacao automacao) {
-        this.casas.get(casaId).adicionarAutomacao(automacao);
+    public void adicionarAutomacao(String casaId, Automacao automacao) throws AutomacaoJaExisteException {
+        Casa casa = this.casas.get(casaId);
+        Automacao a = casa.getAutomacaoById(automacao.getClass().getSimpleName());
+        if (a != null && a.equals(automacao)) {
+            throw new AutomacaoJaExisteException(casaId);
+        } else {
+            casa.adicionarAutomacao(automacao);
+        }
     }
 
-    public void adicionarEscalonamento(String casaId, Escalonamento escalonamento) {
-        this.casas.get(casaId).adicionarEscalonamento(escalonamento);
+    public void adicionarEscalonamento(String casaId, Escalonamento escalonamento) throws EscalonamentoJaExisteException {
+        Casa casa = this.casas.get(casaId);
+        Escalonamento e = casa.getEscalonamentoById(escalonamento.getId());
+        if (e != null && e.getDispositivos().equals(escalonamento.getDispositivos()) && e.getHora().equals(escalonamento.getHora())) {
+            throw new EscalonamentoJaExisteException(casaId);
+        } else {
+            casa.adicionarEscalonamento(escalonamento);
+        }
     }
 
-    public void adicionarCenario(String casaId, Cenario cenario) {
-        this.casas.get(casaId).adicionarCenario(cenario);
+    public void adicionarCenario(String casaId, Cenario cenario) throws CenarioJaExisteException {
+        Casa casa = this.casas.get(casaId);
+        Cenario c = casa.getCenarioByNome(cenario.getNome());
+        if (c != null && c.equals(cenario)) {
+            throw new CenarioJaExisteException(casaId);
+        } else {
+            casa.adicionarCenario(cenario);
+        }
     }
 
-    public void removerAutomacao(String casaId, String idAutomacao) {
-        this.casas.get(casaId).removerAutomacaoPorId(idAutomacao);
+    public void removerAutomacao(String casaId, String idAutomacao) throws CasaNaoExisteException, exceptions.AutomacaoNaoExisteException {
+        if (!this.casas.containsKey(casaId))
+            throw new CasaNaoExisteException(casaId);
+        Casa casa = this.casas.get(casaId);
+        Automacao a = casa.getAutomacaoById(idAutomacao);
+        if (a == null)
+            throw new exceptions.AutomacaoNaoExisteException(idAutomacao);
+        casa.removerAutomacaoPorId(idAutomacao);
     }
 
-    public void removerEscalonamento(String casaId, String idEscalonamento) {
-        this.casas.get(casaId).removerEscalonamentoPorId(idEscalonamento);
+    public void removerEscalonamento(String casaId, String idEscalonamento) throws CasaNaoExisteException, exceptions.EscalonamentoNaoExisteException {
+        if (!this.casas.containsKey(casaId))
+            throw new CasaNaoExisteException(casaId);
+        Casa casa = this.casas.get(casaId);
+        Escalonamento e = casa.getEscalonamentoById(idEscalonamento);
+        if (e == null)
+            throw new exceptions.EscalonamentoNaoExisteException(idEscalonamento);
+        casa.removerEscalonamentoPorId(idEscalonamento);
     }
 
-    public void removerCenario(String casaId, String idCenario) {
-        this.casas.get(casaId).removerCenarioPorNome(idCenario);
+    public void removerCenario(String casaId, String idCenario) throws CasaNaoExisteException, exceptions.CenarioNaoExisteException {
+        if (!this.casas.containsKey(casaId))
+            throw new CasaNaoExisteException(casaId);
+        Casa casa = this.casas.get(casaId);
+        Cenario c = casa.getCenarioByNome(idCenario);
+        if (c == null)
+            throw new exceptions.CenarioNaoExisteException(idCenario);
+        casa.removerCenarioPorNome(idCenario);
     }
 
-    public void ativarCenario(String idCasa, Predicate<Cenario> filtro) {
-        this.casas.get(idCasa).ativarCenarioPorFiltro(filtro);
+    public void ativarCenario(String idCasa, Predicate<Cenario> filtro) throws CasaNaoExisteException, exceptions.CenarioNaoExisteException {
+        if (!this.casas.containsKey(idCasa))
+            throw new CasaNaoExisteException(idCasa);
+        Casa casa = this.casas.get(idCasa);
+        boolean any = casa.getCenarios().stream().anyMatch(filtro);
+        if (!any)
+            throw new exceptions.CenarioNaoExisteException("Nenhum cenário corresponde ao filtro");
+        casa.ativarCenarioPorFiltro(filtro);
     }
 
-    public void executarAutomacoes(String idCasa, Predicate<Automacao> filtro) {
-        this.casas.get(idCasa).executarAutomacoesPorFiltro(filtro);
+    public void executarAutomacoes(String idCasa, Predicate<Automacao> filtro) throws CasaNaoExisteException, exceptions.AutomacaoNaoExisteException {
+        if (!this.casas.containsKey(idCasa))
+            throw new CasaNaoExisteException(idCasa);
+        Casa casa = this.casas.get(idCasa);
+        casa.executarAutomacoesPorFiltro(filtro);
     }
 
-    public void executarEscalonamentos(String idCasa, Predicate<Escalonamento> filtro) {
-        this.casas.get(idCasa).executarEscalonamentosPorFiltro(filtro);
+    public void executarEscalonamentos(String idCasa, Predicate<Escalonamento> filtro) throws CasaNaoExisteException, exceptions.EscalonamentoNaoExisteException {
+        if (!this.casas.containsKey(idCasa))
+            throw new CasaNaoExisteException(idCasa);
+        Casa casa = this.casas.get(idCasa);
+        boolean any = casa.getEscalonamentos().stream().anyMatch(filtro);
+        if (!any)
+            throw new exceptions.EscalonamentoNaoExisteException("Nenhum escalonamento corresponde ao filtro");
+        casa.executarEscalonamentosPorFiltro(filtro);
     }
 
     public List<Cenario> getCenariosAtivos(String idCasa) {

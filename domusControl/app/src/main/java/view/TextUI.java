@@ -9,6 +9,7 @@ import controller.Controller;
 import exceptions.CasaJaExisteException;
 import exceptions.CasaNaoExisteException;
 import exceptions.CasaNaoSelecionadaException;
+import exceptions.CenarioNaoExisteException;
 import exceptions.CredenciaisInvalidasException;
 import exceptions.DivisaoNaoExisteException;
 import exceptions.SessaoNaoIniciadaException;
@@ -402,7 +403,13 @@ public class TextUI {
         listarCenarios(nomeCasa);
         System.out.print("Nome do cenário a ativar: ");
         String nome = sc.nextLine();
-        this.controller.ativarCenario(nomeCasa, nome);
+        try {
+            this.controller.ativarCenario(nomeCasa, nome);
+        } catch (CasaNaoExisteException e) {
+            System.out.println(e.getMessage());
+        } catch (CenarioNaoExisteException e) {
+            System.out.println(e.getMessage());
+        }
         System.out.println("Cenário '" + nome + "' ativado.");
     }
 

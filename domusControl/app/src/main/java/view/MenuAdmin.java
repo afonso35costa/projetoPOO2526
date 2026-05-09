@@ -297,6 +297,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Casa não encontrada.");
             } catch (DivisaoNaoExisteException e) {
                 System.out.println("Divisão não encontrada.");
+            } catch (EscalonamentoNaoExisteException e) {
+                System.out.println("Escalonamento não encontrado.");
             }
 
             try {
@@ -429,6 +431,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Casa não encontrada.");
             } catch (DivisaoNaoExisteException e) {
                 System.out.println("Divisão não encontrada.");
+            } catch (CenarioJaExisteException e) {
+                System.out.println("Erro: cenário já existe.");
             }
         });
         menu.setHandler(2, () -> {
@@ -440,6 +444,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Casa não encontrada.");
             } catch (DivisaoNaoExisteException e) {
                 System.out.println("Divisão não encontrada.");
+            } catch (CenarioJaExisteException e) {
+                System.out.println("Erro: cenário já existe.");
             }
         });
         menu.setHandler(3, () -> {
@@ -451,6 +457,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Casa não encontrada.");
             } catch (DivisaoNaoExisteException e) {
                 System.out.println("Divisão não encontrada.");
+            } catch (CenarioJaExisteException e) {
+                System.out.println("Erro: cenário já existe.");
             }
         });
         menu.setHandler(4, () -> {
@@ -462,6 +470,8 @@ public class MenuAdmin extends TextUI {
                 System.out.println("Casa não encontrada.");
             } catch (DivisaoNaoExisteException e) {
                 System.out.println("Divisão não encontrada.");
+            } catch (CenarioJaExisteException e) {
+                System.out.println("Erro: cenário já existe.");
             }
         });
         menu.run();
@@ -483,8 +493,14 @@ public class MenuAdmin extends TextUI {
         System.out.print("\nNome do cenário a ativar (ENTER para voltar): ");
         String nome = this.sc.nextLine();
         if (nome.isBlank()) return;
-        this.controller.ativarCenario(nomeCasa, nome);
-        System.out.println("Cenário '" + nome + "' ativado.");
+        try {
+            this.controller.ativarCenario(nomeCasa, nome);
+            System.out.println("Cenário '" + nome + "' ativado.");
+        } catch (CasaNaoExisteException e) {
+            System.out.println("Casa não encontrada.");
+        } catch (CenarioNaoExisteException e) {
+            System.out.println("Cenário não encontrado.");
+        }
     }
 
     private void removerCenarioAdmin(String nomeCasa) {
@@ -492,8 +508,14 @@ public class MenuAdmin extends TextUI {
         System.out.print("\nNome do cenário a remover (ENTER para voltar): ");
         String nome = this.sc.nextLine();
         if (nome.isBlank()) return;
-        this.controller.removeCenario(nomeCasa, nome);
-        System.out.println("Cenário '" + nome + "' removido.");
+        try {
+            this.controller.removeCenario(nomeCasa, nome);
+            System.out.println("Cenário '" + nome + "' removido.");
+        } catch (CasaNaoExisteException e) {
+            System.out.println("Casa não encontrada.");
+        } catch (CenarioNaoExisteException e) {
+            System.out.println("Cenário não encontrado.");
+        }
     }
 
     // ==================== AUTOMAÇÕES (ADMIN) ====================
