@@ -9,216 +9,214 @@
 </p>
 
 <p align="center">
-  <strong>Sistema Modular de Gestão, Monitorização e Simulação de Automação Doméstica Inteligente</strong><br>
-  Desenvolvido no âmbito da unidade curricular de <strong>Programação Orientada aos Objetos (POO)</strong><br>
-  Licenciatura em Engenharia Informática — <strong>Universidade do Minho (2025/2026)</strong> • <strong>Grupo 56</strong>
+  <strong>Modular Smart Home Management, Monitoring, and Simulation System</strong><br>
+  Developed for the <strong>Object-Oriented Programming (POO)</strong> course unit<br>
+  BSc in Computer Science (LEI) — <strong>University of Minho (2025/2026)</strong> • <strong>Group 56</strong>
 </p>
 
 ---
 
-## 📋 Índice
+## 📋 Table of Contents
 
-- [📖 Sobre o Projeto](#-sobre-o-projeto)
-- [✨ Funcionalidades Principais](#-funcionalidades-principais)
-- [🏛️ Arquitetura e Decisões de Design](#️-arquitetura-e-decisões-de-design)
-  - [Padrões de Desenho (Design Patterns)](#padrões-de-desenho-design-patterns)
-  - [Boas Práticas e Princípios POO](#boas-práticas-e-princípios-poo)
-- [🔌 Catálogo de Dispositivos e Sensores](#-catálogo-de-dispositivos-e-sensores)
-- [⚙️ Automatismos e Inteligência](#️-automatismos-e-inteligência)
-  - [1. Automações Reativas](#1-automações-reativas)
-  - [2. Escalonamentos Temporais](#2-escalonamentos-temporais)
-  - [3. Cenários Globais](#3-cenários-globais)
-  - [4. Motor de Sugestões Inteligentes](#4-motor-de-sugestões-inteligentes)
-- [📁 Estrutura do Repositório](#-estrutura-do-repositório)
-- [🚀 Instalação e Execução](#-instalação-e-execução)
-- [🧪 Testes de Software](#-testes-de-software)
-- [📊 Documentação e Modelação UML](#-documentação-e-modelação-uml)
-- [👥 Equipa de Desenvolvimento](#-equipa-de-desenvolvimento)
-
----
-
-## 📖 Sobre o Projeto
-
-O **DomusControl** é uma plataforma abrangente de gestão de domótica inspirada em ecossistemas modernos como o *Home Assistant*. Foi concebida para integrar e orquestrar múltiplos dispositivos heterogéneos dentro de habitações inteligentes, proporcionando uma experiência uniforme quer ao utilizador comum, quer ao administrador do sistema.
-
-O sistema modela a estrutura de uma residência com múltiplos níveis hierárquicos (**Casas ➔ Divisões ➔ Dispositivos**), permitindo controlo granular em tempo real, monitorização rigorosa do consumo energético, simulação de passagem do tempo, execução de cenários compostos e automatismos automáticos contextuais baseados em padrões de utilização.
+- [📖 About the Project](#-about-the-project)
+- [✨ Key Features](#-key-features)
+- [🏛️ Architecture & Design Decisions](#️-architecture--design-decisions)
+  - [Design Patterns](#design-patterns)
+  - [OOP Principles & Best Practices](#oop-principles--best-practices)
+- [🔌 Device & Sensor Catalog](#-device--sensor-catalog)
+- [⚙️ Automations & Smart Engine](#️-automations--smart-engine)
+  - [1. Reactive Automations](#1-reactive-automations)
+  - [2. Time-Based Schedules](#2-time-based-schedules)
+  - [3. Global Scenarios](#3-global-scenarios)
+  - [4. Intelligent Suggestion Engine](#4-intelligent-suggestion-engine)
+- [📁 Repository Structure](#-repository-structure)
+- [🚀 Getting Started](#-getting-started)
+- [🧪 Software Testing](#-software-testing)
+- [📊 Documentation & UML Modeling](#-documentation--uml-modeling)
+- [👥 Development Team](#-development-team)
 
 ---
 
-## ✨ Funcionalidades Principais
+## 📖 About the Project
 
-- 🏢 **Gestão Multi-Habitação & Permissões**:
-  - Criação e manutenção de casas, divisões (quartos, sala, cozinha, exterior/jardim, etc.) e utilizadores.
-  - Associação de perfis de utilizador com níveis diferenciados de acesso (Administrador vs. Utilizador Comum).
+**DomusControl** is an end-to-end smart home automation and simulation platform inspired by modern ecosystems such as *Home Assistant*. It is designed to seamlessly integrate and orchestrate heterogeneous connected devices across residential properties, delivering a unified interface for standard users and system administrators.
 
-- 🎛️ **Controlo Centralizado de Dispositivos**:
-  - Operação individual ou por lote de equipamentos (ligar, desligar, abrir, fechar, ajustar intensidade/cor, definir temperaturas).
-  - Registo em tempo real de ativações, tempo acumulado de operação e cálculo de custos/consumos energéticos.
-
-- ⚡ **Automatismos Avançados**:
-  - **Automações Condicionais**: Gatilhos baseados em leituras de sensores ambientais (chuva, luz, temperatura, humidade de solo).
-  - **Escalonamentos**: Agendamentos com hora marcada acionados pelo motor de simulação temporal.
-  - **Cenários Multi-Dispositivo**: Perfis predefinidos que coordenam múltiplos aparelhos simultaneamente (ex: *"Sair de Casa"*, *"Jantar com Amigos"*, *"Deitar"*, *"Acordar"*).
-
-- 🧠 **Motor de Sugestões Automáticas**:
-  - Análise preditiva do histórico de ações: identifica padrões de escalonamentos e sugere-os para novas divisões do mesmo utilizador; generaliza automações consolidadas para outras habitações geridas pelo mesmo proprietário.
-
-- 📈 **Métricas e Auditoria Energética**:
-  - Identificação da casa com maior pegada de consumo.
-  - Top 3 de dispositivos mais ativos (por tempo ligado ou número de ativações).
-  - Top 3 de divisões com maior densidade de dispositivos conectados.
-  - Cálculo de consumo dinâmico por divisão e por habitação global.
-
-- 💾 **Persistência Robusta de Estado**:
-  - Gravação e carregamento transparente de todo o ecossistema através de serialização binária Java (`.obj`), garantindo a preservação total de estados e históricos.
+The system models properties using a multi-tier hierarchy (**Houses ➔ Rooms ➔ Devices**), offering granular real-time control, continuous energy consumption metrics, simulated clock time progression, coordinated multi-device scenarios, and intelligent recommendation routines driven by past user habits.
 
 ---
 
-## 🏛️ Arquitetura e Decisões de Design
+## ✨ Key Features
 
-O projeto segue rigorosamente o padrão arquitetural **MVC (Model-View-Controller)** com separação estrita de responsabilidades:
+- 🏢 **Multi-Property & Access Management**:
+  - Full CRUD operations for houses, rooms (bedrooms, living room, kitchen, garden/outdoors, etc.), and users.
+  - Role-based permissions differentiating standard users from administrators.
+
+- 🎛️ **Centralized Device Control**:
+  - Individual or batch device operations (turn on/off, open/close, adjust RGB color/brightness, configure thermostat targets).
+  - Continuous tracking of activations, operating uptime, and dynamic energy cost calculations.
+
+- ⚡ **Advanced Automations**:
+  - **Conditional Automations**: Sensor-driven event triggers (rain, ambient light, temperature fluctuations, soil moisture).
+  - **Schedules**: Timed routines executed via the built-in time simulation engine.
+  - **Multi-Device Scenarios**: Coordinated batch profiles (*"Leaving Home"*, *"Dinner with Friends"*, *"Going to Sleep"*, *"Waking Up"*).
+
+- 🧠 **Intelligent Suggestion Engine**:
+  - Behavioral pattern recognition: detects recurring schedules across rooms and suggests extending them to new rooms; replicates proven house automations across other properties owned by the same user.
+
+- 📈 **Auditing & Energy Analytics**:
+  - Identification of the household with the highest power consumption.
+  - Global Top 3 most utilized devices (by accumulated runtime or activation count).
+  - Global Top 3 rooms with the highest device density.
+  - Real-time power breakdown per room and per entire house.
+
+- 💾 **State Persistence**:
+  - Effortless save and load functionality using standard Java binary serialization (`.obj`), fully preserving system snapshots and historical states.
+
+---
+
+## 🏛️ Architecture & Design Decisions
+
+The application strictly implements the **Model-View-Controller (MVC)** architectural pattern with clean separation of concerns:
 
 ```
 ┌───────────────────────────────────────────────────────────┐
 │                           VIEW                            │
 │           (TextUI, MenuAdmin, Menu, Menu.Handler)         │
 └─────────────────────────────┬─────────────────────────────┘
-                              │ Interações do Utilizador
+                              │ User Interactions
                               ▼
 ┌───────────────────────────────────────────────────────────┐
 │                        CONTROLLER                         │
-│     (Controller: Fachada, Coordenação & Simulação Tempo)   │
+│       (Controller: Façade, Dispatcher & Time Engine)       │
 └─────────────────────────────┬─────────────────────────────┘
-                              │ Invocações de Domínio
+                              │ Domain Calls
                               ▼
 ┌───────────────────────────────────────────────────────────┐
 │                          MODEL                            │
 │  ┌───────────────────────┬─────────────────────────────┐  │
-│  │     DomusControl      │       Casa & Divisao        │  │
+│  │     DomusControl      │       House & Room          │  │
 │  ├───────────────────────┼─────────────────────────────┤  │
-│  │ Hierarquia Dispositivo│ Automatismos & Cenários     │  │
+│  │   Device Hierarchy    │   Automations & Scenarios   │  │
 │  └───────────────────────┴─────────────────────────────┘  │
 └───────────────────────────────────────────────────────────┘
 ```
 
-### Padrões de Desenho (Design Patterns)
+### Design Patterns
 
-- **Factory Method (`DispositivoFactory`, `AutomacaoFactory`)**: Centraliza e desacopla a criação dinâmica de novos dispositivos e automações utilizando registos de `Supplier`. Permite adicionar novos equipamentos respeitando o princípio *Open/Closed*.
-- **Strategy (`EstrategiaCenario`)**: Encapsula pares desacoplados de condição e ação, permitindo que cenários apliquem comportamentos heterogéneos sobre diferentes categorias de dispositivos sem dependências rígidas.
-- **Façade (`Controller`)**: Expõe uma interface limpa e coesa à camada de apresentação, ocultando a complexidade das manipulações internas do modelo.
-- **Functional Extensions (`SerializablePredicate`, `SerializableConsumer`)**: Extensões proprietárias das interfaces funcionais do Java 21 permitindo que lambdas, condições de ativação e filtros sejam integralmente serializados e persistidos em disco.
+- **Factory Method (`DispositivoFactory`, `AutomacaoFactory`)**: Centralizes and decouples object instantiation through `Supplier` registry maps, strictly honoring the *Open/Closed Principle*.
+- **Strategy (`EstrategiaCenario`)**: Encapsulates dynamic pairs of predicates and consumers, allowing scenarios to apply polymorphic actions across disparate device families without tight coupling.
+- **Façade (`Controller`)**: Provides a cohesive, high-level API to the presentation layer, insulating the UI from internal model details.
+- **Custom Functional Extensions (`SerializablePredicate`, `SerializableConsumer`)**: Serializable extensions of Java 21 functional interfaces, enabling lambda rules, conditional predicates, and actions to be persisted directly to disk.
 
-### Boas Práticas e Princípios POO
+### OOP Principles & Best Practices
 
-- **Encapsulamento & Defesa de Estado**: Todos os atributos são privados. Métodos de consulta (`getters`) devolvem cópias defensivas (`new HashMap<>(...)`, clones) para prevenir mutações indevidas por clientes externos.
-- **Single Responsibility (SRP)**: Cada classe tem uma responsabilidade coesa e bem delimitada.
-- **Liskov Substitution Principle (LSP)**: Todas as subclasses da hierarquia de dispositivos garantem conformidade estrita com os contratos da superclasse abstrata `Dispositivo`.
-- **Don't Repeat Yourself (DRY)**: Reutilização consistente de código através de herança estratégica (ex.: `LampadaCor` estendendo `Lampada`, `MenuAdmin` integrando `TextUI`) e composição flexível nos menus.
+- **Encapsulation & Defensive Copying**: All internal state variables are strictly `private`. Query methods return defensive copies (`new HashMap<>(...)`, clones) to prevent unwanted external state mutations.
+- **Single Responsibility (SRP)**: Each class is dedicated to a distinct, well-defined domain responsibility.
+- **Liskov Substitution Principle (LSP)**: All subclasses within the device hierarchy faithfully conform to contracts established by the abstract `Dispositivo` base class.
+- **Don't Repeat Yourself (DRY)**: Reusable components leverage inheritance (e.g., `LampadaCor` extending `Lampada`, `MenuAdmin` extending `TextUI`) and higher-order functional primitives.
 
 ---
 
-## 🔌 Catálogo de Dispositivos e Sensores
+## 🔌 Device & Sensor Catalog
 
-A hierarquia de dispositivos assenta na classe abstrata `Dispositivo`, subdividindo-se em ramos especializados:
+All connected equipment extends the abstract `Dispositivo` class, branching into specialized categories:
 
-| Dispositivo | Tipo / Categoria | Operações Principais | Métricas / Parâmetros |
+| Device | Category / Type | Primary Operations | Metrics & Attributes |
 | :--- | :--- | :--- | :--- |
-| **Lâmpada** (`Lampada`) | Iluminação | Ligar / Desligar | Consumo horário, tempo ligado, ativações |
-| **Lâmpada Cor** (`LampadaCor`) | Iluminação Smart | Ligar / Desligar / Mudar Cor | Cor (RGB), intensidade luminosa |
-| **Coluna de Som** (`ColunaDeSom`) | Multimédia | Ligar / Desligar / Volume | Volume, reprodução de áudio |
-| **Televisão** (`Televisao`) | Multimédia | Ligar / Desligar / Canal / Volume | Canal sintonizado, volume de som |
-| **Termóstato** (`Termostato`) | Climatização / Sensor | Regular temperatura / Monitorizar | Temperatura alvo, medição ambiente (°C) |
-| **Cortina** (`Cortina`) | Aberturas / Estores | Abrir / Fechar | Percentagem de abertura |
-| **Portão de Garagem** (`PortaoGaragem`) | Segurança / Acesso | Abrir / Fechar | Estado de acesso (aberto/fechado) |
-| **Dispensador de Ração** (`DispensadorRacao`) | Cuidados com Animais | Dispensar dose / Ligar | Quantidade programada de alimento |
-| **Irrigação** (`Irrigacao`) | Exterior / Jardim | Ativar / Desativar rega | Fluxo de água, duração |
-| **Relé** (`Rele`) | Atuador Geral | Comutar circuito | Controlo de alimentação elétrica |
-| **Sensor de Chuva** (`SensorChuva`) | Sensor Ambiental | Leitura pluviométrica | Deteção de precipitação |
-| **Sensor de Luminosidade** (`SensorLuminosidade`) | Sensor Ambiental | Leitura de Lux | Nível de luz ambiente |
-| **Sensor Humidade Solo** (`SensorHumidadeSolo`) | Sensor Agrícola/Jardim | Medição de percentagem | Humidade do terreno (%) |
+| **Lamp** (`Lampada`) | Lighting | Turn On / Turn Off | Power consumption rate, uptime, activations |
+| **Smart Color Lamp** (`LampadaCor`) | Smart Lighting | Turn On / Off / Set Color | RGB color tone, brightness level |
+| **Speaker** (`ColunaDeSom`) | Multimedia | Turn On / Off / Set Volume | Volume scale, audio playback status |
+| **Television** (`Televisao`) | Multimedia | Turn On / Off / Channel / Volume | Current channel, volume level |
+| **Thermostat** (`Termostato`) | Climate / Sensor | Set Temperature / Monitor | Target temp, ambient reading (°C) |
+| **Blind / Curtain** (`Cortina`) | Openings / Blinds | Open / Close | Open percentage (%) |
+| **Garage Gate** (`PortaoGaragem`) | Security / Access | Open / Close | Access state (open/closed) |
+| **Pet Feeder** (`DispensadorRacao`) | Pet Care | Dispense Portion / Turn On | Programmed food dosage |
+| **Irrigation System** (`Irrigacao`) | Garden / Outdoors | Start / Stop Watering | Water flow, cycle duration |
+| **Smart Relay** (`Rele`) | General Actuator | Toggle Circuit | Electrical circuit pass-through status |
+| **Rain Sensor** (`SensorChuva`) | Environmental Sensor | Pluviometric reading | Precipitation detection flag |
+| **Luminosity Sensor** (`SensorLuminosidade`) | Environmental Sensor | Lux reading | Ambient light level (Lux) |
+| **Soil Moisture Sensor** (`SensorHumidadeSolo`) | Garden / Sensor | Percentage reading | Ground moisture level (%) |
 
 ---
 
-## ⚙️ Automatismos e Inteligência
+## ⚙️ Automations & Smart Engine
 
-O motor do DomusControl é constituído por 4 pilares:
+DomusControl automates routine tasks through 4 integrated mechanisms:
 
-### 1. Automações Reativas
-Baseiam-se na monitorização das leituras de sensores para desencadear ações automáticas imediatas:
-- `AutomacaoChuva`: Fecha cortinas ou portões e desativa o sistema de rega perante precipitação.
-- `AutomacaoLuzExterior`: Acende a iluminação exterior quando a luminosidade desce abaixo do limiar estipulado.
-- `AutomacaoTemperatura`: Liga climatização ou termóstatos perante desvios da temperatura de conforto.
-- `AutomacaoRelva`: Ativa a rega se a humidade do solo estiver criticamente baixa e não estiver a chover.
-- `AutomacaoEscalonamentoAnimais`: Assegura a ativação pontual de dispensadores e iluminação de suporte.
+### 1. Reactive Automations
+Continuously inspects sensor thresholds to immediately trigger appropriate actuator responses:
+- `AutomacaoChuva`: Closes open curtains and garage doors while disabling outdoor irrigation when rain is detected.
+- `AutomacaoLuzExterior`: Illuminates exterior lighting automatically whenever ambient light drops below a given threshold.
+- `AutomacaoTemperatura`: Engages heating/cooling when room temperatures deviate from target comfort zones.
+- `AutomacaoRelva`: Activates lawn irrigation if soil moisture is critically low and no rain is detected.
+- `AutomacaoEscalonamentoAnimais`: Guarantees automated pet feeding and support lighting at designated intervals.
 
-### 2. Escalonamentos Temporais
-Tarefas diferidas coordenadas pelo relógio virtual do sistema (`Controller.simularHora()`):
-- Abertura e fecho programado de estores/cortinas ao nascer/pôr do sol.
-- Iluminação inteligente programada para horários noturnos.
-- Ativação periódica de sistemas de multimédia ou irrigação.
+### 2. Time-Based Schedules
+Scheduled operations evaluated on each step of the virtual clock (`Controller.simularHora()`):
+- Automated morning opening and sunset closing of blinds and shutters.
+- Scheduled nighttime exterior and safety lighting.
+- Timed garden irrigation and media routines.
 
-### 3. Cenários Globais
-Execução de perfis orquestrados via padrão Strategy:
-- 🚪 **Sair de Casa**: Desliga todas as lâmpadas, reduz termóstatos, fecha cortinas e tranca portões.
-- 🍷 **Jantar com Amigos**: Ajusta iluminação ambiente para tom acolhedor, ativa a coluna de som e ajusta a climatização da sala.
-- 🌙 **Deitar**: Apaga as luzes da habitação, fecha estores e verifica o estado dos portões exteriores.
-- ☀️ **Acordar**: Abre suavemente as cortinas, acende a luz de apoio e ajusta o termóstato matinal.
+### 3. Global Scenarios
+Preconfigured profiles orchestrated via the Strategy pattern:
+- 🚪 **Leaving Home** (*Sair de Casa*): Turns off all interior lamps, lowers thermostats, closes curtains, and secures garage gates.
+- 🍷 **Dinner with Friends** (*Jantar com Amigos*): Sets ambient lighting to a warm tone, starts background music, and balances living room temperature.
+- 🌙 **Going to Sleep** (*Deitar*): Extinguishes all living area lights, closes blinds, and validates exterior locks.
+- ☀️ **Waking Up** (*Acordar*): Gently raises bedroom blinds, enables morning accent lighting, and warms up the thermostat.
 
-### 4. Motor de Sugestões Inteligentes
-O DomusControl analisa padrões de uso do utilizador:
-- Se uma configuração de escalonamento é aplicada repetidamente em várias divisões, o sistema passa a sugerir a sua replicação para as restantes divisões do mesmo utilizador.
-- Automações consolidadas numa casa são sugeridas para novas habitações do mesmo proprietário, acelerando a configuração de novos espaços residenciais.
+### 4. Intelligent Suggestion Engine
+Learns from user interactions:
+- When a schedule is repeatedly created across multiple rooms, the system automatically suggests applying it to newly configured rooms for the same user.
+- Established house-level automations are recommended when the user sets up new residential properties, minimizing manual reconfiguration.
 
 ---
 
-## 📁 Estrutura do Repositório
+## 📁 Repository Structure
 
 ```text
 projetoPOO2526/
-├── README.md                      # Documentação principal do repositório
-├── relatorio_poo.pdf              # Relatório técnico completo do projeto
-└── domusControl/                  # Projeto Gradle / Código-fonte da aplicação
-    ├── build.gradle               # Ficheiro de configuração do Gradle
-    ├── settings.gradle            # Definições de módulos do projeto
-    ├── gradlew / gradlew.bat      # Gradle Wrapper (Linux / macOS / Windows)
-    ├── estado1.obj                # Exemplo de estado de sistema persistido
+├── README.md                      # Main repository documentation (this file)
+├── relatorio_poo.pdf              # Comprehensive technical report (PDF)
+└── domusControl/                  # Gradle application source tree
+    ├── build.gradle               # Gradle build configuration
+    ├── settings.gradle            # Gradle project settings
+    ├── gradlew / gradlew.bat      # Gradle Wrapper binaries (Linux / macOS / Windows)
+    ├── estado1.obj                # Persisted sample system snapshot
     ├── uml/
-    │   └── domuscontrol.puml      # Diagrama de Classes PlantUML completo
+    │   └── domuscontrol.puml      # Full PlantUML domain class diagram
     └── app/
         └── src/
             ├── main/java/
-            │   ├── controller/    # Camada de Controlo (Controller.java)
-            │   ├── exceptions/    # Exceções de domínio personalizadas
+            │   ├── controller/    # Application controller (Controller.java)
+            │   ├── exceptions/    # Custom domain exceptions
             │   ├── model/
-            │   │   ├── automatismos/  # Automações, Escalonamentos e Fábricas
-            │   │   ├── casas/         # Casa, Divisao, Cenario, EstrategiaCenario
-            │   │   ├── dispositivos/  # Hierarquia de Dispositivos e DispositivoFactory
-            │   │   ├── domus/         # Núcleo do Sistema (DomusControl.java)
-            │   │   └── utilizadores/  # Entidade Utilizador
-            │   ├── utils/         # SerializablePredicate e SerializableConsumer
-            │   └── view/          # Apresentação CLI (MainUI, TextUI, MenuAdmin, Menu)
+            │   │   ├── automatismos/  # Automations, Schedules & Factories
+            │   │   ├── casas/         # House, Room, Scenario & ScenarioStrategy
+            │   │   ├── dispositivos/  # Device hierarchy & DeviceFactory
+            │   │   ├── domus/         # Core system model (DomusControl.java)
+            │   │   └── utilizadores/  # User entity
+            │   ├── utils/         # SerializablePredicate & SerializableConsumer
+            │   └── view/          # CLI interface (MainUI, TextUI, MenuAdmin, Menu)
             └── test/java/
-                └── domuscontrol/  # Bateria completa de testes unitários JUnit 5
+                └── domuscontrol/  # Complete JUnit 5 test suite
 ```
 
 ---
 
-## 🚀 Instalação e Execução
+## 🚀 Getting Started
 
-### Pré-requisitos
-- **Java JDK 21** ou superior instalado (`java -version`).
-- **Git** instalado.
+### Prerequisites
+- **Java JDK 21** or later (`java -version`).
+- **Git** installed.
 
-### 1. Clonar o Repositório
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/afonso35costa/projetoPOO2526.git
-cd projetoPOO2526/domusControl
 git clone git@github.com:POO-UM/2526-G056.git
 cd 2526-G056/domusControl
 ```
 
-### 2. Executar a Aplicação
-Utilize o wrapper do Gradle incluído:
+### 2. Run the Application
+Use the bundled Gradle wrapper:
 
 - **Linux / macOS**:
   ```bash
@@ -230,36 +228,36 @@ Utilize o wrapper do Gradle incluído:
   gradlew.bat run --console=plain
   ```
 
-> **Dica:** O argumento `--console=plain` garante uma formatação ideal e interativa dos menus na consola.
+> **Tip:** The `--console=plain` flag ensures clean, interactive terminal rendering for CLI menus.
 
 ---
 
-## 🧪 Testes de Software
+## 🧪 Software Testing
 
-O projeto dispõe de uma suite abrangente de testes unitários desenvolvida em **JUnit 5**, validando a lógica de negócio, criação via fábricas, mutabilidade controlada, serialização e automatismos:
+The project includes an extensive suite of automated unit tests built with **JUnit 5**, covering domain business logic, factory creation, defensive copying, serialization, and automation triggers:
 
 ```bash
 cd domusControl
 ./gradlew test
 ```
 
-Os relatórios detalhados de execução dos testes são gerados automaticamente em:
+Detailed HTML test execution reports are automatically generated at:
 `domusControl/app/build/reports/tests/test/index.html`
 
 ---
 
-## 📊 Documentação e Modelação UML
+## 📊 Documentation & UML Modeling
 
-- 📐 **Diagrama de Classes Completo**: Encontra-se disponível em [`domusControl/uml/domuscontrol.puml`](domusControl/uml/domuscontrol.puml), modelado em **PlantUML** abrangendo todas as relações, cardinalidades e heranças.
-- 📄 **Relatório Técnico**: O documento [`relatorio_poo.pdf`](relatorio_poo.pdf) descreve pormenorizadamente todo o enquadramento teórico, decisões arquiteturais, padrões adotados e análise crítica dos resultados obtidos.
+- 📐 **Class Diagram**: The complete system model is specified in [`domusControl/uml/domuscontrol.puml`](domusControl/uml/domuscontrol.puml), formatted in **PlantUML** and detailing all classes, inheritance hierarchies, and associations.
+- 📄 **Technical Report**: The full project documentation is available in [`relatorio_poo.pdf`](relatorio_poo.pdf), covering design decisions, theoretical foundations, and comprehensive project analysis.
 
 ---
 
-## 👥 Equipa de Desenvolvimento
+## 👥 Development Team
 
-Trabalho prático realizado pelo **Grupo 56** para a unidade curricular de **Programação Orientada aos Objetos (POO)** — LEI, Universidade do Minho:
+Project developed by **Group 56** for the **Object-Oriented Programming (POO)** course — LEI, University of Minho:
 
-| Aluno | Número | GitHub |
+| Student | ID | GitHub |
 | :--- | :---: | :---: |
 | **Afonso Costa** | `a110544` | [@afonso35costa](https://github.com/afonso35costa) |
 | **Diogo Silva** | `a111493` | [@diogo-20](https://github.com/diogo-20) |
@@ -268,5 +266,5 @@ Trabalho prático realizado pelo **Grupo 56** para a unidade curricular de **Pro
 ---
 
 <p align="center">
-  Universidade do Minho • Licenciatura em Engenharia Informática • 2025/2026
+  University of Minho • BSc in Computer Science (LEI) • Academic Year 2025/2026
 </p>
